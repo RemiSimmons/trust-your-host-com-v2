@@ -1,0 +1,71 @@
+"use client"
+
+import { motion } from "framer-motion"
+import { ChevronDown } from "lucide-react"
+import { LocationSelector } from "@/components/search/location-selector"
+import { DateRangePicker } from "@/components/search/date-range-picker"
+import { ExperienceSelector } from "@/components/search/experience-selector"
+import { FifaBadgeOverlay } from "@/components/home/fifa-badge-overlay"
+
+export function HeroSection() {
+  return (
+    <section className="relative min-h-screen flex flex-col justify-center pt-32 pb-20 overflow-hidden">
+      {/* FIFA 2026 Badge Overlay */}
+      <FifaBadgeOverlay />
+      
+      {/* Content */}
+      <div className="relative z-10 container mx-auto px-6 text-center">
+        <div className="max-w-4xl mx-auto">
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="font-serif text-5xl lg:text-7xl text-white font-bold mb-6 leading-tight drop-shadow-lg"
+          >
+            Find Your Perfect Getaway
+          </motion.h1>
+
+          {/* Subheadline */}
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-xl lg:text-2xl text-white/95 mb-12 leading-relaxed drop-shadow-md max-w-2xl mx-auto"
+          >
+            Discover unique homes and unforgettable experiences curated just for you.
+          </motion.p>
+
+          {/* Search Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            className="w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] text-left"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              <div className="lg:col-span-4">
+                <LocationSelector />
+              </div>
+              <div className="lg:col-span-4">
+                <DateRangePicker />
+              </div>
+              <div className="lg:col-span-4">
+                <ExperienceSelector />
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+      >
+        <ChevronDown className="h-8 w-8 text-white/60" />
+      </motion.div>
+    </section>
+  )
+}

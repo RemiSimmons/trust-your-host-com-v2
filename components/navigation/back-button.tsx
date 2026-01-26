@@ -1,0 +1,41 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { ChevronLeft } from "lucide-react"
+import { useRouter, usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+
+interface BackButtonProps {
+  className?: string
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link"
+}
+
+export function BackButton({ className, variant = "ghost" }: BackButtonProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Don't show back button on the home page
+  // Only check after mounting to avoid hydration mismatch
+  if (!mounted || pathname === "/") {
+    return null
+  }
+
+  return (
+    <Button
+      variant={variant}
+      size="sm"
+      className={cn("gap-1 pl-2 pr-3 md:pr-4", className)}
+      onClick={() => router.back()}
+      aria-label="Go back"
+    >
+      <ChevronLeft className="h-4 w-4" />
+      <span className="hidden md:inline">Back</span>
+    </Button>
+  )
+}
