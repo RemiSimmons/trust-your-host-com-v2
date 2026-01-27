@@ -37,6 +37,11 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Skip auth redirect logic entirely for auth callback routes
+  if (request.nextUrl.pathname.startsWith("/auth/callback")) {
+    return supabaseResponse
+  }
+
   if (
     !user &&
     !request.nextUrl.pathname.startsWith("/login") &&
