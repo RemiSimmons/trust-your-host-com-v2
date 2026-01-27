@@ -6,6 +6,7 @@ import { FeaturedProperties } from "@/components/home/featured-properties"
 import { ExperienceCategories } from "@/components/home/experience-categories"
 import { FifaCitiesSection } from "@/components/home/fifa-cities-section"
 import { HowItWorksExplainer } from "@/components/home/how-it-works-explainer"
+import { HomepageFAQ } from "@/components/home/homepage-faq"
 import { getFeaturedProperties } from "@/lib/db/properties"
 
 export default async function HomePage() {
@@ -47,6 +48,7 @@ export default async function HomePage() {
             </div>
 
             <div className="bg-background/95 backdrop-blur-sm">
+              <HomepageFAQ />
               <HostCTA />
             </div>
           </div>
