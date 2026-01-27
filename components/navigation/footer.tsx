@@ -46,16 +46,18 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/destinations"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Popular Destinations
+                <Link href="/guides" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  City Guides
                 </Link>
               </li>
               <li>
-                <Link href="/guides" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Travel Guides
+                <Link href="/journal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Travel Journal
+                </Link>
+              </li>
+              <li>
+                <Link href="/fifa-2026" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  FIFA 2026
                 </Link>
               </li>
             </ul>
@@ -75,14 +77,6 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/for-hosts#how-it-works"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  How Hosting Works
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/submit-property"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
@@ -91,18 +85,18 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/host-resources"
+                  href="/insights"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Host Resources
+                  Host Insights
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/community"
+                  href="/host-resources"
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Community
+                  Host Resources
                 </Link>
               </li>
               <li>

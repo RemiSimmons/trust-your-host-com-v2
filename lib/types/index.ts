@@ -235,3 +235,42 @@ export interface PlatformMetrics {
     errorRate: number
   }
 }
+
+// Article/Content Types
+export type ArticleCategory = "insights" | "guides" | "journal"
+
+export interface ArticleAuthor {
+  name: string
+  avatar: string
+  role?: string
+  bio?: string
+}
+
+export interface Article {
+  id: string
+  slug: string
+  title: string
+  excerpt: string
+  content: string // Markdown content
+  category: ArticleCategory
+  tags: string[]
+  featuredImage: string
+  author: ArticleAuthor
+  publishedAt: string
+  updatedAt?: string
+  readingTime: number // minutes
+  featured?: boolean
+  
+  // Category-specific fields
+  // For guides
+  city?: string
+  region?: string
+  relatedProperties?: string[] // property IDs
+  
+  // For insights
+  insightType?: "industry" | "tips" | "trends" | "case-study"
+  
+  // For journal
+  guestName?: string
+  tripDestination?: string
+}

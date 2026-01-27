@@ -63,7 +63,7 @@ export function HomepageFAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   return (
-    <section className="py-16 relative">
+    <section className="py-16 relative bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -90,7 +90,7 @@ export function HomepageFAQ() {
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
             >
-              <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 rounded-lg overflow-hidden hover:border-white/20 transition-colors">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg overflow-hidden hover:border-white/30 transition-colors">
                 <button
                   onClick={() => setOpenIndex(openIndex === index ? null : index)}
                   className="w-full px-6 py-5 flex items-center justify-between text-left group"
@@ -99,7 +99,7 @@ export function HomepageFAQ() {
                     {faq.question}
                   </span>
                   <ChevronDown
-                    className={`w-5 h-5 text-white/60 flex-shrink-0 transition-transform ${
+                    className={`w-5 h-5 text-white/80 flex-shrink-0 transition-transform ${
                       openIndex === index ? 'rotate-180' : ''
                     }`}
                   />
@@ -144,7 +144,7 @@ export function HomepageFAQ() {
           viewport={{ once: true }}
           className="mt-12 text-center space-y-4"
         >
-          <p className="text-white/60 text-sm">
+          <p className="text-white/80 text-sm">
             Looking for more detailed information?
           </p>
           <div className="flex flex-wrap justify-center gap-4">
