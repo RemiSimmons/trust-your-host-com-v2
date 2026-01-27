@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { createBrowserClient } from '@/lib/supabase/client'
 import { loadStripe } from '@stripe/stripe-js'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,7 @@ import { NavBar } from '@/components/navigation/nav-bar'
 import { Footer } from '@/components/navigation/footer'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function BillingSetupPage() {
+function BillingSetupContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [property, setProperty] = useState<any>(null)
@@ -237,5 +237,17 @@ export default function BillingSetupPage() {
       </main>
       <Footer />
     </div>
+  )
+}
+
+export default function BillingSetupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+      </div>
+    }>
+      <BillingSetupContent />
+    </Suspense>
   )
 }
