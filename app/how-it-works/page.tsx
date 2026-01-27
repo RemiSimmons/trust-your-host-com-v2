@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { NavBar } from "@/components/navigation/nav-bar"
 import { Footer } from "@/components/navigation/footer"
+import { DetailedGuestFAQ } from "@/components/faq/detailed-guest-faq"
 import { Search, Heart, ExternalLink, Shield, Users, CreditCard, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -97,36 +98,6 @@ export default function HowItWorksPage() {
             </div>
           </div>
 
-          {/* FAQ */}
-          <div className="mb-16">
-            <h2 className="font-serif text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
-            <div className="space-y-4 max-w-3xl mx-auto">
-              <div className="bg-card border border-border rounded-xl p-6">
-                <h3 className="font-bold mb-2">How do I book a property?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Browse properties on TrustYourHost, then click "Visit Website" to book directly on the host's booking site.
-                </p>
-              </div>
-              <div className="bg-card border border-border rounded-xl p-6">
-                <h3 className="font-bold mb-2">Do I pay through TrustYourHost?</h3>
-                <p className="text-sm text-muted-foreground">
-                  No. All payments are made directly on the host's booking website. We don't process any transactions.
-                </p>
-              </div>
-              <div className="bg-card border border-border rounded-xl p-6">
-                <h3 className="font-bold mb-2">Are properties verified?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Yes. Every property and booking website is manually reviewed by our team before being listed.
-                </p>
-              </div>
-              <div className="bg-card border border-border rounded-xl p-6">
-                <h3 className="font-bold mb-2">Is it safe?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Yes. We verify all booking websites and only list properties from hosts with secure booking systems.
-                </p>
-              </div>
-            </div>
-          </div>
 
           {/* Bottom CTA */}
           <div className="text-center space-y-4">
@@ -142,6 +113,9 @@ export default function HowItWorksPage() {
             </div>
           </div>
         </div>
+
+        {/* Detailed FAQ Section */}
+        <DetailedGuestFAQ />
       </main>
       <Footer />
     </div>

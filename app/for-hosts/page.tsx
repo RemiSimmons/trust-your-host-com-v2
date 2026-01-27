@@ -7,7 +7,7 @@ import { ROICalculator } from "@/components/home/roi-calculator"
 import { HowItWorksTimeline } from "@/components/home/how-it-works-timeline"
 import { WebsiteSetupOffer } from "@/components/home/website-setup-offer"
 import { MultiPropertyPricing } from "@/components/home/multi-property-pricing"
-import { HostFAQ } from "@/components/home/host-faq"
+import { DetailedHostFAQ } from "@/components/faq/detailed-host-faq"
 import { HostCTA } from "@/components/home/host-cta"
 import { FloatingPromo } from "@/components/home/floating-promo"
 
@@ -32,7 +32,7 @@ export default function ForHostsPage() {
         </div>
         <MultiPropertyPricing />
         <WebsiteSetupOffer />
-        <HostFAQ />
+        <DetailedHostFAQ />
         <HostCTA />
       </main>
 

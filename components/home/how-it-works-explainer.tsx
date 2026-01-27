@@ -6,7 +6,7 @@ export function HowItWorksExplainer() {
     <section className="py-24 pb-28 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Glass morphism container */}
-        <div className="bg-white/[0.03] backdrop-blur-md rounded-3xl px-6 sm:px-8 lg:px-12 py-16 border border-white/[0.08] shadow-2xl">
+        <div className="bg-white/[0.19] backdrop-blur-2xl rounded-3xl px-6 sm:px-8 lg:px-12 py-16 border border-white/30 shadow-2xl">
           {/* Header */}
           <div className="text-center mb-16">
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 text-balance drop-shadow-lg">

@@ -19,6 +19,7 @@ import {
 import { fifaCities, getCityById } from "@/lib/data/fifa-cities";
 import { NavBar } from "@/components/navigation/nav-bar";
 import { Footer } from "@/components/navigation/footer";
+import { FifaCityFAQ } from "@/components/faq/fifa-city-faq";
 
 interface CityPageProps {
   params: Promise<{
@@ -419,57 +420,7 @@ export default async function CityPage({ params }: CityPageProps) {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-16 bg-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="font-serif text-3xl md:text-4xl font-bold mb-12 text-center">
-              Frequently Asked Questions
-            </h2>
-
-            <div className="space-y-6">
-              <div className="bg-gray-50 rounded-xl p-6">
-                <h3 className="font-bold text-lg mb-3">When should I book my accommodation?</h3>
-                <p className="text-gray-600">
-                  Book as early as possible! {city.practical.hotelRateNote} Properties near the stadium 
-                  are already seeing high demand, especially for match days featuring popular teams or knockout rounds.
-                </p>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl p-6">
-                <h3 className="font-bold text-lg mb-3">How far in advance do prices increase?</h3>
-                <p className="text-gray-600">
-                  Prices typically start increasing 6-12 months before major events. For FIFA 2026, 
-                  we're already seeing properties adjust their rates. Booking now ensures you get the best selection 
-                  and pricing before the rush.
-                </p>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl p-6">
-                <h3 className="font-bold text-lg mb-3">Is public transit reliable in {city.name}?</h3>
-                <p className="text-gray-600">
-                  {city.practical.transportTips[0]} Special event services are typically added for major 
-                  tournaments like the World Cup, making it easier to reach the stadium without dealing with traffic or parking.
-                </p>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl p-6">
-                <h3 className="font-bold text-lg mb-3">What's the weather like in June/July?</h3>
-                <p className="text-gray-600">
-                  The best months to visit {city.name} are typically {city.practical.bestMonths.join(", ")}. 
-                  June and July can vary depending on the city, so pack accordingly and check the forecast before your trip.
-                </p>
-              </div>
-
-              <div className="bg-gray-50 rounded-xl p-6">
-                <h3 className="font-bold text-lg mb-3">Should I stay near the stadium or downtown?</h3>
-                <p className="text-gray-600">
-                  It depends on your priorities! Staying near the stadium ({city.neighborhoods[0].name}) offers 
-                  the shortest commute on match days. Downtown areas like {city.neighborhoods[city.neighborhoods.length - 1]?.name} 
-                  provide more dining and entertainment options but require transit or rideshare to reach the stadium.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <FifaCityFAQ cityName={city.name} />
 
         {/* CTA Section */}
         <section className="py-20 bg-gradient-to-br from-blue-600 to-green-600 text-white">
