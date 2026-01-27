@@ -1,8 +1,10 @@
-'use server'
-
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendTrialEndingReminder } from '@/lib/email/resend'
+
+// Force dynamic rendering - don't try to build this at build time
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 /**
  * Cron job to send trial ending reminders
