@@ -1,6 +1,14 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy initialize Resend only when needed to avoid build-time errors
+let resend: Resend | null = null
+
+function getResendClient() {
+  if (!resend && process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resend
+}
 
 export async function sendPropertySubmissionNotification(submission: {
   propertyName: string
@@ -16,7 +24,12 @@ export async function sendPropertySubmissionNotification(submission: {
   try {
     console.log('[Email] Attempting to send submission notification to:', process.env.ADMIN_EMAIL)
     
-    const result = await resend.emails.send({
+    const client = getResendClient()
+    if (!client) {
+      return { success: false, error: 'Resend client not initialized' }
+    }
+    
+    const result = await client.emails.send({
       from: 'TrustYourHost <hello@trustyourhost.com>',
       to: process.env.ADMIN_EMAIL || 'admin@trustyourhost.com',
       subject: `New Property Submission: ${submission.propertyName}`,
@@ -48,7 +61,10 @@ export async function sendTrialEndingNotification(host: {
     return
   }
 
-  await resend.emails.send({
+  const client = getResendClient()
+  if (!client) return
+
+  await client.emails.send({
     from: 'TrustYourHost <hello@trustyourhost.com>',
     to: host.email,
     subject: `Your TrustYourHost trial ends in ${host.daysRemaining} days`,
@@ -73,7 +89,10 @@ export async function sendPaymentFailedNotification(host: {
     return
   }
 
-  await resend.emails.send({
+  const client = getResendClient()
+  if (!client) return
+
+  await client.emails.send({
     from: 'TrustYourHost <hello@trustyourhost.com>',
     to: host.email,
     subject: `Payment Failed for ${host.propertyName}`,
@@ -99,10 +118,13 @@ export async function sendMonthlyAnalyticsSummary(host: {
     return
   }
 
+  const client = getResendClient()
+  if (!client) return
+
   const trend = host.changePercent > 0 ? 'up' : 'down'
   const trendIcon = host.changePercent > 0 ? '📈' : '📉'
 
-  await resend.emails.send({
+  await client.emails.send({
     from: 'TrustYourHost <hello@trustyourhost.com>',
     to: host.email,
     subject: `Monthly Analytics: ${host.propertyName}`,
@@ -134,7 +156,12 @@ export async function sendPropertyApprovedNotification(host: {
   try {
     console.log('[Email] Attempting to send approval notification to:', host.email)
     
-    const result = await resend.emails.send({
+    const client = getResendClient()
+    if (!client) {
+      return { success: false, error: 'Resend client not initialized' }
+    }
+    
+    const result = await client.emails.send({
       from: 'TrustYourHost <hello@trustyourhost.com>',
       to: host.email,
       subject: `🎉 ${host.propertyName} is Approved! Set up billing to go live`,
@@ -215,7 +242,12 @@ export async function sendTrialEndingReminder(host: {
   }
 
   try {
-    const result = await resend.emails.send({
+    const client = getResendClient()
+    if (!client) {
+      return { success: false, error: 'Resend client not initialized' }
+    }
+    
+    const result = await client.emails.send({
       from: 'TrustYourHost <hello@trustyourhost.com>',
       to: host.email,
       subject: `⏰ Your TrustYourHost Trial Ends in 7 Days`,
@@ -284,7 +316,12 @@ export async function sendSubscriptionFailedNotification(host: {
   }
 
   try {
-    const result = await resend.emails.send({
+    const client = getResendClient()
+    if (!client) {
+      return { success: false, error: 'Resend client not initialized' }
+    }
+    
+    const result = await client.emails.send({
       from: 'TrustYourHost <hello@trustyourhost.com>',
       to: host.email,
       subject: `⚠️ Payment Failed - ${host.propertyName} Paused`,
