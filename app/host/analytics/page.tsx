@@ -3,6 +3,9 @@ import { redirect } from 'next/navigation'
 import { getHostProperties } from '@/lib/db/properties'
 import { DetailedAnalytics } from '@/components/host/detailed-analytics'
 
+// Force dynamic rendering - requires authentication
+export const dynamic = 'force-dynamic'
+
 export default async function HostAnalyticsPage() {
   const supabase = await createServerClient()
   const { data: { user } } = await supabase.auth.getUser()

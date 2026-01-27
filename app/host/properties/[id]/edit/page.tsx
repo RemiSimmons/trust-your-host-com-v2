@@ -3,6 +3,9 @@ import { redirect } from 'next/navigation'
 import { getPropertyById } from '@/lib/db/properties'
 import { PropertyEditForm } from '@/components/host/property-edit-form'
 
+// Force dynamic rendering - requires authentication
+export const dynamic = 'force-dynamic'
+
 export default async function EditPropertyPage({ params }: { params: { id: string } }) {
   const supabase = await createServerClient()
   const { data: { user } } = await supabase.auth.getUser()

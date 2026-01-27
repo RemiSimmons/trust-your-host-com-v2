@@ -4,6 +4,9 @@ import { PropertiesGrid } from '@/components/host/properties-grid'
 import { getHostProperties } from '@/lib/db/properties'
 import { getPropertyClickAnalytics } from '@/lib/db/analytics'
 
+// Force dynamic rendering - requires authentication
+export const dynamic = 'force-dynamic'
+
 export default async function HostDashboardPage() {
   const supabase = await createServerClient()
   const { data: { user } } = await supabase.auth.getUser()

@@ -2,6 +2,9 @@ import { createServerClient } from '@/lib/supabase/server'
 import { SubmissionsTable } from '@/components/admin/submissions-table'
 import { redirect } from 'next/navigation'
 
+// Force dynamic rendering - admin pages should never be pre-rendered
+export const dynamic = 'force-dynamic'
+
 export default async function AdminSubmissionsPage() {
   const supabase = await createServerClient()
   

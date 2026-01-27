@@ -1,6 +1,9 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { ChangeRequestsList } from '@/components/admin/change-requests-list'
 
+// Force dynamic rendering - admin pages should never be pre-rendered
+export const dynamic = 'force-dynamic'
+
 export default async function AdminChangeRequestsPage() {
   const supabase = createAdminClient()
   

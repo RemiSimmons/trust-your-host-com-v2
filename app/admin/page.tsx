@@ -3,6 +3,9 @@ import { PlatformMetricsCards } from "@/components/admin/platform-metrics-cards"
 import { RecentTasksList } from "@/components/admin/recent-tasks-list"
 import { SystemHealthIndicator } from "@/components/admin/system-health-indicator"
 
+// Force dynamic rendering - admin pages should never be pre-rendered
+export const dynamic = 'force-dynamic'
+
 export default async function AdminDashboard() {
   return (
     <div className="space-y-6">

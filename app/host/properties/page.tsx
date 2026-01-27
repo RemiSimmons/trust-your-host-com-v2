@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
 
+// Force dynamic rendering - requires authentication
+export const dynamic = 'force-dynamic'
+
 export default async function HostPropertiesPage() {
   const supabase = await createServerClient()
   const { data: { user } } = await supabase.auth.getUser()
