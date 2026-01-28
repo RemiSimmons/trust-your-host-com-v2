@@ -1,35 +1,130 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
+import dynamic from "next/dynamic"
 import { motion, AnimatePresence } from "framer-motion"
 import { Search, SlidersHorizontal, X } from "lucide-react"
 import type { Property } from "@/lib/types"
 import { PropertyCard } from "@/components/home/featured-properties"
 import { FilterSidebar } from "@/components/search/filter-sidebar"
+import { CityResultsGroup } from "@/components/search/city-results-group"
+import { MapListToggle } from "@/components/search/map-list-toggle"
 import { filterProperties, sortProperties, INITIAL_FILTERS, type FilterState } from "@/lib/utils/search"
 import { Button } from "@/components/ui/button"
+import { fifaCities } from "@/lib/data/fifa-cities"
+
+// Dynamically import MapView to avoid SSR issues with Leaflet
+const MapView = dynamic(() => import("@/components/search/map-view").then(mod => ({ default: mod.MapView })), {
+  ssr: false,
+  loading: () => <div className="h-[calc(100vh-240px)] w-full rounded-xl bg-gray-100 animate-pulse" />
+})
 
 interface SearchPageClientProps {
   initialProperties: Property[]
 }
 
 export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
+  const searchParams = useSearchParams()
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS)
   const [sortBy, setSortBy] = useState("relevance")
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false)
+  const [view, setView] = useState<"list" | "map">("list")
+
+  // Apply URL parameters on mount
+  useEffect(() => {
+    const event = searchParams.get("event") || (searchParams.get("fifa2026") === "true" ? "fifa-2026" : null)
+    const cityParam = searchParams.get("city")
+    const locationParam = searchParams.get("location")
+    const experienceParam = searchParams.get("experience")
+    const radius = searchParams.get("radius")
+    
+    // Handle cities from either 'city' or 'location' param
+    let cities: string[] = []
+    if (cityParam) {
+      cities = cityParam.split(",")
+    } else if (locationParam && locationParam !== "all") {
+      // Map location slug to city ID
+      cities = [locationParam]
+    }
+    
+    // Map experience slug to experience label
+    const experienceMap: Record<string, string> = {
+      "island-getaways": "Island Getaways",
+      "waterfront-escapes": "Waterfront Escapes",
+      "cultural-immersion": "Cultural Immersion",
+      "mountain-lodges": "Mountain Lodges",
+      "hiking-trails": "Hiking & Trails",
+      "wellness-retreats": "Wellness Retreats",
+      "pet-friendly": "Pet Friendly", // Special case - maps to petFriendly filter
+      "family-friendly": "Family-Friendly", // Special case
+      "luxury": "Luxury Properties", // Special case
+    }
+    
+    const experiences: string[] = []
+    let petFriendly = false
+    
+    if (experienceParam && experienceParam !== "all") {
+      if (experienceParam === "pet-friendly") {
+        petFriendly = true
+      } else if (experienceMap[experienceParam]) {
+        experiences.push(experienceMap[experienceParam])
+      }
+    }
+    
+    // Only update if we have any params
+    if (event || cities.length > 0 || experiences.length > 0 || petFriendly) {
+      setFilters(prev => ({
+        ...prev,
+        event,
+        cities,
+        experiences: experiences.length > 0 ? experiences : prev.experiences,
+        petFriendly: petFriendly || prev.petFriendly,
+        radiusMiles: radius ? Number(radius) : prev.radiusMiles
+      }))
+    }
+  }, [searchParams])
 
   const filteredProperties = useMemo(() => {
     const filtered = filterProperties(initialProperties, filters)
     return sortProperties(filtered, sortBy)
   }, [initialProperties, filters, sortBy])
 
+  // Group properties by city when multiple cities selected
+  const propertiesByCity = useMemo(() => {
+    if (filters.cities.length === 0) return null
+    
+    const grouped: Record<string, Property[]> = {}
+    filters.cities.forEach(cityId => {
+      grouped[cityId] = filteredProperties.filter(p => {
+        const cityMatches: Record<string, boolean> = {
+          "new-york-new-jersey": p.location.city.toLowerCase().includes("new") || p.location.state === "New Jersey" || p.location.city === "Brooklyn" || p.location.city === "Hoboken",
+          "miami-gardens": p.location.city.toLowerCase().includes("miami") || p.location.city === "Coral Gables" || p.location.city === "Aventura" || p.location.city === "Key Biscayne" || p.location.city === "Coconut Grove",
+          "los-angeles": p.location.city.toLowerCase().includes("angeles") || p.location.city === "Inglewood" || p.location.city === "Santa Monica",
+          "atlanta": p.location.city === "Atlanta",
+          "boston": p.location.city === "Boston" || p.location.city === "Foxborough",
+          "philadelphia": p.location.city === "Philadelphia",
+          "kansas-city": p.location.city === "Kansas City",
+          "dallas": p.location.city === "Dallas" || p.location.city === "Arlington",
+          "houston": p.location.city === "Houston",
+          "seattle": p.location.city === "Seattle",
+          "san-francisco": p.location.city.toLowerCase().includes("san") || p.location.city === "Santa Clara"
+        }
+        return cityMatches[cityId] || false
+      })
+    })
+    return grouped
+  }, [filteredProperties, filters.cities])
+
   const activeFilterCount =
     filters.experiences.length +
     filters.propertyTypes.length +
     filters.amenities.length +
+    filters.cities.length +
     (filters.bedrooms > 0 ? 1 : 0) +
     (filters.verifiedOnly ? 1 : 0) +
-    (filters.petFriendly ? 1 : 0)
+    (filters.petFriendly ? 1 : 0) +
+    (filters.event ? 1 : 0)
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-12">
@@ -55,8 +150,9 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
               </Button>
             </div>
 
-            {/* Right: Sort dropdown */}
+            {/* Right: Sort dropdown and Map/List toggle */}
             <div className="flex items-center gap-3">
+              <MapListToggle view={view} onViewChange={setView} />
               <span className="text-sm text-gray-500 hidden md:inline">Sort by:</span>
               <select
                 value={sortBy}
@@ -73,16 +169,8 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
         </div>
       </div>
 
-      {/* Content area with fade effect at top */}
+      {/* Content area */}
       <div className="relative">
-        {/* Fade overlay that sits below the sticky nav */}
-        <div 
-          className="pointer-events-none absolute inset-x-0 top-0 h-16 z-20"
-          style={{
-            background: "linear-gradient(to bottom, rgb(249 250 251) 0%, rgb(249 250 251 / 0.8) 40%, transparent 100%)"
-          }}
-        />
-        
         <div className="container mx-auto px-6">
           <div className="flex gap-8">
             {/* Desktop Sidebar */}
@@ -92,23 +180,52 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
 
             {/* Main Content */}
             <main className="flex-1">
-              {/* Property Grid */}
-              <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                <AnimatePresence mode="popLayout">
-                  {filteredProperties.map((property) => (
-                    <motion.div
-                      key={property.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <PropertyCard property={property} />
+              {/* Map View */}
+              {view === "map" ? (
+                <MapView
+                  properties={filteredProperties}
+                  stadiumCoords={filters.cities.length === 1 ? fifaCities.find(c => c.id === filters.cities[0])?.stadium.coordinates ? {
+                    lat: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![0],
+                    lng: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![1]
+                  } : undefined : undefined}
+                  radiusMiles={filters.radiusMiles}
+                  distanceFrom={filters.distanceFrom}
+                />
+              ) : (
+                /* List View */
+                <>
+                  {/* Multi-City Grouped Results */}
+                  {propertiesByCity ? (
+                    <div>
+                      {filters.cities.map(cityId => (
+                        <CityResultsGroup
+                          key={cityId}
+                          cityId={cityId}
+                          properties={propertiesByCity[cityId] || []}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    /* Single List View */
+                    <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                      <AnimatePresence mode="popLayout">
+                        {filteredProperties.map((property) => (
+                          <motion.div
+                            key={property.id}
+                            layout
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <PropertyCard property={property} />
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
                     </motion.div>
-                  ))}
-                </AnimatePresence>
-              </motion.div>
+                  )}
+                </>
+              )}
 
               {/* Empty State */}
               {filteredProperties.length === 0 && (

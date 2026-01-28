@@ -2,9 +2,7 @@
 
 import { motion } from "framer-motion"
 import { ChevronDown } from "lucide-react"
-import { LocationSelector } from "@/components/search/location-selector"
-import { DateRangePicker } from "@/components/search/date-range-picker"
-import { ExperienceSelector } from "@/components/search/experience-selector"
+import { HeroSearch } from "@/components/home/hero-search"
 import { FifaBadgeOverlay } from "@/components/home/fifa-badge-overlay"
 
 export function HeroSection() {
@@ -15,7 +13,7 @@ export function HeroSection() {
       
       {/* Content */}
       <div className="relative z-10 container mx-auto px-6 text-center">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           {/* Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -41,19 +39,9 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-            className="w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] text-left"
+            className="w-full max-w-[1200px] mx-auto mb-20"
           >
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-              <div className="lg:col-span-4">
-                <LocationSelector />
-              </div>
-              <div className="lg:col-span-4">
-                <DateRangePicker />
-              </div>
-              <div className="lg:col-span-4">
-                <ExperienceSelector />
-              </div>
-            </div>
+            <HeroSearch />
           </motion.div>
         </div>
       </div>
