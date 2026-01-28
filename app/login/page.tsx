@@ -1,16 +1,18 @@
 'use client'
 
-import { useState } from 'react'
-import { createBrowserClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Mail, Loader2, Heart } from 'lucide-react'
-import Link from 'next/link'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
+  const router = useRouter()
+  
+  // Redirect to host login - guests don't need accounts on a directory platform
+  useEffect(() => {
+    router.replace('/host/login')
+  }, [router])
+  
+  return null
+}
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)

@@ -1,16 +1,18 @@
 'use client'
 
-import { useState } from 'react'
-import { createBrowserClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Mail, Loader2, Heart, User } from 'lucide-react'
-import Link from 'next/link'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function SignupPage() {
+  const router = useRouter()
+  
+  // Redirect to property submission - this is how hosts create accounts
+  useEffect(() => {
+    router.replace('/submit-property')
+  }, [router])
+  
+  return null
+}
   const router = useRouter()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')

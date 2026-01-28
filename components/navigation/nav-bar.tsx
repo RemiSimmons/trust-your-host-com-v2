@@ -165,18 +165,18 @@ export function NavBar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuLabel>Host Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard">
+                    <Link href="/host">
                       <LayoutDashboard className="mr-2 h-4 w-4" />
-                      Guest Dashboard
+                      Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/host">
+                    <Link href="/host/properties">
                       <Building className="mr-2 h-4 w-4" />
-                      Host Dashboard
+                      My Properties
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -187,13 +187,13 @@ export function NavBar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link href="/login">
+              <Link href="/host/login">
                 <Button
                   variant={(scrolled || !isHomePage) ? "ghost" : "ghost"}
                   size="sm"
                   className={(scrolled || !isHomePage) ? "" : "text-white hover:text-white hover:bg-white/10"}
                 >
-                  Log In
+                  Host Login
                 </Button>
               </Link>
             )}
@@ -286,16 +286,16 @@ export function NavBar() {
             <div className="space-y-2 border-t border-border pt-3">
               {user ? (
                 <>
-                  <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" size="sm" className="w-full justify-start">
-                      <LayoutDashboard className="h-4 w-4 mr-2" />
-                      Guest Dashboard
-                    </Button>
-                  </Link>
                   <Link href="/host" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" size="sm" className="w-full justify-start">
+                      <LayoutDashboard className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Link href="/host/properties" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="ghost" size="sm" className="w-full justify-start">
                       <Building className="h-4 w-4 mr-2" />
-                      Host Dashboard
+                      My Properties
                     </Button>
                   </Link>
                   <Button
@@ -313,14 +313,9 @@ export function NavBar() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/host/login" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" size="sm" className="w-full">
-                      Log In
-                    </Button>
-                  </Link>
-                  <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
-                    <Button size="sm" className="w-full">
-                      Sign Up
+                      Host Login
                     </Button>
                   </Link>
                 </>
