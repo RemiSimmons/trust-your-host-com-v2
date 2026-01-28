@@ -1,7 +1,8 @@
 "use client"
-import { Check } from "lucide-react"
+import { Check, Trophy, MapPin, Target } from "lucide-react"
 import type { FilterState } from "@/lib/utils/search"
 import { cn } from "@/lib/utils"
+import { fifaCities } from "@/lib/data/fifa-cities"
 
 interface FilterSidebarProps {
   filters: FilterState
@@ -49,12 +50,16 @@ const AMENITIES = [
   "Beach Access",
 ]
 
+const SPECIAL_EVENTS = [
+  { id: "fifa-2026", name: "FIFA World Cup 2026", icon: Trophy }
+]
+
 export function FilterSidebar({ filters, setFilters, className }: FilterSidebarProps) {
   const updateFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
     setFilters({ ...filters, [key]: value })
   }
 
-  const toggleArrayFilter = (key: "experiences" | "propertyTypes" | "amenities", item: string) => {
+  const toggleArrayFilter = (key: "experiences" | "propertyTypes" | "amenities" | "cities", item: string) => {
     const current = filters[key]
     const updated = current.includes(item) ? current.filter((i) => i !== item) : [...current, item]
     updateFilter(key, updated)
@@ -76,6 +81,10 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
               instantBook: false,
               verifiedOnly: false,
               petFriendly: false,
+              event: null,
+              cities: [],
+              distanceFrom: "stadium",
+              radiusMiles: 25,
             })
           }
           className="text-sm text-gray-600 hover:text-gray-900 underline"
@@ -83,6 +92,90 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
           Reset all
         </button>
       </div>
+
+      {/* Special Events */}
+      <div className="mb-8 pb-8 border-b border-gray-100">
+        <h4 className="font-semibold text-gray-900 mb-3">Special Events</h4>
+        <select
+          value={filters.event || ""}
+          onChange={(e) => updateFilter("event", e.target.value || null)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 text-sm bg-white"
+        >
+          <option value="">No event filter</option>
+          {SPECIAL_EVENTS.map(event => (
+            <option key={event.id} value={event.id}>{event.name}</option>
+          ))}
+        </select>
+
+        {/* FIFA Cities Multi-Select */}
+        {filters.event === "fifa-2026" && (
+          <div className="mt-4 space-y-2">
+            <label className="text-xs text-gray-600 font-medium block">Host Cities</label>
+            <div className="max-h-64 overflow-y-auto space-y-2 border border-gray-200 rounded-lg p-3">
+              {fifaCities.map((city) => (
+                <label key={city.id} className="flex items-center gap-2 cursor-pointer group">
+                  <div
+                    className={cn(
+                      "w-4 h-4 rounded border flex items-center justify-center transition-colors",
+                      filters.cities.includes(city.id)
+                        ? "bg-accent border-accent text-white"
+                        : "border-gray-300 group-hover:border-accent",
+                    )}
+                  >
+                    {filters.cities.includes(city.id) && <Check className="h-3 w-3" />}
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="hidden"
+                    checked={filters.cities.includes(city.id)}
+                    onChange={() => toggleArrayFilter("cities", city.id)}
+                  />
+                  <span className="text-sm text-gray-700 group-hover:text-gray-900 flex items-center gap-1.5 flex-1">
+                    <span>{city.emoji}</span>
+                    <span>{city.displayName}</span>
+                    <span className="ml-auto text-xs text-gray-500">{city.stadium.matchesHosted} matches</span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Distance/Radius Filter - only show when cities selected */}
+      {filters.cities.length > 0 && (
+        <div className="mb-8 pb-8 border-b border-gray-100">
+          <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <Target className="h-4 w-4" />
+            Distance From
+          </h4>
+          
+          <select
+            value={filters.distanceFrom}
+            onChange={(e) => updateFilter("distanceFrom", e.target.value as "stadium" | "city-center")}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 text-sm bg-white mb-3"
+          >
+            <option value="stadium">Stadium</option>
+            <option value="city-center">City Center</option>
+          </select>
+
+          <label className="text-xs text-gray-600 font-medium block mb-2">
+            Within {filters.radiusMiles} miles
+          </label>
+          <input
+            type="range"
+            min="1"
+            max="25"
+            value={filters.radiusMiles}
+            onChange={(e) => updateFilter("radiusMiles", Number(e.target.value))}
+            className="w-full accent-accent"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>1 mi</span>
+            <span>25 mi</span>
+          </div>
+        </div>
+      )}
 
       {/* Experience Categories */}
       <div className="mb-8">
