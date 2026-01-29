@@ -153,7 +153,7 @@ export function Footer() {
               <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Terms
               </Link>
-              <Link href="/sitemap" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/site-navigation" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Sitemap
               </Link>
             </div>
