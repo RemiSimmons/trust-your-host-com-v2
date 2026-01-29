@@ -48,3 +48,6 @@ Thumbs.db
 
 # Cursor
 .cursor/
+
+# Duplicate git directories
+trust-your-host-com-v2.git/
