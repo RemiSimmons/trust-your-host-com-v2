@@ -11,3 +11,6 @@ export * from "./metadata"
 
 // Related content and internal linking
 export * from "./related-content"
+
+// Breadcrumb helpers
+export * from "./breadcrumb-helpers"

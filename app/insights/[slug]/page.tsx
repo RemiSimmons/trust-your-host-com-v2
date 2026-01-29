@@ -7,7 +7,8 @@ import { Footer } from "@/components/navigation/footer"
 import { generateArticleMetadata } from "@/lib/seo/metadata"
 import { generateArticleSchema, generateBreadcrumbSchema } from "@/lib/seo/schema"
 import { SchemaMarkup } from "@/components/seo/schema-markup"
-import { Breadcrumbs, generateArticleBreadcrumbs } from "@/components/seo/breadcrumbs"
+import { Breadcrumbs } from "@/components/seo/breadcrumbs"
+import { generateArticleBreadcrumbs } from "@/lib/seo/breadcrumb-helpers"
 import { findRelatedArticles } from "@/lib/seo/related-content"
 
 interface PageProps {

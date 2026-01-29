@@ -22,7 +22,8 @@ import { Footer } from "@/components/navigation/footer";
 import { FifaCityFAQ } from "@/components/faq/fifa-city-faq";
 import { SchemaMarkup } from "@/components/seo/schema-markup";
 import { generateBreadcrumbSchema } from "@/lib/seo/schema";
-import { Breadcrumbs, generateFifaBreadcrumbs } from "@/components/seo/breadcrumbs";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { generateFifaBreadcrumbs } from "@/lib/seo/breadcrumb-helpers";
 import { findArticlesForFifaCity } from "@/lib/seo/related-content";
 import { RelatedContent } from "@/components/seo/related-content";
 
