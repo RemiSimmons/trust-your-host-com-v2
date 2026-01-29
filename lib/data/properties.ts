@@ -2130,4 +2130,61 @@ export const properties: Property[] = [
   },
 ]
 
-export const mockProperties = properties
+// Import FIFA properties
+import { fifaProperties } from "./fifa-properties"
+
+// Helper to calculate distance between two coordinates
+function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 3959 // Earth's radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLng = (lng2 - lng1) * Math.PI / 180
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return R * c
+}
+
+// Merge regular properties with FIFA properties
+const allProperties = [...properties, ...fifaProperties]
+
+export const mockProperties = allProperties
+
+// Helper functions
+export function getProperties() {
+  return allProperties
+}
+
+export function getPropertiesByFifaCity(cityId: string): Property[] {
+  return allProperties.filter(p => {
+    if (!p.is_fifa_2026) return false
+    
+    // Match city based on location
+    const cityMatches: Record<string, boolean> = {
+      "new-york-new-jersey": p.location.city.toLowerCase().includes("new") || p.location.state === "New Jersey" || p.location.city === "Brooklyn" || p.location.city === "Hoboken",
+      "miami-gardens": p.location.city.toLowerCase().includes("miami") || p.location.city === "Coral Gables" || p.location.city === "Aventura" || p.location.city === "Key Biscayne" || p.location.city === "Coconut Grove",
+      "los-angeles": p.location.city.toLowerCase().includes("angeles") || p.location.city === "Inglewood" || p.location.city === "Santa Monica",
+      "atlanta": p.location.city === "Atlanta",
+      "boston": p.location.city === "Boston" || p.location.city === "Foxborough",
+      "philadelphia": p.location.city === "Philadelphia",
+      "kansas-city": p.location.city === "Kansas City",
+      "dallas": p.location.city === "Dallas" || p.location.city === "Arlington",
+      "houston": p.location.city === "Houston",
+      "seattle": p.location.city === "Seattle",
+      "san-francisco": p.location.city.toLowerCase().includes("san") || p.location.city === "Santa Clara"
+    }
+    return cityMatches[cityId] || false
+  })
+}
+
+export function getPropertiesWithinRadius(lat: number, lng: number, radiusMiles: number): Property[] {
+  return allProperties.filter(p => {
+    const distance = calculateDistance(
+      lat,
+      lng,
+      p.location.coordinates.lat,
+      p.location.coordinates.lng
+    )
+    return distance <= radiusMiles
+  })
+}

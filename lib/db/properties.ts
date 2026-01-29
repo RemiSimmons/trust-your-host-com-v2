@@ -1,6 +1,6 @@
 import { createServerClient } from "@/lib/supabase/server"
 import type { Property } from "@/lib/types"
-import { properties as mockProperties } from "@/lib/data/properties"
+import { mockProperties } from "@/lib/data/properties"
 
 export async function getProperties(): Promise<Property[]> {
   console.log("[v0] getProperties called")

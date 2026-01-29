@@ -17,18 +17,21 @@ const categoryPaths = {
   insights: "/insights",
   guides: "/guides",
   journal: "/journal",
+  resources: "/host-resources",
 }
 
 const categoryLabels = {
   insights: "Host Insights",
   guides: "Guide",
   journal: "Journal",
+  resources: "Host Resources",
 }
 
 const categoryColors = {
   insights: "bg-blue-100 text-blue-700",
   guides: "bg-emerald-100 text-emerald-700",
   journal: "bg-amber-100 text-amber-700",
+  resources: "bg-purple-100 text-purple-700",
 }
 
 export function ArticleCard({ article, variant = "default", className }: ArticleCardProps) {

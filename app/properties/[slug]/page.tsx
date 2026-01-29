@@ -1,49 +1,111 @@
 import { notFound } from "next/navigation"
-import { getPropertyBySlug, getProperties, getPropertiesCount } from "@/lib/db/properties"
-import { PropertyTopHeader } from "@/components/property/property-top-header"
-import { PropertyGalleryRedesign } from "@/components/property/property-gallery-redesign"
-import { PropertyDetailsGrid } from "@/components/property/property-details-grid"
-import { VisitWebsiteSection } from "@/components/property/visit-website-section"
-import { SimilarProperties } from "@/components/property/similar-properties"
+import { Metadata } from "next"
+import { getPropertyBySlug, getProperties } from "@/lib/db/properties"
+import { PropertyDetailClient } from "@/components/property/property-detail-client"
+import { NavBar } from "@/components/navigation/nav-bar"
+import { Footer } from "@/components/navigation/footer"
+import { generatePropertyMetadata } from "@/lib/seo/metadata"
+import { generateLodgingBusinessSchema, generateBreadcrumbSchema } from "@/lib/seo/schema"
+import { SchemaMarkup } from "@/components/seo/schema-markup"
+import { Breadcrumbs, generatePropertyBreadcrumbs } from "@/components/seo/breadcrumbs"
+import { findArticlesForProperty } from "@/lib/seo/related-content"
+import { RelatedContent } from "@/components/seo/related-content"
 
 interface PropertyPageProps {
-  params: Promise<{
+  params: {
     slug: string
-  }>
+  }
+}
+
+export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
+  const property = await getPropertyBySlug(params.slug)
+
+  if (!property) {
+    return {
+      title: "Property Not Found",
+    }
+  }
+
+  return generatePropertyMetadata(property)
 }
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
-  const { slug } = await params
-  const property = await getPropertyBySlug(slug)
-  const allProperties = await getProperties()
-  const totalProperties = await getPropertiesCount()
+  const property = await getPropertyBySlug(params.slug)
 
   if (!property) {
     notFound()
   }
 
+  // Fetch related properties
+  const allProperties = await getProperties()
+  const relatedProperties = allProperties
+    .filter(p => {
+      if (p.id === property.id) return false
+      
+      // Match same city or FIFA city
+      const sameCity = p.location.city === property.location.city
+      const sameFifaCity = p.is_fifa_2026 && property.is_fifa_2026
+      
+      if (!sameCity && !sameFifaCity) return false
+      
+      // Match similar price range (±30%)
+      const priceMatch = 
+        p.pricing.baseNightlyRate >= property.pricing.baseNightlyRate * 0.7 &&
+        p.pricing.baseNightlyRate <= property.pricing.baseNightlyRate * 1.3
+      
+      return priceMatch
+    })
+    .sort((a, b) => {
+      // Prioritize verified
+      if (a.verified !== b.verified) return a.verified ? -1 : 1
+      // Then by distance to stadium if FIFA
+      if (a.distance_to_stadium && b.distance_to_stadium) {
+        return a.distance_to_stadium - b.distance_to_stadium
+      }
+      return 0
+    })
+    .slice(0, 4)
+
+  // Generate schema markup
+  const canonicalUrl = `https://trustyourhost.com/properties/${property.slug}`
+  const lodgingSchema = generateLodgingBusinessSchema(property, canonicalUrl)
+  const breadcrumbItems = generatePropertyBreadcrumbs(
+    property.name,
+    property.location.city,
+    property.location.state
+  )
+  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems.map((item) => ({
+    name: item.label,
+    url: item.href ? `https://trustyourhost.com${item.href}` : undefined,
+  })))
+
+  // Get related articles
+  const relatedArticles = findArticlesForProperty(property, 3)
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Top Header */}
-      <PropertyTopHeader property={property} totalProperties={totalProperties} />
-
-      {/* Image Gallery */}
-      <PropertyGalleryRedesign images={property.images} />
-
-      {/* Property Details Grid */}
-      <PropertyDetailsGrid property={property} />
-
-      {/* Visit Website Section */}
-      <div className="border-t border-gray-200">
-        <VisitWebsiteSection property={property} />
-      </div>
-
-      {/* Similar Properties */}
-      <div className="border-t border-gray-200 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <SimilarProperties currentProperty={property} properties={allProperties} />
+    <div className="min-h-screen flex flex-col">
+      <SchemaMarkup schema={[lodgingSchema, breadcrumbSchema]} />
+      <NavBar />
+      <main className="flex-1">
+        {/* Breadcrumbs */}
+        <div className="container mx-auto px-4 py-4">
+          <Breadcrumbs items={breadcrumbItems} />
         </div>
-      </div>
+
+        <PropertyDetailClient property={property} relatedProperties={relatedProperties} />
+
+        {/* Related articles for internal linking */}
+        {relatedArticles.length > 0 && (
+          <div className="container mx-auto px-4 py-12">
+            <RelatedContent
+              articles={relatedArticles}
+              title="Local Guides & Tips"
+              description={`Discover more about ${property.location.city} and surrounding areas`}
+            />
+          </div>
+        )}
+      </main>
+      <Footer />
     </div>
   )
 }

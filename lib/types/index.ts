@@ -237,7 +237,7 @@ export interface PlatformMetrics {
 }
 
 // Article/Content Types
-export type ArticleCategory = "insights" | "guides" | "journal"
+export type ArticleCategory = "insights" | "guides" | "journal" | "resources"
 
 export interface ArticleAuthor {
   name: string

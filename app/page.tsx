@@ -8,12 +8,22 @@ import { FifaCitiesSection } from "@/components/home/fifa-cities-section"
 import { HowItWorksExplainer } from "@/components/home/how-it-works-explainer"
 import { HomepageFAQ } from "@/components/home/homepage-faq"
 import { getFeaturedProperties } from "@/lib/db/properties"
+import { generateHomeMetadata } from "@/lib/seo/metadata"
+import { generateOrganizationSchema, generateWebSiteSchema } from "@/lib/seo/schema"
+import { SchemaMarkup } from "@/components/seo/schema-markup"
+
+export const metadata = generateHomeMetadata()
 
 export default async function HomePage() {
   const featuredProperties = await getFeaturedProperties()
 
+  // Generate schema markup for homepage
+  const organizationSchema = generateOrganizationSchema()
+  const websiteSchema = generateWebSiteSchema()
+
   return (
     <div className="min-h-screen flex flex-col">
+      <SchemaMarkup schema={[organizationSchema, websiteSchema]} />
       <NavBar />
       <main className="flex-1">
         <div className="relative">

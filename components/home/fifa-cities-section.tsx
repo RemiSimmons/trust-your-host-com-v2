@@ -2,10 +2,12 @@
 
 import { motion } from "framer-motion";
 import { fifaCities } from "@/lib/data/fifa-cities";
+import { getPropertiesByFifaCity } from "@/lib/data/properties";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MapPin, Calendar, Building2, ChevronRight, Map, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,8 +19,18 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export function FifaCitiesSection() {
+  const router = useRouter();
   const [isMultiCityDialogOpen, setIsMultiCityDialogOpen] = useState(false);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
+
+  // Calculate property counts for each city
+  const cityPropertyCounts = useMemo(() => {
+    const counts: Record<string, number> = {}
+    fifaCities.forEach(city => {
+      counts[city.id] = getPropertiesByFifaCity(city.id).length
+    })
+    return counts
+  }, [])
 
   // Gradient colors for city placeholders
   const gradientColors: Record<string, string> = {
@@ -46,12 +58,9 @@ export function FifaCitiesSection() {
   const openAllSelectedCities = () => {
     if (selectedCities.length === 0) return;
     
-    selectedCities.forEach((cityId, index) => {
-      // Small delay between opening windows to prevent popup blocker
-      setTimeout(() => {
-        window.open(`/fifa-2026/${cityId}`, '_blank');
-      }, index * 100);
-    });
+    // Navigate to combined search results instead of opening multiple tabs
+    const cityIds = selectedCities.join(',');
+    router.push(`/search?event=fifa-2026&city=${cityIds}`);
     
     setIsMultiCityDialogOpen(false);
     setSelectedCities([]);
@@ -192,7 +201,7 @@ export function FifaCitiesSection() {
               transition={{ duration: 0.5, delay: index * 0.05 }}
             >
               <Link
-                href={`/fifa-2026/${city.id}`}
+                href={`/search?event=fifa-2026&city=${city.id}`}
                 className="group block"
               >
                 <div className="relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-2">
@@ -274,7 +283,7 @@ export function FifaCitiesSection() {
                       {/* Property Count */}
                       <div className="flex items-center gap-1.5 text-white/90 text-sm">
                         <MapPin className="w-4 h-4" />
-                        <span>{city.propertyCount || 0} properties</span>
+                        <span>{cityPropertyCounts[city.id] || 0} properties</span>
                       </div>
 
                       {/* View Arrow */}
@@ -292,6 +301,19 @@ export function FifaCitiesSection() {
             );
           })}
           </div>
+        </div>
+
+        {/* Search All FIFA Properties CTA */}
+        <div className="mt-12 text-center">
+          <Link href="/search?event=fifa-2026">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-8 py-6 text-lg shadow-xl"
+            >
+              <Map className="w-5 h-5 mr-2" />
+              Search All FIFA 2026 Properties
+            </Button>
+          </Link>
         </div>
 
         {/* Multi-City Selection Dialog */}

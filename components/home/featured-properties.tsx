@@ -1,14 +1,19 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { Star, MapPin, Heart, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { formatCurrency } from "@/lib/utils"
 import Link from "next/link"
 import type { Property } from "@/lib/types"
+import { QuickViewModal } from "@/components/property/quick-view-modal"
 
 export function PropertyCard({ property }: { property: Property }) {
+  const [showQuickView, setShowQuickView] = useState(false)
+  
   return (
+    <>
     <div
       className="group relative aspect-[4/3] overflow-hidden rounded-xl cursor-pointer
                 border border-gray-200/60
@@ -133,21 +138,29 @@ export function PropertyCard({ property }: { property: Property }) {
             ))}
           </ul>
 
-          {/* Action buttons */}
-          <div className="grid grid-cols-2 gap-2">
-            <button className="bg-white/20 backdrop-blur-md border border-white/30 text-white py-2 px-4 rounded-lg hover:bg-white/30 transition-colors text-sm font-medium shadow-lg">
-              Quick View
-            </button>
-            <Link
-              href={`/properties/${property.slug}`}
-              className="bg-accent text-white py-2 px-4 rounded-lg hover:bg-accent/90 transition-colors text-sm font-medium shadow-lg text-center"
-            >
-              View Details
-            </Link>
-          </div>
+          {/* Action button */}
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              setShowQuickView(true)
+            }}
+            className="w-full bg-accent text-white py-3 px-4 rounded-lg hover:bg-accent/90 transition-colors text-sm font-medium shadow-lg"
+          >
+            View Details
+          </button>
         </div>
       </div>
+
     </div>
+    
+    {/* Quick View Modal - Outside card container to prevent hover conflicts */}
+    <QuickViewModal
+      property={property}
+      isOpen={showQuickView}
+      onClose={() => setShowQuickView(false)}
+    />
+    </>
   )
 }
 

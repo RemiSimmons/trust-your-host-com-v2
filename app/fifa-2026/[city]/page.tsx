@@ -20,6 +20,11 @@ import { fifaCities, getCityById } from "@/lib/data/fifa-cities";
 import { NavBar } from "@/components/navigation/nav-bar";
 import { Footer } from "@/components/navigation/footer";
 import { FifaCityFAQ } from "@/components/faq/fifa-city-faq";
+import { SchemaMarkup } from "@/components/seo/schema-markup";
+import { generateBreadcrumbSchema } from "@/lib/seo/schema";
+import { Breadcrumbs, generateFifaBreadcrumbs } from "@/components/seo/breadcrumbs";
+import { findArticlesForFifaCity } from "@/lib/seo/related-content";
+import { RelatedContent } from "@/components/seo/related-content";
 
 interface CityPageProps {
   params: Promise<{
@@ -84,25 +89,25 @@ export default async function CityPage({ params }: CityPageProps) {
   // Get other cities for cross-linking (exclude current city)
   const otherCities = fifaCities.filter((c) => c.id !== city.id).slice(0, 3);
 
+  // Get related articles for the city
+  const relatedArticles = findArticlesForFifaCity(city.name, 3);
+
+  // Generate breadcrumb schema
+  const breadcrumbItems = generateFifaBreadcrumbs(city.name);
+  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems.map((item) => ({
+    name: item.label,
+    url: item.href ? `https://trustyourhost.com${item.href}` : undefined,
+  })));
+
   return (
     <div className="min-h-screen flex flex-col">
+      <SchemaMarkup schema={breadcrumbSchema} />
       <NavBar />
 
       {/* Breadcrumbs */}
       <div className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <nav className="flex items-center gap-2 text-sm" aria-label="Breadcrumb">
-            <Link href="/" className="text-blue-600 hover:text-blue-700 flex items-center gap-1">
-              <Home className="h-4 w-4" />
-              <span>Home</span>
-            </Link>
-            <ChevronRight className="h-4 w-4 text-gray-400" />
-            <Link href="/fifa-2026" className="text-blue-600 hover:text-blue-700">
-              FIFA 2026
-            </Link>
-            <ChevronRight className="h-4 w-4 text-gray-400" />
-            <span className="text-gray-600">{city.name}</span>
-          </nav>
+          <Breadcrumbs items={breadcrumbItems} />
         </div>
       </div>
 
@@ -421,6 +426,19 @@ export default async function CityPage({ params }: CityPageProps) {
 
         {/* FAQ Section */}
         <FifaCityFAQ cityName={city.name} />
+
+        {/* Related Articles */}
+        {relatedArticles.length > 0 && (
+          <section className="py-16 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <RelatedContent
+                articles={relatedArticles}
+                title={`${city.name} Travel Guides & Tips`}
+                description="Expert advice for planning your FIFA 2026 trip"
+              />
+            </div>
+          </section>
+        )}
 
         {/* CTA Section */}
         <section className="py-20 bg-gradient-to-br from-blue-600 to-green-600 text-white">

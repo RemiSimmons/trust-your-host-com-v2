@@ -1,7 +1,409 @@
-import type { Article } from "@/lib/types"
+import type { Article, ArticleCategory } from "@/lib/types"
 
 // Host Insights - Industry trends, hosting tips, business advice
 export const insightsArticles: Article[] = [
+  {
+    id: "ins-5",
+    slug: "short-term-rental-regulations-major-cities",
+    title: "Short-Term Rental Regulations in Major US Cities: What Hosts Need to Know (and Prepare For)",
+    excerpt: "Regulations are no longer a background consideration—they're a primary business risk. Learn why rules keep changing and how to reduce exposure.",
+    content: `
+# Short-Term Rental Regulations in Major US Cities: What Hosts Need to Know (and Prepare For)
+
+Short-term rental regulations are no longer a background consideration for hosts in major U.S. cities. They are a primary business risk.
+
+Across markets like New York City, New Jersey, Boston, Miami, Los Angeles, San Francisco, and Seattle, local governments are tightening rules around permits, licensing, registration, and enforcement. For many hosts, the challenge is not compliance alone, but the uncertainty created by frequent rule changes and shifting interpretations.
+
+This article breaks down why regulations feel increasingly unstable, how that instability affects hosts financially, and what hosts can realistically do to reduce exposure while continuing to operate responsibly.
+
+## Why Short-Term Rental Regulations Keep Changing
+
+Cities regulate short-term rentals for a mix of reasons: housing availability, neighborhood complaints, hotel industry pressure, and tax enforcement. While these goals are often framed as public interest measures, the result for hosts is a constantly moving target.
+
+In many major metro areas:
+
+* Rules are revised annually or even mid-year
+* Enforcement increases after new systems are introduced
+* Hosts may be compliant one year and non-compliant the next without changing anything
+
+This environment makes it difficult to plan upgrades, marketing investments, or long-term strategies with confidence.
+
+## The Real Risk for Hosts Is Not Regulation, It's Volatility
+
+Most professional hosts accept regulation as part of operating in dense urban markets. The larger concern is volatility.
+
+Hosts often invest in:
+
+* Furnishings and renovations
+* Professional photography and branding
+* Direct booking websites
+* Operational systems and cleaning teams
+
+When rules change suddenly, these sunk costs can become stranded. A new cap, permit freeze, or residency requirement can dramatically limit availability or eliminate short-term rentals altogether in certain units or neighborhoods.
+
+From a host's perspective, the risk is asymmetrical. Cities can change rules quickly, while hosts absorb the financial impact slowly and personally.
+
+## City-Level Enforcement Is Becoming More Aggressive
+
+Another major shift is enforcement intensity.
+
+Many cities now use:
+
+* Mandatory registration databases
+* Platform data-sharing agreements
+* Complaint-driven inspections
+* Fines that escalate quickly
+
+Even hosts attempting to comply may find themselves navigating unclear processes, delayed approvals, or inconsistent guidance. In some cases, platforms continue accepting bookings while local compliance status remains unresolved, leaving hosts exposed.
+
+This has led many hosts to reassess how dependent they want to be on any single platform or regulatory interpretation.
+
+## How Regulation Impacts Pricing, Occupancy, and Strategy
+
+Regulatory pressure indirectly affects core business metrics.
+
+* **Pricing**: Hosts may raise rates to offset permit fees, taxes, or reduced availability
+* **Occupancy**: Caps on nights or units limit revenue potential
+* **Strategy**: Hosts shorten planning cycles and avoid long-term commitments
+
+In highly regulated cities, hosting becomes less about growth and more about resilience. Hosts who survive tend to prioritize flexibility over scale.
+
+## What Hosts Can Do to Reduce Regulatory Risk
+
+Another often overlooked benefit of having a direct booking site is operational independence. Unlike large platforms that track, analyze, and retain detailed data on pricing, guest behavior, and revenue, a host-owned site allows hosts to operate without a third-party system continuously monitoring and packaging every transaction.
+
+This does not remove the need for legal compliance, but it does give hosts greater control over their data, guest relationships, and business decisions.
+
+While no strategy eliminates regulatory risk entirely, hosts can take steps to reduce exposure.
+
+### 1. Diversify Traffic and Guest Relationships
+
+Relying solely on one platform increases vulnerability. Direct guest relationships and diversified traffic sources offer more control when platform or regulatory rules shift.
+
+### 2. Stay Documentation-Ready
+
+Keeping permits, correspondence, and compliance records organized reduces friction if enforcement questions arise.
+
+### 3. Avoid Over-Optimizing for One Regulatory Moment
+
+Building a business model that only works under the current rule set increases fragility. Flexibility matters more than short-term optimization.
+
+### 4. Monitor Local Changes Proactively
+
+Hosts who track city council agendas, housing department updates, and enforcement trends are better prepared to adapt early.
+
+## The Bigger Picture for Urban Hosts
+
+Short-term rental regulations are unlikely to loosen in major cities. The direction of travel is clear: more oversight, more reporting, and more enforcement.
+
+The hosts who remain successful will be those who:
+
+* Treat regulation as an ongoing operating condition
+* Reduce single-point dependencies
+* Build trust with guests outside of any one platform
+* Maintain optionality as rules evolve
+
+Hosting in major cities is still viable, but it increasingly rewards preparedness over optimism.
+
+## Frequently Asked Questions
+
+**Are short-term rentals still legal in major U.S. cities?**  
+Yes, but legality depends on city-specific rules, permits, and unit type. Many cities allow limited hosting under strict conditions.
+
+**Can regulations change after I list my property?**  
+Yes. Hosts can be affected by new rules even if their listing was previously compliant.
+
+**Is it risky to build a direct booking site in regulated cities?**  
+Direct booking itself is not illegal, but hosts should ensure compliance with local laws and use it as part of a diversified strategy rather than a single dependency.
+
+**Do platforms protect hosts from regulatory enforcement?**  
+Platforms provide tools and guidance, but responsibility for compliance typically rests with the host.
+
+---
+
+*Learn how hosts are reducing platform dependency and building more resilient hosting models.*
+    `,
+    category: "insights",
+    tags: ["regulations", "compliance", "risk management", "urban hosting"],
+    featuredImage: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&h=600&fit=crop",
+    author: {
+      name: "Remi Simmons",
+      avatar: "/remi-simmons-avatar.png",
+      role: "Hosting Strategy Expert",
+    },
+    publishedAt: "2026-01-28T09:00:00Z",
+    readingTime: 12,
+    featured: true,
+    insightType: "trends",
+  },
+  {
+    id: "ins-6",
+    slug: "airbnb-algorithm-changes-platform-dependency",
+    title: "Airbnb Algorithm Changes and Platform Dependency: Why Hosts Are Losing Visibility in Urban Markets",
+    excerpt: "Performance no longer declines gradually—it drops suddenly. Learn how algorithm volatility affects hosts and what you can do to regain stability.",
+    content: `
+# Airbnb Algorithm Changes and Platform Dependency: Why Hosts Are Losing Visibility in Urban Markets
+
+For many short-term rental hosts, performance no longer declines gradually. It drops suddenly.
+
+In major U.S. cities like New York, Miami, Los Angeles, San Francisco, Boston, and Seattle, hosts report the same experience: a listing that once performed reliably becomes harder to find, bookings slow, and revenue fluctuates without a clear operational reason. In most cases, the cause is not demand. It is platform dependency combined with algorithm changes.
+
+This article explains how algorithm volatility affects hosts in competitive urban markets, why reliance on a single platform creates outsized risk, and what hosts can do to regain stability without abandoning compliance or professionalism.
+
+## How Platform Algorithms Shape Host Visibility
+
+Short-term rental platforms rely on algorithms to determine which listings guests see first. These systems evaluate dozens of signals, including availability, pricing behavior, response times, reviews, booking patterns, and evolving product priorities.
+
+While this structure benefits platforms at scale, it introduces uncertainty for hosts. Algorithm updates are frequent, rarely transparent, and often rolled out globally, even though their impact is felt most sharply in oversupplied urban markets.
+
+A small visibility shift in a dense city can mean the difference between steady occupancy and sudden gaps.
+
+## Why Urban Hosts Are More Exposed to Algorithm Changes
+
+In crowded metro areas, competition amplifies algorithm effects.
+
+When hundreds or thousands of comparable listings compete in the same neighborhood, visibility becomes a zero-sum game. If a platform elevates new categories, prioritizes different stay types, or adjusts ranking signals, previously high-performing listings can be displaced almost overnight.
+
+Hosts in these markets often rely heavily on one platform, making revenue sensitive to changes they cannot predict or control. This creates a fragile operating environment where performance feels disconnected from effort or quality.
+
+## The Compounding Risk of Single-Platform Dependency
+
+Platform dependency is not just about bookings. It affects how hosts think, price, and plan.
+
+When one platform controls:
+
+* Discovery
+* Guest communication
+* Pricing feedback loops
+* Booking flow
+* Performance data
+
+Hosts are effectively building businesses inside systems they do not own. Over time, this can discourage long-term investment and encourage reactive decision-making driven by algorithm behavior rather than guest experience.
+
+For hosts operating in regulated cities, this dependency is even riskier. A single algorithm shift combined with regulatory pressure can compress revenue quickly and unexpectedly.
+
+## Algorithm Volatility Is a Data and Control Issue
+
+One overlooked aspect of platform dependency is data ownership.
+
+Large platforms track pricing changes, guest behavior, booking velocity, cancellations, and revenue patterns in detail. While this data powers optimization tools, it also means hosts operate under continuous third-party observation.
+
+A host-owned booking site offers greater operational independence. It allows hosts to manage guest relationships, pricing strategies, and transactions without every adjustment being monitored, categorized, and stored by an external platform. This does not remove the need for legal compliance, but it does give hosts more control over how their business data is generated and used.
+
+For many hosts, this independence supports stability rather than avoidance.
+
+## How Visibility Loss Affects Revenue and Planning
+
+When visibility drops, hosts feel the impact quickly:
+
+* Fewer inquiries
+* Shorter booking windows
+* Increased price sensitivity
+* Pressure to discount or add incentives
+
+In urban markets, where fixed costs are high, even modest occupancy declines can materially affect profitability. Hosts may respond by over-adjusting pricing or amenities, further feeding algorithm volatility.
+
+This feedback loop makes long-term planning difficult and reinforces the sense that hosting success is increasingly platform-driven rather than host-driven.
+
+## What Hosts Can Do to Reduce Algorithm Risk
+
+No host can eliminate platform risk entirely, but exposure can be reduced.
+
+### 1. Diversify Traffic Sources
+
+Hosts who rely on multiple channels are less vulnerable to any single ranking change. Diversification creates optionality.
+
+### 2. Build Direct Guest Relationships
+
+Repeat guests and referrals reduce dependence on algorithm-driven discovery.
+
+### 3. Maintain a Host-Owned Booking Presence
+
+A direct site gives hosts control over messaging, pricing logic, and guest communication, without constant third-party tracking of every interaction.
+
+### 4. Avoid Overreacting to Short-Term Ranking Shifts
+
+Chasing algorithm changes often creates instability. Consistency and clarity tend to outperform constant optimization.
+
+## The Long-Term Reality for Urban Hosts
+
+Platform algorithms will continue to evolve. That is not inherently negative. The risk arises when hosts have no counterbalance.
+
+In competitive, regulated cities, hosting is increasingly about resilience. Hosts who succeed long term tend to:
+
+* Reduce single-platform exposure
+* Own their guest relationships
+* Treat platforms as channels, not foundations
+* Build flexibility into pricing and operations
+
+Visibility should be earned through trust and quality, not dependent on one opaque system.
+
+## Frequently Asked Questions
+
+**Why did my Airbnb bookings suddenly drop?**  
+In many cases, algorithm changes or category shifts affect visibility, especially in crowded markets.
+
+**Can platforms explain ranking changes?**  
+Platforms provide general guidance, but specific ranking logic is rarely disclosed.
+
+**Is having a direct booking site risky?**  
+Direct booking is legal in many markets, but hosts must still comply with local regulations. It should be part of a diversified strategy.
+
+**Should hosts stop using platforms entirely?**  
+Most hosts benefit from platforms, but relying on them exclusively increases risk.
+
+---
+
+*Learn how hosts are reducing platform dependency while staying compliant and competitive.*
+    `,
+    category: "insights",
+    tags: ["algorithms", "platform dependency", "visibility", "urban markets"],
+    featuredImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop",
+    author: {
+      name: "Remi Simmons",
+      avatar: "/remi-simmons-avatar.png",
+      role: "Hosting Strategy Expert",
+    },
+    publishedAt: "2026-01-27T09:00:00Z",
+    readingTime: 11,
+    featured: true,
+    insightType: "trends",
+  },
+  {
+    id: "ins-7",
+    slug: "rising-short-term-rental-costs-major-cities",
+    title: "Rising Short-Term Rental Costs in Major Cities: Why Host Margins Are Getting Squeezed",
+    excerpt: "Revenue hasn't disappeared—profit has. Learn why operating costs are rising faster than rates and how to protect profitability.",
+    content: `
+# Rising Short-Term Rental Costs in Major Cities: Why Host Margins Are Getting Squeezed
+
+For many short-term rental hosts, revenue has not disappeared. Profit has.
+
+In major U.S. cities like New York, Miami, Los Angeles, San Francisco, Boston, and Seattle, hosts are facing a widening gap between headline nightly rates and actual take-home earnings. Even when calendars look reasonably full, margins continue to tighten.
+
+This article breaks down why operating costs are rising in urban markets, how platform fees and taxes compound the problem, and what hosts can do to protect profitability without sacrificing compliance or guest experience.
+
+## Why Operating Costs Are Rising Faster Than Rates
+
+Urban hosting has always carried higher costs, but recent years have accelerated the trend.
+
+Hosts are seeing sustained increases in:
+
+* Professional cleaning and turnover services
+* Laundry and linen replacement
+* Utilities, especially electricity and water
+* Maintenance and repair labor
+* Consumables and restocking supplies
+
+In dense cities, service providers charge more due to labor shortages, travel time, and regulatory compliance of their own. These costs are largely fixed, regardless of nightly rate performance.
+
+As a result, hosts may raise prices only to discover that higher rates do not meaningfully improve net margins.
+
+## Platform Fees and Local Taxes Compound the Pressure
+
+Operating costs are only part of the equation.
+
+Platform service fees, payment processing costs, and local occupancy taxes further reduce net income. In some cities, combined fees and taxes can account for a significant percentage of gross revenue before operating expenses are even considered.
+
+This creates a misleading picture. Listings may appear profitable at a glance, but once all deductions are accounted for, the remaining margin is thin. Hosts often feel forced to chase higher nightly rates or increased occupancy just to maintain previous income levels.
+
+## Why Urban Hosts Feel the Squeeze More Than Others
+
+In suburban or rural markets, hosts often have more pricing flexibility. In major cities, competition limits that freedom.
+
+Oversupply in popular neighborhoods makes aggressive price increases risky. At the same time, guest expectations continue to rise. Cleanliness standards, response times, and amenities increasingly resemble hotel benchmarks, but without hotel-scale efficiencies.
+
+The result is a difficult balance. Hosts must absorb higher costs while competing in markets where guests have abundant alternatives.
+
+## Margin Compression Changes Host Behavior
+
+As margins tighten, hosts adjust in ways that affect long-term sustainability.
+
+Common responses include:
+
+* Reducing service frequency or amenities
+* Shortening stay lengths to chase higher nightly rates
+* Self-managing tasks previously outsourced
+* Delaying upgrades or maintenance
+
+While these strategies may help in the short term, they can introduce operational strain or negatively affect guest experience over time.
+
+This is where margin pressure becomes more than a financial issue. It becomes a structural one.
+
+## Data, Fees, and the Cost of Platform Dependence
+
+Another often overlooked cost is indirect: loss of control.
+
+Large platforms track pricing behavior, booking patterns, cancellation rates, and revenue performance continuously. Hosts often respond to these signals by adjusting pricing or policies to remain competitive within the platform's ecosystem.
+
+A host-owned booking site offers more operational independence. It allows hosts to test pricing strategies, manage guest communication, and structure stays without every change being observed, analyzed, and fed back into platform algorithms. This does not eliminate taxes or compliance requirements, but it does reduce pressure to constantly optimize for platform-driven metrics rather than sustainable margins.
+
+For many hosts, margin protection starts with regaining control over how pricing decisions are made.
+
+## What Hosts Can Do to Protect Margins
+
+Urban hosts cannot eliminate rising costs, but they can improve resilience.
+
+### 1. Understand True Net Profit Per Stay
+
+Gross nightly rates are misleading. Hosts should track all-in costs per booking to make informed decisions.
+
+### 2. Reduce Single-Platform Fee Exposure
+
+Diversifying booking channels can lower blended fee percentages over time.
+
+### 3. Optimize for Fewer, Better Stays
+
+Longer stays or repeat guests often reduce turnover costs and labor intensity.
+
+### 4. Maintain Pricing Flexibility
+
+Avoid locking into rigid pricing structures driven solely by platform suggestions.
+
+## The Long-Term Outlook for City Hosts
+
+Rising costs are unlikely to reverse in major metro markets. Labor, utilities, and regulatory compliance will continue to pressure margins.
+
+The hosts who remain profitable will be those who:
+
+* Treat hosting as an operating business, not passive income
+* Understand their cost structure in detail
+* Reduce dependence on platform-driven pricing signals
+* Build flexibility into how they attract and manage guests
+
+In urban hosting, sustainability is no longer about growth alone. It is about control.
+
+## Frequently Asked Questions
+
+**Why do my profits feel lower even when bookings are steady?**  
+Rising operating costs, fees, and taxes often outpace increases in nightly rates.
+
+**Can I raise prices to offset higher costs?**  
+In competitive markets, price increases may reduce occupancy. Many hosts need a balanced approach.
+
+**Do platforms contribute to margin pressure?**  
+Platform fees and pricing dynamics can reduce net earnings, especially when hosts rely on a single channel.
+
+**Is direct booking cheaper?**  
+Direct booking can reduce platform fees, but hosts must still account for payment processing, taxes, and compliance.
+
+---
+
+*Learn how hosts are building more resilient, margin-aware hosting models.*
+    `,
+    category: "insights",
+    tags: ["margins", "costs", "profitability", "urban hosting"],
+    featuredImage: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&h=600&fit=crop",
+    author: {
+      name: "Remi Simmons",
+      avatar: "/remi-simmons-avatar.png",
+      role: "Hosting Strategy Expert",
+    },
+    publishedAt: "2026-01-26T09:00:00Z",
+    readingTime: 10,
+    featured: false,
+    insightType: "trends",
+  },
   {
     id: "ins-1",
     slug: "maximize-direct-bookings-2026",
@@ -90,7 +492,7 @@ The highest demand is expected in:
     featuredImage: "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=1200&h=600&fit=crop",
     author: {
       name: "Marcus Chen",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
+      avatar: "/remi-simmons-avatar.png",
       role: "Market Analyst",
     },
     publishedAt: "2026-01-10T09:00:00Z",
@@ -655,21 +1057,462 @@ That $500 funded a lot of pastéis de nata.
   },
 ]
 
+// Host Resources - Action-oriented, practical, problem-solving
+export const resourcesArticles: Article[] = [
+  {
+    id: "res-1",
+    slug: "rising-operational-costs-squeezed-margins",
+    title: "Rising Short-Term Rental Costs in Major Cities: Why Host Margins Are Getting Squeezed",
+    excerpt: "Revenue hasn't disappeared—profit has. Learn why operating costs are rising faster than rates and how to protect profitability.",
+    content: `
+# Rising Short-Term Rental Costs in Major Cities: Why Host Margins Are Getting Squeezed
+
+For many short-term rental hosts, revenue has not disappeared. Profit has.
+
+In major U.S. cities like New York, Miami, Los Angeles, San Francisco, Boston, and Seattle, hosts are facing a widening gap between headline nightly rates and actual take-home earnings. Even when calendars look reasonably full, margins continue to tighten.
+
+This article breaks down why operating costs are rising in urban markets, how platform fees and taxes compound the problem, and what hosts can do to protect profitability without sacrificing compliance or guest experience.
+
+## Why Operating Costs Are Rising Faster Than Rates
+
+Urban hosting has always carried higher costs, but recent years have accelerated the trend.
+
+Hosts are seeing sustained increases in:
+
+* Professional cleaning and turnover services
+* Laundry and linen replacement
+* Utilities, especially electricity and water
+* Maintenance and repair labor
+* Consumables and restocking supplies
+
+In dense cities, service providers charge more due to labor shortages, travel time, and regulatory compliance of their own. These costs are largely fixed, regardless of nightly rate performance.
+
+As a result, hosts may raise prices only to discover that higher rates do not meaningfully improve net margins.
+
+## Platform Fees and Local Taxes Compound the Pressure
+
+Operating costs are only part of the equation.
+
+Platform service fees, payment processing costs, and local occupancy taxes further reduce net income. In some cities, combined fees and taxes can account for a significant percentage of gross revenue before operating expenses are even considered.
+
+This creates a misleading picture. Listings may appear profitable at a glance, but once all deductions are accounted for, the remaining margin is thin. Hosts often feel forced to chase higher nightly rates or increased occupancy just to maintain previous income levels.
+
+## Why Urban Hosts Feel the Squeeze More Than Others
+
+In suburban or rural markets, hosts often have more pricing flexibility. In major cities, competition limits that freedom.
+
+Oversupply in popular neighborhoods makes aggressive price increases risky. At the same time, guest expectations continue to rise. Cleanliness standards, response times, and amenities increasingly resemble hotel benchmarks, but without hotel-scale efficiencies.
+
+The result is a difficult balance. Hosts must absorb higher costs while competing in markets where guests have abundant alternatives.
+
+## Margin Compression Changes Host Behavior
+
+As margins tighten, hosts adjust in ways that affect long-term sustainability.
+
+Common responses include:
+
+* Reducing service frequency or amenities
+* Shortening stay lengths to chase higher nightly rates
+* Self-managing tasks previously outsourced
+* Delaying upgrades or maintenance
+
+While these strategies may help in the short term, they can introduce operational strain or negatively affect guest experience over time.
+
+This is where margin pressure becomes more than a financial issue. It becomes a structural one.
+
+## Data, Fees, and the Cost of Platform Dependence
+
+Another often overlooked cost is indirect: loss of control.
+
+Large platforms track pricing behavior, booking patterns, cancellation rates, and revenue performance continuously. Hosts often respond to these signals by adjusting pricing or policies to remain competitive within the platform's ecosystem.
+
+A host-owned booking site offers more operational independence. It allows hosts to test pricing strategies, manage guest communication, and structure stays without every change being observed, analyzed, and fed back into platform algorithms. This does not eliminate taxes or compliance requirements, but it does reduce pressure to constantly optimize for platform-driven metrics rather than sustainable margins.
+
+For many hosts, margin protection starts with regaining control over how pricing decisions are made.
+
+## What Hosts Can Do to Protect Margins
+
+Urban hosts cannot eliminate rising costs, but they can improve resilience.
+
+### 1. Understand True Net Profit Per Stay
+
+Gross nightly rates are misleading. Hosts should track all-in costs per booking to make informed decisions.
+
+### 2. Reduce Single-Platform Fee Exposure
+
+Diversifying booking channels can lower blended fee percentages over time.
+
+### 3. Optimize for Fewer, Better Stays
+
+Longer stays or repeat guests often reduce turnover costs and labor intensity.
+
+### 4. Maintain Pricing Flexibility
+
+Avoid locking into rigid pricing structures driven solely by platform suggestions.
+
+## The Long-Term Outlook for City Hosts
+
+Rising costs are unlikely to reverse in major metro markets. Labor, utilities, and regulatory compliance will continue to pressure margins.
+
+The hosts who remain profitable will be those who:
+
+* Treat hosting as an operating business, not passive income
+* Understand their cost structure in detail
+* Reduce dependence on platform-driven pricing signals
+* Build flexibility into how they attract and manage guests
+
+In urban hosting, sustainability is no longer about growth alone. It is about control.
+
+## Frequently Asked Questions
+
+**Why do my profits feel lower even when bookings are steady?**  
+Rising operating costs, fees, and taxes often outpace increases in nightly rates.
+
+**Can I raise prices to offset higher costs?**  
+In competitive markets, price increases may reduce occupancy. Many hosts need a balanced approach.
+
+**Do platforms contribute to margin pressure?**  
+Platform fees and pricing dynamics can reduce net earnings, especially when hosts rely on a single channel.
+
+**Is direct booking cheaper?**  
+Direct booking can reduce platform fees, but hosts must still account for payment processing, taxes, and compliance.
+
+---
+
+*Learn how hosts are building more resilient, margin-aware hosting models.*
+    `,
+    category: "resources",
+    tags: ["margins", "costs", "profitability", "operational costs"],
+    featuredImage: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&h=600&fit=crop",
+    author: {
+      name: "Remi Simmons",
+      avatar: "/remi-simmons-avatar.png",
+      role: "Hosting Strategy Expert",
+    },
+    publishedAt: "2026-01-29T09:00:00Z",
+    readingTime: 10,
+    featured: true,
+  },
+  {
+    id: "res-2",
+    slug: "guest-expectations-reviews-reputation-risk",
+    title: "Guest Expectations, Reviews, and Reputation Risk in Urban Short-Term Rentals",
+    excerpt: "In major cities, hosting is judged publicly, permanently, and competitively. Learn how to protect your reputation without turning hosting into full-time customer service.",
+    content: `
+# Guest Expectations, Reviews, and Reputation Risk in Urban Short-Term Rentals
+
+In major U.S. cities, hosting is no longer judged only by the stay itself. It is judged publicly, permanently, and competitively.
+
+For hosts in markets like New York, Miami, Los Angeles, San Francisco, Boston, and Seattle, guest expectations continue to rise while tolerance for mistakes continues to shrink. Reviews have become one of the strongest drivers of conversion, visibility, and pricing power, often outweighing location or amenities.
+
+This article explores why guest behavior and review dynamics are more intense in urban markets, how reputation risk affects host decision-making, and what hosts can do to protect their standing without turning hosting into a full-time customer service operation.
+
+## Why Guest Expectations Are Higher in Major Cities
+
+Urban guests arrive with different assumptions.
+
+Many are business travelers, international visitors, or short-stay guests accustomed to hotel standards. They expect:
+
+* Professional-level cleanliness
+* Immediate responses at all hours
+* Clear instructions and frictionless access
+* Amenities that mirror hotels, not homes
+
+At the same time, cities offer abundant alternatives. If a guest is dissatisfied, switching listings is easy. This combination raises expectations and lowers patience.
+
+For hosts, this means that hospitality quality is no longer enough. Consistency and precision matter just as much.
+
+## Reviews Carry More Weight in Oversupplied Markets
+
+In competitive cities, reviews are not just feedback. They are ranking and conversion signals.
+
+When dozens of similar listings appear side by side, guests often filter by rating first. A small drop in average score or a handful of negative reviews can materially affect booking volume.
+
+This creates asymmetric risk. A host can deliver dozens of solid stays and still feel the impact of one or two poor experiences. The margin for error narrows as competition increases.
+
+Hosts in urban markets are often forced to respond by:
+
+* Over-investing in amenities
+* Offering concessions or refunds
+* Adjusting policies to avoid negative feedback
+
+Over time, review pressure can quietly reshape a host's entire operating model.
+
+## The Rise of More Demanding and Difficult Guests
+
+Many urban hosts report an increase in challenging guest behavior.
+
+Common issues include:
+
+* Requests beyond the listing description
+* Disputes over minor issues
+* Policy violations
+* Aggressive review threats
+
+This behavior is not universal, but its impact is amplified in cities where reviews directly affect visibility and income. Hosts may feel compelled to accommodate unreasonable demands simply to protect their rating.
+
+The emotional and operational toll of this dynamic is often underestimated. Hosting becomes less about hospitality and more about risk management.
+
+## Reputation Risk Changes Host Strategy
+
+As review sensitivity increases, hosts adapt in ways that are not always visible to guests.
+
+Some tighten house rules. Others adjust pricing to filter for certain guest profiles. Many invest heavily in automation, messaging templates, and response systems to minimize friction.
+
+While these changes can improve outcomes, they also add complexity. Hosts are effectively building systems to manage reputation at scale, often without the support structures hotels rely on.
+
+This is where control over guest relationships becomes critical.
+
+## Guest Control and the Limits of Platform Mediation
+
+On large platforms, guest communication, dispute resolution, and review processes are standardized. While this offers scale, it limits nuance.
+
+Hosts operate inside systems where:
+
+* Guest expectations are shaped by platform norms
+* Reviews follow fixed formats
+* Disputes are mediated externally
+* Communication data is retained and analyzed
+
+A host-owned booking site provides more control over guest relationships. It allows hosts to set clearer expectations, communicate directly, and manage policies without every interaction being framed for a third-party system. This does not remove accountability or legal responsibility, but it does give hosts more influence over how relationships are established and maintained.
+
+For many hosts, reputation protection starts with expectation alignment.
+
+## What Hosts Can Do to Reduce Reputation Risk
+
+Urban hosts cannot eliminate review pressure, but they can manage it more intentionally.
+
+### 1. Set Expectations Clearly
+
+Listings that overpromise create unnecessary risk. Precision matters more than persuasion.
+
+### 2. Filter for the Right Guests
+
+Pricing, stay length, and communication tone all influence who books.
+
+### 3. Standardize Responses Without Sounding Scripted
+
+Consistency reduces errors, but guests still expect professionalism.
+
+### 4. Build Repeat and Referral Traffic
+
+Repeat guests reduce uncertainty and lower reputation volatility.
+
+## The Long-Term Reality for Urban Hosts
+
+In major cities, hosting success increasingly depends on reputation stability.
+
+Hosts who thrive tend to:
+
+* Treat reviews as conversion assets, not validation
+* Reduce exposure to unreasonable guest behavior
+* Maintain control over guest communication
+* Balance hospitality with boundaries
+
+Urban hosting rewards clarity, not constant accommodation.
+
+## Frequently Asked Questions
+
+**Why do reviews matter more in cities than smaller markets?**  
+High competition means guests use reviews to filter quickly between similar listings.
+
+**Can one bad review really affect bookings?**  
+In oversupplied markets, even small rating changes can reduce conversion.
+
+**Are guests more difficult in urban markets?**  
+Hosts often report higher expectations and less tolerance for issues in cities.
+
+**Does direct booking help with guest quality?**  
+Direct booking allows clearer expectation-setting and stronger guest relationships, but hosts must still manage screening and compliance.
+
+---
+
+*Learn how hosts are building trust, clarity, and stronger guest relationships.*
+    `,
+    category: "resources",
+    tags: ["reviews", "reputation", "guest expectations", "customer service"],
+    featuredImage: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&h=600&fit=crop",
+    author: {
+      name: "Remi Simmons",
+      avatar: "/remi-simmons-avatar.png",
+      role: "Hosting Strategy Expert",
+    },
+    publishedAt: "2026-01-28T09:00:00Z",
+    readingTime: 11,
+    featured: true,
+  },
+  {
+    id: "res-3",
+    slug: "fifa-2026-event-driven-demand-planning",
+    title: "FIFA 2026 and Event-Driven Demand: Pricing Risk for Short-Term Rental Hosts in Host Cities",
+    excerpt: "For hosts in FIFA World Cup 2026 host cities, opportunity and uncertainty arrive together. Learn how to price accurately and balance regulation, platform rules, and guest expectations.",
+    content: `
+# FIFA 2026 and Event-Driven Demand: Pricing Risk for Short-Term Rental Hosts in Host Cities
+
+For hosts in FIFA World Cup 2026 host cities, opportunity and uncertainty are arriving at the same time.
+
+With matches scheduled across major U.S. markets including New York/New Jersey, Los Angeles, Miami, Seattle, San Francisco, Boston, and others, hosts expect a surge in short-term rental demand. What remains unclear is how to price accurately, when to open calendars, and how to balance regulation, platform rules, and guest expectations during a global event.
+
+This article explores why mega-events create unique pricing and planning risks for hosts, how platforms and regulations complicate decision-making, and what hosts can do to avoid leaving money on the table—or overpricing themselves out of demand.
+
+## Why Mega-Events Disrupt Normal Pricing Logic
+
+Major events do not follow typical demand patterns.
+
+Unlike seasonal travel, FIFA demand will:
+
+* Be highly date-specific
+* Spike sharply around match days
+* Attract international guests unfamiliar with local pricing norms
+* Increase booking lead times while also increasing last-minute volatility
+
+Hosts accustomed to steady urban demand may find that traditional pricing strategies fail during event windows. Rates that look reasonable months in advance may later prove too low—or too high.
+
+The margin for error is small, especially when fixed costs and taxes remain unchanged.
+
+## The Risk of Opening Calendars Too Early or Too Late
+
+One of the biggest sources of anxiety for hosts is timing.
+
+Opening calendars too early risks locking in rates before demand fully materializes. Waiting too long risks missing early planners and international travelers who book far in advance.
+
+Hosts must also consider:
+
+* Minimum stay requirements
+* Local regulations on stay length or occupancy
+* Platform visibility algorithms that favor early availability
+
+In regulated cities, calendar decisions are further complicated by uncertainty around enforcement during high-profile events, when scrutiny often increases.
+
+## Platform Rules, Pricing Signals, and Visibility Pressure
+
+Platforms play a significant role in shaping host behavior during large events.
+
+Dynamic pricing tools, suggested rates, and availability nudges may encourage hosts to price conservatively to maintain booking velocity. At the same time, platforms may monitor pricing behavior closely during high-demand periods, particularly in regulated cities.
+
+Hosts relying solely on platform guidance may find themselves:
+
+* Underpricing peak nights
+* Losing flexibility once bookings are confirmed
+* Competing in crowded search results as supply increases
+
+During global events, platform incentives do not always align with host revenue optimization.
+
+## Regulatory Visibility Increases During Global Events
+
+Mega-events bring attention—not just from guests, but from cities.
+
+Local governments often increase enforcement, inspections, and compliance checks during major international events. Hosts operating in already-regulated markets may face heightened scrutiny around permits, taxes, and registration requirements.
+
+This creates a dual risk:
+
+* Pricing and occupancy decisions must account for demand spikes
+* Compliance must be airtight to avoid penalties during peak revenue periods
+
+For many hosts, this reinforces the importance of clarity, documentation, and operational control.
+
+## Pricing Flexibility and the Value of Control
+
+Event-driven demand rewards flexibility more than precision.
+
+Hosts who retain control over pricing logic, stay length, and guest communication are better positioned to adapt as demand evolves. A host-owned booking site can support this flexibility by allowing hosts to manage pricing strategies, calendar adjustments, and guest expectations without every decision being shaped by platform defaults or comparative pricing pressure.
+
+This does not eliminate the need to use platforms, but it allows hosts to treat them as channels rather than decision-makers during critical periods.
+
+## Common Pricing Mistakes Hosts Make During Major Events
+
+Based on past mega-events, hosts often fall into predictable traps:
+
+* Locking in rates too early without adjustment mechanisms
+* Setting minimum stays that deter otherwise high-value guests
+* Overpricing based on headlines rather than booking behavior
+* Ignoring post-event demand drop-off
+
+Avoiding these mistakes requires planning well in advance, with room to adapt.
+
+## What Hosts Can Do to Prepare for FIFA 2026
+
+Hosts in FIFA cities still have time to prepare strategically.
+
+### 1. Model Multiple Pricing Scenarios
+
+Plan for conservative, moderate, and peak-demand outcomes.
+
+### 2. Maintain Calendar Flexibility
+
+Avoid rigid minimum stays too early in the cycle.
+
+### 3. Diversify Booking Channels
+
+Relying on one platform during a global event increases risk.
+
+### 4. Prepare Compliance Documentation Early
+
+High demand periods are not the time to resolve permit or tax issues.
+
+## The Bigger Picture for Event-Driven Hosting
+
+FIFA 2026 is not just a revenue opportunity. It is a stress test.
+
+It will expose:
+
+* Pricing rigidity
+* Platform dependency
+* Regulatory fragility
+* Operational readiness
+
+Hosts who approach the event strategically can benefit meaningfully. Hosts who rely on default settings and optimism may struggle.
+
+In major cities, success during FIFA will come down to preparation, control, and adaptability.
+
+## Frequently Asked Questions
+
+**Should I raise prices significantly for FIFA 2026?**  
+Prices will likely increase, but successful pricing depends on timing, flexibility, and demand signals—not headlines.
+
+**When should I open my calendar for FIFA dates?**  
+There is no universal answer. Hosts should balance early demand capture with pricing flexibility.
+
+**Will cities enforce regulations more strictly during FIFA?**  
+Historically, major events bring increased scrutiny, making compliance especially important.
+
+**Is it risky to rely on one platform during FIFA?**  
+Single-platform dependency increases exposure to pricing pressure and visibility shifts during high-demand periods.
+
+---
+
+*Learn how hosts are preparing for high-demand events with more control and confidence.*
+    `,
+    category: "resources",
+    tags: ["FIFA 2026", "event planning", "pricing strategy", "demand planning"],
+    featuredImage: "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=1200&h=600&fit=crop",
+    author: {
+      name: "Remi Simmons",
+      avatar: "/remi-simmons-avatar.png",
+      role: "Hosting Strategy Expert",
+    },
+    publishedAt: "2026-01-27T09:00:00Z",
+    readingTime: 12,
+    featured: false,
+  },
+]
+
 // Combined articles getter
 export function getAllArticles(): Article[] {
-  return [...insightsArticles, ...guidesArticles, ...journalArticles].sort(
+  return [...insightsArticles, ...guidesArticles, ...journalArticles, ...resourcesArticles].sort(
     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   )
 }
 
 export function getArticlesByCategory(category: ArticleCategory): Article[] {
-  const articleMap = {
+  const articleMap: Record<ArticleCategory, Article[]> = {
     insights: insightsArticles,
     guides: guidesArticles,
     journal: journalArticles,
+    resources: resourcesArticles,
   }
   return articleMap[category].sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+    (a: Article, b: Article) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   )
 }
 

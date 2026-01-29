@@ -55,13 +55,13 @@ export default function Fifa2026Page() {
               <span className="font-bold text-lg text-white">FIFA WORLD CUP 2026</span>
             </div>
 
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl [text-shadow:_0_4px_12px_rgb(0_0_0_/_40%)]">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl [text-shadow:_0_4px_12px_rgb(0_0_0_/_60%)]">
               Stay in the Action <br />
-              <span className="text-yellow-400 drop-shadow-2xl [text-shadow:_0_4px_12px_rgb(0_0_0_/_40%)]">Book Near the Stadiums</span>
+              <span className="text-yellow-400 drop-shadow-2xl [text-shadow:_0_4px_12px_rgb(0_0_0_/_60%)]">Book Near the Stadiums</span>
             </h1>
 
-            <p className="text-xl md:text-2xl mb-8 text-white max-w-3xl mx-auto leading-relaxed drop-shadow-lg [text-shadow:_0_2px_8px_rgb(0_0_0_/_30%)]">
-              Book your vacation rental in one of the host cities. From group stage to the 
+            <p className="text-xl md:text-2xl mb-8 text-white max-w-3xl mx-auto leading-relaxed drop-shadow-lg [text-shadow:_0_2px_8px_rgb(0_0_0_/_50%)] font-medium">
+              Book your vacation rental in one of 11 US host cities. From group stage to the 
               final, find the perfect home base for the world's biggest sporting event.
             </p>
 
@@ -69,17 +69,17 @@ export default function Fifa2026Page() {
             <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto mb-12">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                 <div className="text-4xl md:text-5xl font-bold mb-2 text-yellow-400">11</div>
-                <div className="text-sm md:text-base text-white/80">Host Cities</div>
+                <div className="text-sm md:text-base text-white font-semibold">Host Cities</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                 <div className="text-4xl md:text-5xl font-bold mb-2 text-yellow-400">{totalMatches}</div>
-                <div className="text-sm md:text-base text-white/80">Matches</div>
+                <div className="text-sm md:text-base text-white font-semibold">Matches</div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                 <div className="text-4xl md:text-5xl font-bold mb-2 text-yellow-400">
                   {(totalCapacity / 1000000).toFixed(1)}M+
                 </div>
-                <div className="text-sm md:text-base text-white/80">Total Seats</div>
+                <div className="text-sm md:text-base text-white font-semibold">Total Seats</div>
               </div>
             </div>
 

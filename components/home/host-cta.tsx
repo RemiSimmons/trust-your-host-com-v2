@@ -53,7 +53,7 @@ export function HostCTA() {
               <Link href="/submit-property">Start Your Free Trial</Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/how-it-works">Learn More</Link>
+              <Link href="/insights">Learn More</Link>
             </Button>
           </div>
         </div>
