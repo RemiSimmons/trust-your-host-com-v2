@@ -9,42 +9,49 @@ const faqs = [
   {
     question: "What is TrustYourHost and how is it different from Airbnb or Vrbo?",
     answer: "TrustYourHost is a curated directory, not a booking platform. We send guests directly to your own website—we don't add guest service fees or control your policies. You maintain full control of pricing, guest communication, and bookings.",
+    detailLink: "/faq/what-is-trustyourhost",
     links: [
-      { text: "For Hosts: How TrustYourHost Works", href: "/for-hosts" },
-      { text: "Use TrustYourHost Alongside OTAs", href: "/for-hosts#alongside-otas" }
+      { text: "Full Answer: What is TrustYourHost?", href: "/faq/what-is-trustyourhost" },
+      { text: "For Hosts: How TrustYourHost Works", href: "/for-hosts" }
     ],
     category: "host"
   },
   {
     question: "Can I keep using Airbnb, Vrbo, or other platforms if I list on TrustYourHost?",
     answer: "Yes, we are non-exclusive. Most hosts use TrustYourHost alongside OTAs to get more profitable direct bookings while keeping their existing listings active.",
+    detailLink: "/faq/can-i-use-with-otas",
     links: [
-      { text: "How to Use TrustYourHost Alongside Airbnb and Other OTAs", href: "/for-hosts#alongside-otas" }
+      { text: "Full Answer: Using Multiple Platforms", href: "/faq/can-i-use-with-otas" },
+      { text: "List Your Property", href: "/submit-property" }
     ],
     category: "host"
   },
   {
     question: "Do I book on TrustYourHost or directly with the host?",
     answer: "You discover places on TrustYourHost, then book directly on the host's website or chosen channel. We don't process your payment—everything happens between you and the host.",
+    detailLink: "/faq/how-to-book",
     links: [
-      { text: "For Guests: How TrustYourHost Works", href: "/how-it-works" },
-      { text: "Booking Direct with Hosts: What to Expect", href: "/how-it-works#booking-direct" }
+      { text: "Full Answer: How Booking Works", href: "/faq/how-to-book" },
+      { text: "Browse Properties", href: "/search" }
     ],
     category: "guest"
   },
   {
     question: "Are there service or booking fees for guests?",
     answer: "TrustYourHost doesn't add a guest service fee. You pay whatever total the host shows on their own site—no platform markups or hidden fees.",
+    detailLink: "/faq/guest-fees",
     links: [
-      { text: "Guest Fees and Pricing Transparency", href: "/how-it-works#fees" }
+      { text: "Full Answer: Guest Fees & Pricing", href: "/faq/guest-fees" },
+      { text: "How It Works", href: "/how-it-works" }
     ],
     category: "guest"
   },
   {
     question: "How does TrustYourHost help with FIFA World Cup 2026 stays?",
     answer: "We highlight trusted hosts in all FIFA 2026 host cities and let you filter by city, neighborhood, and stadium proximity so you can book direct for match days.",
+    detailLink: "/faq/fifa-2026-stays",
     links: [
-      { text: "Finding FIFA 2026 Stays by City and Stadium", href: "/fifa-2026" },
+      { text: "Full Answer: FIFA 2026 Accommodations", href: "/faq/fifa-2026-stays" },
       { text: "Browse All FIFA 2026 Cities", href: "/fifa-2026" }
     ],
     category: "fifa"
@@ -52,6 +59,7 @@ const faqs = [
   {
     question: "How do I find stays near FIFA 2026 stadiums and fan zones?",
     answer: "Visit our FIFA 2026 section, choose your host city, then filter by stadium proximity and neighborhood preferences to find the perfect match-day accommodation.",
+    detailLink: "/faq/finding-fifa-properties",
     links: [
       { text: "View FIFA 2026 City Guides", href: "/fifa-2026" }
     ],
@@ -149,10 +157,17 @@ export function HomepageFAQ() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
+              href="/faq"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-orange-500 hover:bg-orange-600 border border-orange-600 rounded-lg text-white font-semibold transition-all"
+            >
+              View All FAQs
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
               href="/for-hosts"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 rounded-lg text-white font-medium transition-all"
             >
-              Learn more for hosts
+              For hosts
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
@@ -160,13 +175,6 @@ export function HomepageFAQ() {
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 rounded-lg text-white font-medium transition-all"
             >
               For travelers
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/fifa-2026"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 rounded-lg text-white font-medium transition-all"
-            >
-              FIFA 2026 city guides
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

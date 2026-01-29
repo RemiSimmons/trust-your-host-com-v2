@@ -3,11 +3,13 @@ import { Footer } from "@/components/navigation/footer"
 import { HeroSection } from "@/components/home/hero-section"
 import { HostCTA } from "@/components/home/host-cta"
 import { FeaturedProperties } from "@/components/home/featured-properties"
+import { FeaturedContent } from "@/components/home/featured-content"
 import { ExperienceCategories } from "@/components/home/experience-categories"
 import { FifaCitiesSection } from "@/components/home/fifa-cities-section"
 import { HowItWorksExplainer } from "@/components/home/how-it-works-explainer"
 import { HomepageFAQ } from "@/components/home/homepage-faq"
 import { getFeaturedProperties } from "@/lib/db/properties"
+import { getArticlesByCategory } from "@/lib/data/articles"
 import { generateHomeMetadata } from "@/lib/seo/metadata"
 import { generateOrganizationSchema, generateWebSiteSchema } from "@/lib/seo/schema"
 import { SchemaMarkup } from "@/components/seo/schema-markup"
@@ -16,6 +18,12 @@ export const metadata = generateHomeMetadata()
 
 export default async function HomePage() {
   const featuredProperties = await getFeaturedProperties()
+  
+  // Get featured articles from each category
+  const guides = getArticlesByCategory("guides")
+  const journal = getArticlesByCategory("journal")
+  const insights = getArticlesByCategory("insights")
+  const resources = getArticlesByCategory("resources")
 
   // Generate schema markup for homepage
   const organizationSchema = generateOrganizationSchema()
@@ -58,6 +66,12 @@ export default async function HomePage() {
             </div>
 
             <div className="bg-background/95 backdrop-blur-sm">
+              <FeaturedContent 
+                guides={guides}
+                journal={journal}
+                insights={insights}
+                resources={resources}
+              />
               <HomepageFAQ />
               <HostCTA />
             </div>
