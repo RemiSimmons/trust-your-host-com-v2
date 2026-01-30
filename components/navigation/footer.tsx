@@ -16,7 +16,7 @@ export function Footer() {
               Experience authentic stays with trusted local hosts. Your journey to memorable moments starts here.
             </p>
             <div className="flex items-center gap-4">
-              <Link href="#" className="text-muted-foreground hover:text-accent transition-colors">
+              <Link href="https://www.facebook.com/trustyourhost" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
                 <Facebook className="h-5 w-5" />
               </Link>
               <Link href="#" className="text-muted-foreground hover:text-accent transition-colors">
@@ -24,6 +24,9 @@ export function Footer() {
               </Link>
               <Link href="#" className="text-muted-foreground hover:text-accent transition-colors">
                 <Instagram className="h-5 w-5" />
+              </Link>
+              <Link href="https://2minapp.com/" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-accent transition-colors">
+                2MinApp
               </Link>
             </div>
           </div>
