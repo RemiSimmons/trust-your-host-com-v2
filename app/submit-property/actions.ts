@@ -123,7 +123,28 @@ export async function submitPropertyListing(formData: FormData) {
     
     if (error) {
       console.error('Submission error:', error)
-      return { error: 'Failed to submit property. Please try again.' }
+      
+      // Provide specific error messages based on error type
+      if (error.code === '23505') {
+        return { error: 'This property has already been submitted. Please check your email for the status.' }
+      }
+      
+      if (error.code === '23514') {
+        return { error: 'Invalid data format. Please check all required fields and try again.' }
+      }
+      
+      if (error.message?.includes('email')) {
+        return { error: 'Invalid email address. Please check and try again.' }
+      }
+      
+      if (error.message?.includes('phone')) {
+        return { error: 'Invalid phone number format. Please use a valid phone number.' }
+      }
+      
+      // Generic error with more detail
+      const errorMsg = error.message || 'Unknown error'
+      console.error('Full error details:', errorMsg)
+      return { error: `Failed to submit property: ${errorMsg.substring(0, 100)}. Please contact support if this persists.` }
     }
     
     // Send email notification to admin

@@ -68,8 +68,11 @@ export function SubmissionForm() {
     const result = await submitPropertyListing(formData)
 
     if (result.error) {
+      console.error('Submission failed:', result.error)
       setError(result.error)
       setIsLoading(false)
+      // Scroll to top to show error
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } else {
       setSubmitted(true)
       setIsLoading(false)
@@ -101,6 +104,23 @@ export function SubmissionForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Error Display */}
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 px-4 py-3 rounded shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <p className="font-medium text-red-800 dark:text-red-400">Submission Error</p>
+              <p className="text-sm text-red-700 dark:text-red-300 mt-1">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Host Information */}
       <Card>
         <CardHeader>
@@ -157,11 +177,11 @@ export function SubmissionForm() {
               id="external_booking_url" 
               name="external_booking_url" 
               type="url" 
-              placeholder="https://yourwebsite.com (https:// is required)" 
+              placeholder="yourwebsite.com or booking.com/your-property" 
               required 
             />
             <p className="text-sm text-muted-foreground">
-              This is where travelers will be directed to book your property. URL must start with https://
+              Where travelers will book your property. Don't worry about https:// - we'll add it automatically!
             </p>
           </div>
 
@@ -509,12 +529,6 @@ export function SubmissionForm() {
           </CardContent>
         )}
       </Card>
-
-      {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded">
-          {error}
-        </div>
-      )}
 
       <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
         {isLoading ? (
