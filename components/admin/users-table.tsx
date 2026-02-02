@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -15,50 +15,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Search, MoreHorizontal, Mail, Ban, CheckCircle, Eye } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Search, MoreHorizontal, Trash2, Loader2, RefreshCw } from "lucide-react"
+import { createBrowserClient } from "@/lib/supabase/client"
+import { adminDeleteUser } from "@/app/actions/account"
 
-const mockUsers = [
-  {
-    id: "1",
-    name: "Sarah Johnson",
-    email: "sarah.j@example.com",
-    role: "host",
-    status: "active",
-    properties: 3,
-    joinedDate: "2024-01-15",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: "2",
-    name: "Michael Chen",
-    email: "m.chen@example.com",
-    role: "guest",
-    status: "active",
-    bookings: 12,
-    joinedDate: "2023-11-20",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: "3",
-    name: "Emma Davis",
-    email: "emma.d@example.com",
-    role: "host",
-    status: "active",
-    properties: 1,
-    joinedDate: "2024-03-08",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: "4",
-    name: "James Wilson",
-    email: "j.wilson@example.com",
-    role: "guest",
-    status: "suspended",
-    bookings: 5,
-    joinedDate: "2023-08-12",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-]
+interface User {
+  id: string
+  email: string
+  full_name: string | null
+  role: string
+  avatar_url: string | null
+  created_at: string
+}
 
 interface UsersTableProps {
   filter: string
@@ -66,101 +44,215 @@ interface UsersTableProps {
 
 export function UsersTable({ filter }: UsersTableProps) {
   const [searchQuery, setSearchQuery] = useState("")
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [userToDelete, setUserToDelete] = useState<User | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [error, setError] = useState("")
+
+  const fetchUsers = async () => {
+    setLoading(true)
+    const supabase = createBrowserClient()
+    
+    let query = supabase
+      .from('profiles')
+      .select('*')
+      .order('created_at', { ascending: false })
+    
+    // Apply filter
+    if (filter === 'hosts') {
+      query = query.eq('role', 'host')
+    } else if (filter === 'guests') {
+      query = query.eq('role', 'guest')
+    } else if (filter === 'admins') {
+      query = query.eq('role', 'admin')
+    }
+    
+    const { data, error } = await query
+    
+    if (error) {
+      console.log('Error fetching users:', error)
+      setUsers([])
+    } else {
+      setUsers(data || [])
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchUsers()
+  }, [filter])
+
+  const handleDeleteClick = (user: User) => {
+    setUserToDelete(user)
+    setDeleteDialogOpen(true)
+    setError("")
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!userToDelete) return
+    
+    setIsDeleting(true)
+    setError("")
+    
+    const result = await adminDeleteUser(userToDelete.id)
+    
+    if (result.error) {
+      setError(result.error)
+      setIsDeleting(false)
+    } else {
+      setDeleteDialogOpen(false)
+      setUserToDelete(null)
+      setIsDeleting(false)
+      // Refresh users list
+      fetchUsers()
+    }
+  }
+
+  const filteredUsers = users.filter(user => {
+    if (!searchQuery) return true
+    const query = searchQuery.toLowerCase()
+    return (
+      user.email?.toLowerCase().includes(query) ||
+      user.full_name?.toLowerCase().includes(query) ||
+      user.id.toLowerCase().includes(query)
+    )
+  })
 
   return (
-    <Card>
-      <CardHeader className="pb-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by name, email, or ID..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Activity</TableHead>
-              <TableHead>Joined</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {mockUsers.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={user.avatar || "/placeholder.svg"} />
-                      <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium">{user.name}</p>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline" className="capitalize">
-                    {user.role}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={user.status === "active" ? "default" : "destructive"} className="capitalize">
-                    {user.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {user.role === "host" ? `${user.properties} properties` : `${user.bookings} bookings`}
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {new Date(user.joinedDate).toLocaleDateString()}
-                </TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Eye className="mr-2 h-4 w-4" />
-                        View Profile
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Mail className="mr-2 h-4 w-4" />
-                        Send Message
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      {user.status === "active" ? (
-                        <DropdownMenuItem className="text-destructive">
-                          <Ban className="mr-2 h-4 w-4" />
-                          Suspend Account
-                        </DropdownMenuItem>
-                      ) : (
-                        <DropdownMenuItem className="text-green-600">
-                          <CheckCircle className="mr-2 h-4 w-4" />
-                          Reactivate Account
-                        </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardHeader className="pb-4">
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search by name, email, or ID..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Button variant="outline" size="icon" onClick={fetchUsers} disabled={loading}>
+              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : filteredUsers.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No users found
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>User</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Joined</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredUsers.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={user.avatar_url || "/placeholder.svg"} />
+                          <AvatarFallback>
+                            {user.full_name?.slice(0, 2) || user.email?.slice(0, 2) || '??'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{user.full_name || 'No name'}</p>
+                          <p className="text-sm text-muted-foreground">{user.email}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={user.role === 'admin' ? 'default' : 'outline'} 
+                        className="capitalize"
+                      >
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {new Date(user.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => handleDeleteClick(user)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete Account
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete User Account?</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>
+                Are you sure you want to delete <strong>{userToDelete?.email}</strong>?
+              </p>
+              <p>
+                This will permanently delete their account, all properties, and all associated data.
+                This action cannot be undone.
+              </p>
+              {error && (
+                <p className="text-red-600 font-medium">{error}</p>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete Account
+                </>
+              )}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }

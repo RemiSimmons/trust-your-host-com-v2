@@ -9,31 +9,27 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  // TODO: Re-enable auth check after testing
-  // Temporarily disabled for testing
-  
-  // const isDemoMode = !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  // Check authentication and admin role
+  const supabase = await createServerClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  // if (isDemoMode) {
-  //   // In demo mode, allow access without authentication
-  // } else {
-  //   // In production mode, verify authentication
-  //   const supabase = await createServerClient()
-  //   const {
-  //     data: { user },
-  //   } = await supabase.auth.getUser()
+  if (!user) {
+    redirect("/host/login?redirectTo=/admin")
+  }
 
-  //   if (!user) {
-  //     redirect("/host/login?redirect=/admin")
-  //   }
+  // Check if user has admin role
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
 
-  //   // In production, query the admin_users table or check user metadata
-  //   const isAdmin = true // Mock: Replace with actual role check
+  if (profile?.role !== 'admin') {
+    redirect("/")
+  }
 
-  //   if (!isAdmin) {
-  //     redirect("/")
-  //   }
-  // }
   return (
     <div className="flex h-screen bg-background">
       <AdminSidebar />

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Mail, Loader2, Heart } from 'lucide-react'
 import Link from 'next/link'
 
-export default function HostLoginPage() {
+function LoginContent() {
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') || '/host'
   
@@ -204,5 +204,30 @@ export default function HostLoginPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+function LoginFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Heart className="h-8 w-8 text-accent fill-accent mx-auto" />
+        </div>
+        <Card>
+          <CardContent className="flex items-center justify-center py-12">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+export default function HostLoginPage() {
+  return (
+    <Suspense fallback={<LoginFallback />}>
+      <LoginContent />
+    </Suspense>
   )
 }
