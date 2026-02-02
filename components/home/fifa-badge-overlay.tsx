@@ -38,10 +38,11 @@ export function FifaBadgeOverlay() {
         ease: "easeOut",
         delay: 0.3,
       }}
-      className="absolute top-[225px] left-1/2 -translate-x-1/2 z-50 cursor-pointer
-                 sm:top-[241px]
+      className="absolute top-[180px] left-1/2 -translate-x-1/2 z-50 cursor-pointer
+                 sm:top-[225px]
                  md:top-[257px]
-                 scale-[1.4]"
+                 scale-[1.2]
+                 sm:scale-[1.4]"
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       tabIndex={0}
