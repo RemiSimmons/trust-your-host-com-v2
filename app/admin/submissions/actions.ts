@@ -164,11 +164,12 @@ export async function approvePropertySubmission(submissionId: string) {
   }
   
   // Send approval notification with billing setup link
+  // The login URL includes redirectTo param to send hosts directly to billing after auth
   await sendPropertyApprovedNotification({
     email: submission.host_email,
     name: submission.host_name,
     propertyName: submission.property_name,
-    loginUrl: `${process.env.NEXT_PUBLIC_APP_URL}/host/login`,
+    loginUrl: `${process.env.NEXT_PUBLIC_APP_URL}/host/login?redirectTo=/host/billing`,
     billingSetupUrl: `${process.env.NEXT_PUBLIC_APP_URL}/host/billing`
   })
   

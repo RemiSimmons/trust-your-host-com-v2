@@ -110,7 +110,7 @@ export function SubmissionForm() {
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="host_name">Your Name *</Label>
+              <Label htmlFor="host_name">Full Legal Name *</Label>
               <Input id="host_name" name="host_name" required />
             </div>
             <div className="space-y-2">
@@ -118,9 +118,23 @@ export function SubmissionForm() {
               <Input id="host_email" name="host_email" type="email" required />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="host_phone">Phone Number</Label>
-            <Input id="host_phone" name="host_phone" type="tel" />
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="host_phone">Phone Number *</Label>
+              <Input id="host_phone" name="host_phone" type="tel" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="host_profile_picture">Profile Picture URL (optional)</Label>
+              <Input 
+                id="host_profile_picture" 
+                name="host_profile_picture" 
+                type="url" 
+                placeholder="https://example.com/profile.jpg"
+              />
+              <p className="text-xs text-muted-foreground">
+                Direct link to your profile picture (JPG, PNG, or WebP)
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -143,11 +157,11 @@ export function SubmissionForm() {
               id="external_booking_url" 
               name="external_booking_url" 
               type="url" 
-              placeholder="https://yourwebsite.com" 
+              placeholder="https://yourwebsite.com (https:// is required)" 
               required 
             />
             <p className="text-sm text-muted-foreground">
-              This is where travelers will be directed to book your property
+              This is where travelers will be directed to book your property. URL must start with https://
             </p>
           </div>
 
@@ -197,6 +211,8 @@ export function SubmissionForm() {
                 <SelectItem value="villa">Villa</SelectItem>
                 <SelectItem value="cabin">Cabin</SelectItem>
                 <SelectItem value="apartment">Apartment/Condo</SelectItem>
+                <SelectItem value="house">House</SelectItem>
+                <SelectItem value="townhouse">Townhouse</SelectItem>
                 <SelectItem value="lodge">Lodge</SelectItem>
                 <SelectItem value="glamping">Glamping</SelectItem>
                 <SelectItem value="treehouse">Treehouse</SelectItem>
@@ -279,7 +295,7 @@ export function SubmissionForm() {
                 id="image_urls"
                 name="image_urls"
                 rows={5}
-                placeholder="https://example.com/image1.jpg&#10;https://drive.google.com/file/d/xxx/view&#10;https://www.dropbox.com/s/xxx/photo.jpg&#10;https://onedrive.live.com/download?...&#10;https://wetransfer.com/downloads/xxx"
+                placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg, https://example.com/image3.jpg&#10;&#10;Or enter one URL per line:&#10;https://drive.google.com/file/d/xxx/view&#10;https://www.dropbox.com/s/xxx/photo.jpg&#10;https://onedrive.live.com/download?...&#10;https://wetransfer.com/downloads/xxx"
                 className="font-mono text-sm"
                 required
               />
@@ -288,7 +304,7 @@ export function SubmissionForm() {
                   ✅ Accepted: Direct image URLs, Google Drive, Dropbox, OneDrive, or WeTransfer links
                 </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li>Enter one URL per line</li>
+                  <li>Enter URLs separated by commas OR one URL per line</li>
                   <li>Minimum 3 images, maximum 5</li>
                   <li>Accepted formats: JPG, PNG, WebP</li>
                   <li>For Google Drive: Share link with "Anyone with the link can view"</li>

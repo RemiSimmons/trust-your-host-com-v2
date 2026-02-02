@@ -8,16 +8,27 @@ export async function submitPropertyListing(formData: FormData) {
   // Use admin client to bypass RLS for public submissions
   const supabase = createAdminClient()
   
-  // Validate external URL
-  const externalUrl = formData.get('external_booking_url') as string
-  if (!externalUrl || !externalUrl.startsWith('http')) {
-    return { error: 'Please provide a valid website URL starting with http:// or https://' }
+  // Validate and normalize external URL
+  let externalUrl = formData.get('external_booking_url') as string
+  if (!externalUrl) {
+    return { error: 'Please provide a valid website URL' }
+  }
+  
+  // Auto-prepend https:// if missing
+  externalUrl = externalUrl.trim()
+  if (!externalUrl.startsWith('http://') && !externalUrl.startsWith('https://')) {
+    externalUrl = `https://${externalUrl}`
+  }
+  
+  if (!externalUrl.startsWith('http://') && !externalUrl.startsWith('https://')) {
+    return { error: 'Please provide a valid website URL' }
   }
   
   // Parse image URLs and convert share links to direct links
+  // Support both comma-separated and newline-separated URLs
   const imageInput = formData.get('image_urls') as string
   const imageUrls = imageInput
-    .split('\n')
+    .split(/[,\n]/) // Split by comma or newline
     .map(s => s.trim())
     .filter(s => s.length > 0)
     .map(url => {
@@ -85,6 +96,7 @@ export async function submitPropertyListing(formData: FormData) {
         host_name: formData.get('host_name'),
         host_email: formData.get('host_email'),
         host_phone: formData.get('host_phone'),
+        host_profile_picture: formData.get('host_profile_picture') as string || null,
         property_name: formData.get('property_name'),
         external_booking_url: externalUrl,
         city: fullAddress.city,

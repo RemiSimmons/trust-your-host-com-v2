@@ -8,6 +8,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(req: Request) {
   try {
+    // Validate required environment variables
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('Missing STRIPE_SECRET_KEY')
+      return NextResponse.json(
+        { error: 'Payment system not configured' },
+        { status: 500 }
+      )
+    }
+    if (!process.env.STRIPE_PRICE_ID || !process.env.STRIPE_ADDITIONAL_PRICE_ID) {
+      console.error('Missing STRIPE_PRICE_ID or STRIPE_ADDITIONAL_PRICE_ID')
+      return NextResponse.json(
+        { error: 'Payment pricing not configured' },
+        { status: 500 }
+      )
+    }
+
     const supabase = await createServerClient()
     
     // Get authenticated user
@@ -44,8 +60,8 @@ export async function POST(req: Request) {
 
     // Determine which Stripe Price ID to use (primary or additional)
     const priceId = property.is_primary_property 
-      ? process.env.STRIPE_PRIMARY_PRICE_ID || process.env.STRIPE_PRICE_ID
-      : process.env.STRIPE_ADDITIONAL_PRICE_ID || process.env.STRIPE_PRICE_ID
+      ? process.env.STRIPE_PRICE_ID
+      : process.env.STRIPE_ADDITIONAL_PRICE_ID
     
     // Only first property gets trial
     const trialDays = property.is_primary_property ? 60 : 0

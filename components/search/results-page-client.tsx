@@ -8,6 +8,8 @@ import { getExperienceConfig } from "@/lib/config/experience-config"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { FilterModal } from "./filter-modal"
+import { filterProperties, type FilterState } from "@/lib/utils/search"
+import { PropertyCard } from "@/components/home/featured-properties"
 
 interface ResultsPageClientProps {
   initialProperties: Property[]
@@ -177,12 +179,34 @@ export function ResultsPageClient({ initialProperties }: ResultsPageClientProps)
     }
   }
 
-  // Filter properties (simplified - you can enhance this with actual filtering logic)
+  // Convert filtersFromUrl to FilterState format for the filterProperties function
+  const filterState = useMemo((): FilterState => {
+    // Convert single experience to array
+    const experiences = filtersFromUrl.experience ? [filtersFromUrl.experience] : []
+    
+    // Estimate bedrooms from guests (rough estimate: guests / 2)
+    const bedrooms = filtersFromUrl.guests > 2 ? Math.ceil(filtersFromUrl.guests / 2) : 0
+    
+    return {
+      experiences,
+      priceRange: filtersFromUrl.priceRange,
+      propertyTypes: filtersFromUrl.propertyTypes,
+      bedrooms,
+      amenities: filtersFromUrl.amenities,
+      instantBook: false,
+      verifiedOnly: false,
+      petFriendly: false,
+      event: null,
+      cities: [],
+      distanceFrom: "stadium",
+      radiusMiles: 25,
+    }
+  }, [filtersFromUrl])
+
+  // Filter properties using the actual filtering logic
   const filteredProperties = useMemo(() => {
-    // TODO: Implement actual filtering logic based on filtersFromUrl
-    // For now, just return all properties
-    return initialProperties
-  }, [initialProperties, filtersFromUrl])
+    return filterProperties(initialProperties, filterState)
+  }, [initialProperties, filterState])
 
   return (
     <>
@@ -252,19 +276,9 @@ export function ResultsPageClient({ initialProperties }: ResultsPageClientProps)
 
         {/* Results */}
         {filteredProperties.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* TODO: Add PropertyCard component here */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {filteredProperties.map((property) => (
-              <div
-                key={property.id}
-                className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow duration-200"
-              >
-                <h3 className="font-semibold text-lg mb-2">{property.name}</h3>
-                <p className="text-gray-600 text-sm">{property.description.short}</p>
-                <p className="text-[#2C5F7C] font-semibold mt-2">
-                  ${property.pricing.baseNightlyRate}/night
-                </p>
-              </div>
+              <PropertyCard key={property.id} property={property} />
             ))}
           </div>
         ) : (

@@ -12,7 +12,7 @@ export function HeroSection() {
       <FifaBadgeOverlay />
       
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 text-center">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-5xl mx-auto">
           {/* Headline */}
           <motion.h1

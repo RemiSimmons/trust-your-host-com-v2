@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Plus, Edit, BarChart3, Eye, Calendar, Info } from 'lucide-react'
+import { Plus, Edit, BarChart3, Eye, Calendar, Info, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Property } from '@/lib/types'
@@ -25,6 +25,11 @@ export function PropertiesGrid({ properties, totalMonthlyCost }: PropertiesGridP
   const activeCount = properties.filter(p => p.property.verified).length
   const totalClicks = properties.reduce((sum, p) => sum + (p.clicks.allTime || 0), 0)
   const totalViews = properties.reduce((sum, p) => sum + (p.clicks.allTime * 5 || 0), 0) // Mock: 5:1 view to click ratio
+  
+  // Check if any property has pending payment
+  const hasPendingPayment = properties.some(p => 
+    p.property.subscription_status === 'pending_payment'
+  )
 
   return (
     <div className="space-y-6">
@@ -43,6 +48,30 @@ export function PropertiesGrid({ properties, totalMonthlyCost }: PropertiesGridP
           </Link>
         </Button>
       </div>
+
+      {/* Pending Payment Banner */}
+      {hasPendingPayment && (
+        <Alert className="bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800">
+          <AlertCircle className="h-4 w-4 text-orange-600" />
+          <AlertDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-orange-900 dark:text-orange-100">
+                  Complete Your Billing Setup
+                </p>
+                <p className="text-sm text-orange-700 dark:text-orange-300 mt-1">
+                  Your property is approved! Set up billing to go live and start receiving traffic.
+                </p>
+              </div>
+              <Button asChild className="ml-4 shrink-0 bg-orange-600 hover:bg-orange-700">
+                <Link href="/host/billing">
+                  Complete Setup
+                </Link>
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Multi-Property Pricing Info */}
       {propertyCount > 0 && (

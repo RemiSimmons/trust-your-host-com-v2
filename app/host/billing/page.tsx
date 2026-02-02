@@ -30,17 +30,18 @@ function BillingSetupContent() {
       }
       setUser(user)
 
-      // Get user's property
+      // Get user's property that needs billing setup
       const { data: property } = await supabase
         .from('properties')
         .select('*')
         .eq('host_id', user.id)
+        .eq('subscription_status', 'pending_payment')
         .single()
       
       setProperty(property)
 
-      // If they already have a subscription, redirect to dashboard
-      if (property?.stripe_subscription_id) {
+      // If no property pending payment, redirect to dashboard
+      if (!property) {
         router.push('/host')
       }
     }

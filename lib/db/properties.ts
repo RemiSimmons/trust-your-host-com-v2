@@ -7,29 +7,36 @@ export async function getProperties(): Promise<Property[]> {
   const supabase = await createServerClient()
 
   try {
-    const { data, error } = await supabase.from("properties").select("*, host:profiles(*)")
+    // Only fetch active properties (trial or active subscription status)
+    const { data, error } = await supabase
+      .from("properties")
+      .select("*, host:profiles(*)")
+      .eq("is_active", true)
 
     if (error) {
       console.log("[v0] Database error, using mock data:", error.code)
-      if (
-        error.code === "PGRST205" ||
-        error.code === "SUPABASE_NOT_CONFIGURED" ||
-        error.message.includes("Could not find the table")
-      ) {
-        console.warn("Database not available. Falling back to mock data.")
-        return mockProperties
-      }
-      console.error("Error fetching properties:", error)
       return mockProperties
     }
 
     console.log("[v0] Fetched properties from database:", data?.length)
 
-    if (!data || data.length === 0) {
-      console.log("[v0] Database empty, using mock data")
-      return mockProperties
+    // Hybrid approach: Show mock data until we have 50+ real properties
+    if (!data || data.length < 50) {
+      const realCount = data?.length || 0
+      console.log(`[v0] Only ${realCount} real properties. Showing mock data + real properties.`)
+      
+      if (!data || data.length === 0) {
+        // No real properties yet, return all mock data
+        return mockProperties
+      }
+      
+      // Mix real properties with mock data (real properties appear first)
+      const realProperties = data.map(mapDatabasePropertyToProperty)
+      return [...realProperties, ...mockProperties]
     }
 
+    // 50+ real properties, only show real ones
+    console.log("[v0] 50+ real properties! Using only real data.")
     return data.map(mapDatabasePropertyToProperty)
   } catch (err) {
     console.log("[v0] Exception caught, returning mock data:", err)
@@ -41,14 +48,28 @@ export async function getPropertiesCount(): Promise<number> {
   const supabase = await createServerClient()
 
   try {
-    const { count, error } = await supabase.from("properties").select("*", { count: "exact", head: true })
+    // Only count active properties
+    const { count, error } = await supabase
+      .from("properties")
+      .select("*", { count: "exact", head: true })
+      .eq("is_active", true)
 
     if (error) {
       console.log("[v0] Database error, using mock data count:", error.code)
       return mockProperties.length
     }
 
-    return count || mockProperties.length
+    const realCount = count || 0
+    
+    // Show combined count (real + mock) until we have 50+ real properties
+    if (realCount < 50) {
+      console.log(`[v0] Count: ${realCount} real + ${mockProperties.length} mock`)
+      return realCount + mockProperties.length
+    }
+
+    // 50+ real properties: return only real count
+    console.log(`[v0] Count: ${realCount} real properties (50+ threshold reached)`)
+    return realCount
   } catch (err) {
     console.log("[v0] Exception caught, returning mock data count:", err)
     return mockProperties.length
@@ -60,36 +81,33 @@ export async function getFeaturedProperties(): Promise<Property[]> {
   const supabase = await createServerClient()
 
   try {
+    // Only fetch active, featured properties
     const { data, error } = await supabase
       .from("properties")
       .select("*, host:profiles(*)")
       .eq("featured", true)
+      .eq("is_active", true)
       .limit(6)
 
     if (error) {
-      console.log("[v0] Database error, using mock data:", error.code)
-      if (
-        error.code === "PGRST205" ||
-        error.code === "SUPABASE_NOT_CONFIGURED" ||
-        error.message.includes("Could not find the table")
-      ) {
-        console.warn("Database not available. Falling back to mock data.")
-        return mockProperties.filter((p) => p.featured).slice(0, 6)
-      }
-      console.error("Error fetching featured properties:", error)
+      console.log("[v0] Database error, using mock featured:", error.code)
       return mockProperties.filter((p) => p.featured).slice(0, 6)
     }
 
     console.log("[v0] Fetched featured properties from database:", data?.length)
 
-    if (!data || data.length === 0) {
-      console.log("[v0] Database empty, using mock featured properties")
-      return mockProperties.filter((p) => p.featured).slice(0, 6)
+    // Until we have enough real featured properties, mix with mock data
+    if (!data || data.length < 6) {
+      const realFeatured = data ? data.map(mapDatabasePropertyToProperty) : []
+      const mockFeatured = mockProperties.filter((p) => p.featured).slice(0, 6 - realFeatured.length)
+      console.log(`[v0] Mixing ${realFeatured.length} real + ${mockFeatured.length} mock featured`)
+      return [...realFeatured, ...mockFeatured].slice(0, 6)
     }
 
+    // 6+ real featured properties, use only real ones
     return data.map(mapDatabasePropertyToProperty)
   } catch (err) {
-    console.log("[v0] Exception caught, returning mock data:", err)
+    console.log("[v0] Exception caught, returning mock featured:", err)
     return mockProperties.filter((p) => p.featured).slice(0, 6)
   }
 }
@@ -156,13 +174,7 @@ export async function getHostProperties(hostId: string): Promise<Property[]> {
   const { data, error } = await supabase.from("properties").select("*, host:profiles(*)").eq("host_id", hostId)
 
   if (error) {
-    if (error.code === "PGRST205" || error.message.includes("Could not find the table")) {
-      console.warn("Database tables not found. Falling back to mock data.")
-      // In mock data, we don't have real host IDs, so we'll return all properties for the demo
-      // or filter if we had assigned host IDs in mock data.
-      return mockProperties
-    }
-    console.error("Error fetching host properties:", error)
+    console.log("[v0] Error fetching host properties:", error.code)
     return []
   }
 

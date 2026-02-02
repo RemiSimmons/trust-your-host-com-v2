@@ -29,6 +29,7 @@ export const EXPERIENCE_FEATURES: ExperienceFeature[] = [
   { id: "mountain-lodges", label: "Mountain Lodges", icon: Mountain },
   { id: "island-getaways", label: "Island Getaways", icon: Palmtree },
   { id: "waterfront-escapes", label: "Waterfront Escapes", icon: Waves },
+  { id: "urban-exploration", label: "Urban Exploration", icon: Building2 },
   { id: "glamping", label: "Glamping", icon: Tent },
   { id: "desert-solitude", label: "Desert Solitude", icon: TreePine },
   { id: "adventure-sports", label: "Adventure Sports", icon: Activity },
@@ -37,7 +38,7 @@ export const EXPERIENCE_FEATURES: ExperienceFeature[] = [
   { id: "wine-country", label: "Wine Country", icon: Grape },
   { id: "remote-work", label: "Remote Work Retreats", icon: Laptop },
   { id: "cultural-immersion", label: "Cultural Immersion", icon: Landmark },
-  { id: "historic-stays", label: "Historic Stays", icon: Building2 },
+  { id: "historic-stays", label: "Historic Stays", icon: Landmark },
   { id: "ski-chalets", label: "Ski Chalets", icon: Snowflake },
   { id: "unique-stays", label: "Unique & Themed Stays", icon: Sparkles },
 ]

@@ -10,6 +10,7 @@ const EXPERIENCE_OPTIONS = [
   { label: "All Experiences", value: "all" },
   { label: "Island Getaways", value: "island-getaways" },
   { label: "Waterfront Escapes", value: "waterfront-escapes" },
+  { label: "Urban Exploration", value: "urban-exploration" },
   { label: "Cultural Immersion", value: "cultural-immersion" },
   { label: "Mountain Lodges", value: "mountain-lodges" },
   { label: "Hiking & Trails", value: "hiking-trails" },
@@ -92,7 +93,8 @@ function SelectDropdown({ value, options, onChange, groups }: SelectDropdownProp
       </button>
       
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-white rounded-xl shadow-xl border border-gray-200 max-h-64 overflow-hidden overflow-y-auto p-1.5">
+        <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
+          <div className="max-h-64 overflow-y-auto p-1.5 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
           {groups ? (
             <>
               {/* Standalone options first */}
@@ -156,6 +158,7 @@ function SelectDropdown({ value, options, onChange, groups }: SelectDropdownProp
               </button>
             ))
           )}
+          </div>
         </div>
       )}
     </div>

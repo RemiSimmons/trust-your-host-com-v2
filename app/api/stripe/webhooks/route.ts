@@ -37,9 +37,10 @@ export async function POST(req: NextRequest) {
           const hostId = session.metadata?.host_id
 
           if (propertyId && hostId) {
-            // Calculate trial end date (60 days from now)
-            const trialEndsAt = new Date()
-            trialEndsAt.setDate(trialEndsAt.getDate() + 60)
+            // Use Stripe's trial end timestamp (more accurate, handles timezone correctly)
+            const trialEndsAt = subscription.trial_end 
+              ? new Date(subscription.trial_end * 1000).toISOString()
+              : null
 
             // Update property with subscription info
             await supabase
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
                 stripe_subscription_id: subscription.id,
                 stripe_customer_id: customerId,
                 subscription_status: 'trial',
-                trial_ends_at: trialEndsAt.toISOString(),
+                trial_ends_at: trialEndsAt,
                 is_active: true,
                 updated_at: new Date().toISOString(),
               })
