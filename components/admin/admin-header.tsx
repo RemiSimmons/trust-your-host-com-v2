@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Bell, Search, LogOut } from "lucide-react"
+import { Bell, Search, LogOut, ExternalLink } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -12,8 +12,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { createBrowserClient } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 export function AdminHeader() {
+  const router = useRouter()
+  const supabase = createBrowserClient()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push("/")
+  }
+
   return (
     <header className="flex h-16 items-center justify-between border-b bg-card px-6">
       <div className="flex flex-1 items-center gap-4">
@@ -42,10 +53,14 @@ export function AdminHeader() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Admin Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View Site</DropdownMenuItem>
-            <DropdownMenuItem>Profile Settings</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/" target="_blank">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                View Site
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuItem className="text-destructive" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </DropdownMenuItem>
