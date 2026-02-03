@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 function BillingSetupContent() {
   const [isLoading, setIsLoading] = useState(false)
+  const [isCheckingProperty, setIsCheckingProperty] = useState(true)
   const [user, setUser] = useState<any>(null)
   const [property, setProperty] = useState<any>(null)
   const router = useRouter()
@@ -29,25 +30,55 @@ function BillingSetupContent() {
         return
       }
       setUser(user)
+      
+      console.log('Looking for property for user:', user.id, user.email)
 
       // Get user's property that needs billing setup
-      const { data: property } = await supabase
+      const { data: property, error: propertyError } = await supabase
         .from('properties')
         .select('*')
         .eq('host_id', user.id)
         .eq('subscription_status', 'pending_payment')
         .single()
       
+      if (propertyError) {
+        console.error('Error fetching property:', propertyError)
+        // If error is "not found", redirect. Otherwise stay on page and show error
+        if (propertyError.code === 'PGRST116') {
+          console.log('No property with pending_payment found, redirecting...')
+          router.push('/host')
+          return
+        }
+      }
+      
       setProperty(property)
 
       // If no property pending payment, redirect to dashboard
       if (!property) {
+        console.log('Property is null, redirecting...')
         router.push('/host')
+      } else {
+        console.log('Property found:', property.name, property.subscription_status)
       }
+      
+      setIsCheckingProperty(false)
     }
 
     loadData()
   }, [router])
+  
+  // Show loading state while checking for property
+  if (isCheckingProperty) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <NavBar />
+        <main className="flex-1 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   const handleSubscribe = async () => {
     setIsLoading(true)
