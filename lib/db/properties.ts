@@ -267,9 +267,9 @@ function mapDatabasePropertyToProperty(dbProp: any): Property {
     propertyType: dbProp.property_type,
     pricing: {
       ...dbProp.pricing,
-      baseNightlyRate: Number(dbProp.pricing.baseNightlyRate),
+      baseNightlyRate: Number(dbProp.pricing?.baseNightlyRate || 0),
     },
-    capacity: dbProp.capacity,
+    capacity: dbProp.capacity || { guests: 0, bedrooms: 0, beds: 0, bathrooms: 0, allowsPets: false },
     amenities: dbProp.amenities || [],
     quickHighlights: dbProp.quick_highlights || [],
     description: dbProp.description,
@@ -287,5 +287,12 @@ function mapDatabasePropertyToProperty(dbProp: any): Property {
     },
     verified: dbProp.verified,
     featured: dbProp.featured,
+    // Additional fields for host dashboard
+    external_booking_url: dbProp.external_booking_url,
+    typical_response_hours: dbProp.typical_response_hours,
+    subscription_status: dbProp.subscription_status,
+    stripe_subscription_id: dbProp.stripe_subscription_id,
+    trial_ends_at: dbProp.trial_ends_at,
+    is_active: dbProp.is_active,
   }
 }

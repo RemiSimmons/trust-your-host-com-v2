@@ -28,7 +28,7 @@ export default async function HostPropertiesPage() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/submit-property">
+          <Link href="/host/properties/new">
             <Plus className="h-4 w-4 mr-2" />
             Add Property
           </Link>
