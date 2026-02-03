@@ -44,12 +44,20 @@ export async function POST(req: Request) {
       .single()
 
     // Get the property that needs billing setup (with pricing info)
-    const { data: property } = await supabase
+    const { data: property, error: propertyError } = await supabase
       .from('properties')
       .select('id, name, is_primary_property, monthly_amount')
       .eq('host_id', user.id)
       .eq('subscription_status', 'pending_payment')
       .single()
+
+    if (propertyError) {
+      console.error('Property query error:', propertyError)
+      return NextResponse.json(
+        { error: `Database error: ${propertyError.message}` },
+        { status: 500 }
+      )
+    }
 
     if (!property) {
       return NextResponse.json(
@@ -99,10 +107,11 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json({ sessionId: session.id })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating checkout session:', error)
+    const errorMessage = error?.message || 'Unknown error'
     return NextResponse.json(
-      { error: 'Failed to create checkout session' },
+      { error: `Failed to create checkout session: ${errorMessage}` },
       { status: 500 }
     )
   }
