@@ -9,6 +9,7 @@ import { Loader2, CheckCircle, CreditCard } from 'lucide-react'
 import { NavBar } from '@/components/navigation/nav-bar'
 import { Footer } from '@/components/navigation/footer'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { getStripePublishableKey } from '@/lib/stripe-config'
 
 function BillingSetupContent() {
   const [isLoading, setIsLoading] = useState(false)
@@ -109,7 +110,17 @@ function BillingSetupContent() {
       }
       
       // Redirect to Stripe Checkout
-      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+      const stripeKey = getStripePublishableKey()
+      
+      if (!stripeKey) {
+        console.error('Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY')
+        alert('Payment system not configured. The site needs to be redeployed with Stripe credentials.')
+        setIsLoading(false)
+        return
+      }
+      
+      console.log('Loading Stripe with key:', stripeKey.substring(0, 20) + '...')
+      const stripe = await loadStripe(stripeKey)
       if (!stripe) {
         alert('Failed to load Stripe. Please check your connection.')
         setIsLoading(false)
