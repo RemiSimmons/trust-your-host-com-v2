@@ -22,7 +22,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  const supabase = createAdminClient()
+  let supabase
+  try {
+    supabase = createAdminClient()
+  } catch (adminError) {
+    console.error('❌ Failed to create Supabase admin client:', adminError)
+    return NextResponse.json({ error: 'Database client error' }, { status: 500 })
+  }
 
   try {
     switch (event.type) {
@@ -42,21 +48,29 @@ export async function POST(req: NextRequest) {
               ? new Date(subscription.trial_end * 1000).toISOString()
               : null
 
+            console.log(`🔄 Updating property ${propertyId} with subscription ${subscription.id}`)
+
             // Update property with subscription info
-            await supabase
+            const { error: propertyError } = await supabase
               .from('properties')
               .update({
                 stripe_subscription_id: subscription.id,
                 stripe_customer_id: customerId,
-                subscription_status: 'trial',
+                subscription_status: subscription.trial_end ? 'trial' : 'active',
                 trial_ends_at: trialEndsAt,
                 is_active: true,
                 updated_at: new Date().toISOString(),
               })
               .eq('id', propertyId)
 
+            if (propertyError) {
+              console.error(`❌ Failed to update property ${propertyId}:`, propertyError)
+            } else {
+              console.log(`✅ Property ${propertyId} updated successfully`)
+            }
+
             // Update host profile
-            await supabase
+            const { error: profileError } = await supabase
               .from('profiles')
               .update({
                 stripe_customer_id: customerId,
@@ -64,7 +78,15 @@ export async function POST(req: NextRequest) {
               })
               .eq('id', hostId)
 
+            if (profileError) {
+              console.error(`❌ Failed to update profile ${hostId}:`, profileError)
+            } else {
+              console.log(`✅ Profile ${hostId} updated successfully`)
+            }
+
             console.log(`✅ Trial started for property ${propertyId}`)
+          } else {
+            console.error(`❌ Missing metadata - propertyId: ${propertyId}, hostId: ${hostId}`)
           }
         }
         break
