@@ -201,16 +201,23 @@ export function HostAnalyticsDashboard({ properties, stripeCustomerId }: HostAna
 
               {/* Actions */}
               <div className="flex gap-3">
-                <Button variant="outline" asChild className="flex-1">
-                  <a 
-                    href={`/properties/${property.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                {property.slug ? (
+                  <Button variant="outline" asChild className="flex-1">
+                    <a 
+                      href={`/properties/${property.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View Listing
+                    </a>
+                  </Button>
+                ) : (
+                  <Button variant="outline" className="flex-1" disabled>
                     <ExternalLink className="h-4 w-4 mr-2" />
-                    View Listing
-                  </a>
-                </Button>
+                    Not Published
+                  </Button>
+                )}
                 {property.external_booking_url && (
                   <Button variant="outline" asChild className="flex-1">
                     <a 

@@ -98,15 +98,22 @@ export function PropertiesListClient({ properties }: PropertiesListClientProps) 
                     Edit Property
                   </Link>
                 </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <a href={`/properties/${property.slug}`} target="_blank" rel="noopener noreferrer">
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Listing
-                  </a>
-                </Button>
-                {property.host?.responseTime && (
+                {property.slug ? (
                   <Button variant="outline" size="sm" asChild>
-                    <a href="#" target="_blank" rel="noopener noreferrer">
+                    <a href={`/properties/${property.slug}`} target="_blank" rel="noopener noreferrer">
+                      <Eye className="h-4 w-4 mr-2" />
+                      View Listing
+                    </a>
+                  </Button>
+                ) : (
+                  <Button variant="outline" size="sm" disabled>
+                    <Eye className="h-4 w-4 mr-2" />
+                    Not Published
+                  </Button>
+                )}
+                {property.external_booking_url && (
+                  <Button variant="outline" size="sm" asChild>
+                    <a href={property.external_booking_url} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Your Website
                     </a>
