@@ -174,17 +174,17 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
         </div>
       </div>
 
-      {/* Content area */}
-      <div className="relative overflow-hidden">
+      {/* Content area - contained with proper overflow */}
+      <div className="relative">
         <div className="container mx-auto px-6">
           <div className="flex gap-8">
             {/* Desktop Sidebar */}
-            <aside className="hidden md:block w-80 shrink-0 sticky top-[140px] h-[calc(100vh-160px)] z-10">
+            <aside className="hidden md:block w-80 shrink-0 sticky top-[140px] h-[calc(100vh-160px)] z-10 overflow-y-auto">
               <FilterSidebar filters={filters} setFilters={setFilters} />
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 relative z-0">
+            {/* Main Content - ensure images don't escape container */}
+            <main className="flex-1 relative z-0 overflow-hidden">
               {/* Map View */}
               {view === "map" ? (
                 <MapView

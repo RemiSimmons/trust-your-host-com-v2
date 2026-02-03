@@ -47,21 +47,24 @@ function BillingSetupContent() {
       console.log('Looking for property for user:', user.id, user.email)
 
       // First, check for any property with trial or active subscription
+      // Also check for verified properties with a stripe_subscription_id (fallback for webhook timing)
       const { data: activeProperty, error: activeError } = await supabase
         .from('properties')
         .select('*')
         .eq('host_id', user.id)
-        .in('subscription_status', ['trial', 'active', 'canceled'])
+        .or('subscription_status.in.(trial,active,canceled),and(verified.eq.true,stripe_subscription_id.not.is.null)')
         .order('created_at', { ascending: false })
         .limit(1)
         .single()
 
       if (activeProperty && !activeError) {
+        // Determine actual status - prefer subscription_status, fallback to 'active' if verified with subscription
+        const effectiveStatus = activeProperty.subscription_status || (activeProperty.verified && activeProperty.stripe_subscription_id ? 'active' : 'pending_payment')
         // User has an active/trial subscription - show management view
         setProperty(activeProperty)
         setViewMode('management')
         
-        // Fetch subscription details from Stripe
+        // Fetch subscription details from Stripe if available
         if (activeProperty.stripe_subscription_id) {
           try {
             const res = await fetch('/api/stripe/get-subscription-details', {
@@ -72,16 +75,42 @@ function BillingSetupContent() {
             if (res.ok) {
               const data = await res.json()
               setSubscriptionInfo({
-                status: activeProperty.subscription_status,
+                status: effectiveStatus,
                 currentPeriodEnd: data.currentPeriodEnd ? new Date(data.currentPeriodEnd * 1000) : null,
                 cancelAtPeriodEnd: data.cancelAtPeriodEnd || false,
                 lastFourDigits: data.lastFourDigits,
                 trialEndsAt: activeProperty.trial_ends_at ? new Date(activeProperty.trial_ends_at) : null
               })
+            } else {
+              // Even if Stripe API fails, show management view with effective status
+              setSubscriptionInfo({
+                status: effectiveStatus,
+                currentPeriodEnd: null,
+                cancelAtPeriodEnd: false,
+                lastFourDigits: null,
+                trialEndsAt: activeProperty.trial_ends_at ? new Date(activeProperty.trial_ends_at) : null
+              })
             }
           } catch (error) {
             console.error('Error fetching subscription details:', error)
+            // Still show management view even if API call fails
+            setSubscriptionInfo({
+              status: effectiveStatus,
+              currentPeriodEnd: null,
+              cancelAtPeriodEnd: false,
+              lastFourDigits: null,
+              trialEndsAt: activeProperty.trial_ends_at ? new Date(activeProperty.trial_ends_at) : null
+            })
           }
+        } else if (activeProperty.verified) {
+          // Property is verified but no Stripe subscription yet - show basic info
+          setSubscriptionInfo({
+            status: effectiveStatus,
+            currentPeriodEnd: null,
+            cancelAtPeriodEnd: false,
+            lastFourDigits: null,
+            trialEndsAt: activeProperty.trial_ends_at ? new Date(activeProperty.trial_ends_at) : null
+          })
         }
         
         setIsCheckingProperty(false)

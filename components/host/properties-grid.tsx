@@ -73,8 +73,8 @@ export function PropertiesGrid({ properties, totalMonthlyCost }: PropertiesGridP
         </Alert>
       )}
 
-      {/* Multi-Property Pricing Info */}
-      {propertyCount > 0 && (
+      {/* Multi-Property Pricing Info - Only show when user has multiple properties */}
+      {propertyCount > 1 && (
         <Alert className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
           <Info className="h-4 w-4 text-blue-600" />
           <AlertDescription>
@@ -87,14 +87,12 @@ export function PropertiesGrid({ properties, totalMonthlyCost }: PropertiesGridP
                   First property: <strong>$49/month</strong> • Additional properties: <strong>$39/month</strong> each
                 </p>
               </div>
-              {propertyCount > 1 && (
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                    ${totalMonthlyCost}
-                  </p>
-                  <p className="text-xs text-blue-600 dark:text-blue-400">per month</p>
-                </div>
-              )}
+              <div className="text-right">
+                <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                  ${totalMonthlyCost}
+                </p>
+                <p className="text-xs text-blue-600 dark:text-blue-400">per month</p>
+              </div>
             </div>
           </AlertDescription>
         </Alert>
@@ -274,12 +272,19 @@ function PropertyCard({ property, clicks, isPrimary }: PropertyCardProps) {
         </div>
 
         {/* View Public Listing */}
-        <Button variant="ghost" size="sm" className="w-full" asChild>
-          <a href={`/properties/${property.slug}`} target="_blank" rel="noopener noreferrer">
+        {property.slug ? (
+          <Button variant="ghost" size="sm" className="w-full" asChild>
+            <a href={`/properties/${property.slug}`} target="_blank" rel="noopener noreferrer">
+              <Eye className="h-4 w-4 mr-2" />
+              View Public Listing
+            </a>
+          </Button>
+        ) : (
+          <Button variant="ghost" size="sm" className="w-full" disabled>
             <Eye className="h-4 w-4 mr-2" />
-            View Public Listing
-          </a>
-        </Button>
+            Listing Not Published
+          </Button>
+        )}
       </CardContent>
     </Card>
   )
