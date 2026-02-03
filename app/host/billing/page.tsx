@@ -59,28 +59,42 @@ function BillingSetupContent() {
         headers: { 'Content-Type': 'application/json' },
       })
       
+      const data = await res.json()
+      
       if (!res.ok) {
-        throw new Error('Failed to create checkout session')
+        const errorMsg = data.error || 'Failed to create checkout session'
+        console.error('API Error:', errorMsg)
+        alert(`Error: ${errorMsg}`)
+        setIsLoading(false)
+        return
       }
 
-      const { sessionId } = await res.json()
+      const { sessionId } = data
+      
+      if (!sessionId) {
+        alert('No session ID returned from server')
+        setIsLoading(false)
+        return
+      }
       
       // Redirect to Stripe Checkout
       const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
       if (!stripe) {
-        throw new Error('Failed to load Stripe')
+        alert('Failed to load Stripe. Please check your connection.')
+        setIsLoading(false)
+        return
       }
 
       const { error } = await stripe.redirectToCheckout({ sessionId })
       
       if (error) {
         console.error('Stripe checkout error:', error)
-        alert('Failed to redirect to payment. Please try again.')
+        alert(`Stripe Error: ${error.message}`)
         setIsLoading(false)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating checkout session:', error)
-      alert('Failed to create checkout session. Please try again.')
+      alert(`Error: ${error.message || 'Failed to create checkout session. Please try again.'}`)
       setIsLoading(false)
     }
   }
