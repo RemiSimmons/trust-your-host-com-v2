@@ -67,61 +67,69 @@ export function SubmissionsTable({ submissions }: { submissions: Submission[] })
   const [isApproving, setIsApproving] = useState(false)
   const [isRejecting, setIsRejecting] = useState(false)
   const [showRejectDialog, setShowRejectDialog] = useState(false)
+  const [showApproveConfirm, setShowApproveConfirm] = useState(false)
   const [rejectionReason, setRejectionReason] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
-  async function handleApprove(submissionId: string) {
-    if (!confirm('Are you sure you want to approve this property? This will create a host account and start their 60-day trial.')) {
-      return
-    }
-
+  async function confirmApprove(submissionId: string) {
+    setShowApproveConfirm(false)
     setIsApproving(true)
+    setErrorMessage('')
+    setSuccessMessage('')
+    
     try {
       console.log('Starting approval for submission:', submissionId)
       const result = await approvePropertySubmission(submissionId)
       
       if (result.error) {
         console.error('Approval failed:', result.error)
-        alert(`Error: ${result.error}`)
+        setErrorMessage(result.error)
         setIsApproving(false)
       } else {
         console.log('Approval successful, property ID:', result.propertyId)
-        alert('Property approved successfully! The page will now reload.')
-        setIsDialogOpen(false)
-        window.location.reload()
+        setSuccessMessage('Property approved successfully!')
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500)
       }
     } catch (error) {
       console.error('Unexpected error during approval:', error)
-      alert(`Unexpected error: ${error}`)
+      setErrorMessage(`Unexpected error: ${error}`)
       setIsApproving(false)
     }
   }
 
   async function handleReject(submissionId: string) {
     if (!rejectionReason.trim()) {
-      alert('Please provide a reason for rejection')
+      setErrorMessage('Please provide a reason for rejection')
       return
     }
 
     setIsRejecting(true)
+    setErrorMessage('')
+    setSuccessMessage('')
+    
     try {
       console.log('Starting rejection for submission:', submissionId)
       const result = await rejectPropertySubmission(submissionId, rejectionReason)
       
       if (result.error) {
         console.error('Rejection failed:', result.error)
-        alert(`Error: ${result.error}`)
+        setErrorMessage(result.error)
         setIsRejecting(false)
       } else {
         console.log('Rejection successful')
-        alert('Property rejected successfully! The page will now reload.')
+        setSuccessMessage('Property rejected successfully!')
         setShowRejectDialog(false)
-        setIsDialogOpen(false)
         setRejectionReason('')
-        window.location.reload()
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500)
       }
     } catch (error) {
       console.error('Unexpected error during rejection:', error)
-      alert(`Unexpected error: ${error}`)
+      setErrorMessage(`Unexpected error: ${error}`)
       setIsRejecting(false)
     }
   }
@@ -388,6 +396,18 @@ export function SubmissionsTable({ submissions }: { submissions: Submission[] })
                   </CardContent>
                 </Card>
 
+                {/* Success/Error Messages */}
+                {successMessage && (
+                  <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 rounded">
+                    <p className="text-sm text-green-700 dark:text-green-300">{successMessage}</p>
+                  </div>
+                )}
+                {errorMessage && (
+                  <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded">
+                    <p className="text-sm text-red-700 dark:text-red-300">{errorMessage}</p>
+                  </div>
+                )}
+
                 {/* Actions */}
                 <div className="flex justify-end gap-3 pt-4 border-t">
                   <Button
@@ -399,7 +419,7 @@ export function SubmissionsTable({ submissions }: { submissions: Submission[] })
                     Reject
                   </Button>
                   <Button
-                    onClick={() => handleApprove(selectedSubmission.id)}
+                    onClick={() => setShowApproveConfirm(true)}
                     disabled={isApproving || isRejecting}
                   >
                     {isApproving ? (
@@ -418,6 +438,36 @@ export function SubmissionsTable({ submissions }: { submissions: Submission[] })
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Approval Confirmation Dialog */}
+      <Dialog open={showApproveConfirm} onOpenChange={setShowApproveConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Approve Property Submission?</DialogTitle>
+            <DialogDescription>
+              This will create a host account and start their 60-day free trial.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 rounded">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                The host will receive an email with a link to set up billing and activate their listing.
+              </p>
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setShowApproveConfirm(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => selectedSubmission && confirmApprove(selectedSubmission.id)}
+              >
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Approve & Start Trial
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 

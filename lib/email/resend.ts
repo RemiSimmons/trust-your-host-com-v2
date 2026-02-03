@@ -190,7 +190,7 @@ export async function sendPropertyApprovedNotification(host: {
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${host.billingSetupUrl}" style="display: inline-block; background-color: #ea580c; color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+            <a href="${host.loginUrl}" style="display: inline-block; background-color: #ea580c; color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
               Activate My Listing Now
             </a>
           </div>

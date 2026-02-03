@@ -38,6 +38,7 @@ Updated the homepage "How It Works" section to match the existing design flow an
 
 ---
 
+
 ### Icon 2: Self-Hosting Sites You Can Trust
 **BEFORE:** "Visit Host's Website"  
 **AFTER:** "Self-Hosting Sites You Can Trust"
