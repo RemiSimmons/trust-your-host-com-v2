@@ -9,10 +9,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertCircle, CheckCircle2, Lock, Save, Clock } from 'lucide-react'
-import { updatePropertyInstant, updatePropertyRequiresApproval, getPendingChangeRequests } from '@/app/host/properties/actions'
+import { AlertCircle, CheckCircle2, Lock, Save, Clock, Loader2 } from 'lucide-react'
+import { updatePropertyInstant, updatePropertyRequiresApproval, getPendingChangeRequests, updatePropertyImages } from '@/app/host/properties/actions'
 import { useRouter } from 'next/navigation'
 import type { Property } from '@/lib/types'
+import { ImageManager } from './image-manager'
 
 interface PropertyEditFormProps {
   property: Property
@@ -28,9 +29,12 @@ interface ChangeRequest {
 export function PropertyEditForm({ property }: PropertyEditFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSavingImages, setIsSavingImages] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const [activeTab, setActiveTab] = useState('instant')
   const [pendingChanges, setPendingChanges] = useState<ChangeRequest[]>([])
+  const [images, setImages] = useState<string[]>(property.images || [])
+  const [imagesChanged, setImagesChanged] = useState(false)
 
   // Fetch pending change requests
   useEffect(() => {
@@ -40,6 +44,31 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
     }
     fetchPending()
   }, [property.id])
+
+  const handleImagesChange = (newImages: string[]) => {
+    setImages(newImages)
+    setImagesChanged(true)
+  }
+
+  const handleSaveImages = async () => {
+    setIsSavingImages(true)
+    setMessage(null)
+
+    try {
+      const result = await updatePropertyImages(property.id, images)
+      if (result.success) {
+        setMessage({ type: 'success', text: 'Images saved successfully!' })
+        setImagesChanged(false)
+        router.refresh()
+      } else {
+        setMessage({ type: 'error', text: result.error || 'Failed to save images' })
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'An error occurred while saving images.' })
+    } finally {
+      setIsSavingImages(false)
+    }
+  }
 
   async function handleInstantUpdate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -62,6 +91,7 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
         external_booking_url: formData.get('external_booking_url') as string,
         contact_email: formData.get('contact_email') as string,
         contact_phone: formData.get('contact_phone') as string,
+        typical_response_hours: Number(formData.get('typical_response_hours')) || 24,
       })
 
       if (result.success) {
@@ -88,8 +118,8 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
       const result = await updatePropertyRequiresApproval(property.id, {
         name: formData.get('name') as string,
         property_type: formData.get('property_type') as string,
+        postal_code: formData.get('postal_code') as string,
         location: {
-          address: formData.get('address') as string,
           city: formData.get('city') as string,
           state: formData.get('state') as string,
           country: formData.get('country') as string,
@@ -266,10 +296,13 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
                     id="external_booking_url"
                     name="external_booking_url"
                     type="url"
-                    defaultValue={property.host.responseTime} // TODO: Fix this field mapping
-                    placeholder="https://yourbookingsite.com"
+                    defaultValue={property.external_booking_url || ''}
+                    placeholder="https://yourwebsite.com/booking"
                     required
                   />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Include the full URL with https://
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -296,8 +329,60 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
                     id="contact_phone"
                     name="contact_phone"
                     type="tel"
-                    placeholder="+1 (555) 123-4567"
+                    placeholder="404-301-0535"
                   />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Response Time */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Typical Response Time</CardTitle>
+                <CardDescription>How quickly do you typically respond to inquiries?</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <input
+                      type="radio"
+                      name="typical_response_hours"
+                      value="1"
+                      defaultChecked={property.typical_response_hours === 1}
+                      className="h-4 w-4 text-orange-600"
+                    />
+                    <span className="text-sm font-medium">Within 1 hour</span>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <input
+                      type="radio"
+                      name="typical_response_hours"
+                      value="4"
+                      defaultChecked={property.typical_response_hours === 4}
+                      className="h-4 w-4 text-orange-600"
+                    />
+                    <span className="text-sm font-medium">Within 4 hours</span>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <input
+                      type="radio"
+                      name="typical_response_hours"
+                      value="24"
+                      defaultChecked={property.typical_response_hours === 24 || !property.typical_response_hours}
+                      className="h-4 w-4 text-orange-600"
+                    />
+                    <span className="text-sm font-medium">Within 24 hours</span>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <input
+                      type="radio"
+                      name="typical_response_hours"
+                      value="48"
+                      defaultChecked={property.typical_response_hours === 48}
+                      className="h-4 w-4 text-orange-600"
+                    />
+                    <span className="text-sm font-medium">Within 48 hours</span>
+                  </label>
                 </div>
               </CardContent>
             </Card>
@@ -322,6 +407,46 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
               {isSubmitting ? 'Saving...' : 'Save Changes (Updates Immediately)'}
             </Button>
           </form>
+
+          {/* Image Management Section - Separate from main form */}
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Property Images</CardTitle>
+              <CardDescription>
+                Manage your property photos. The first image will be used as the main thumbnail. 
+                Maximum 5 images, 5MB each.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ImageManager
+                propertyId={property.id}
+                images={images}
+                onImagesChange={handleImagesChange}
+                maxImages={5}
+              />
+              
+              {imagesChanged && (
+                <Button
+                  type="button"
+                  onClick={handleSaveImages}
+                  disabled={isSavingImages}
+                  className="w-full"
+                >
+                  {isSavingImages ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Saving Images...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Image Changes
+                    </>
+                  )}
+                </Button>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* REQUIRES APPROVAL TAB */}
@@ -377,17 +502,21 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
             <Card>
               <CardHeader>
                 <CardTitle>Property Location</CardTitle>
-                <CardDescription>Address changes require re-verification</CardDescription>
+                <CardDescription>Location changes require re-verification</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="address">Street Address</Label>
+                  <Label htmlFor="postal_code">Location Radius (zip code)</Label>
                   <Input
-                    id="address"
-                    name="address"
-                    defaultValue={property.location.address}
+                    id="postal_code"
+                    name="postal_code"
+                    defaultValue={property.postal_code || ''}
+                    placeholder="Enter zip/postal code"
                     required
                   />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Your full street address is kept private and only shared with confirmed guests.
+                  </p>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
@@ -540,7 +669,7 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
               <Alert className="mt-6">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  Need to change these fields? Contact us at <strong>hello@trustyourhost.com</strong>
+                  Need to change these fields? Contact us at <strong>hello@trustyourhost.com</strong> or call 404-301-0535
                 </AlertDescription>
               </Alert>
             </CardContent>

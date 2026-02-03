@@ -2,12 +2,13 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Star, MapPin, Heart, Check } from "lucide-react"
+import { Star, MapPin, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { formatCurrency } from "@/lib/utils"
 import Link from "next/link"
 import type { Property } from "@/lib/types"
 import { QuickViewModal } from "@/components/property/quick-view-modal"
+import { FavoriteButton } from "@/components/favorites/favorite-button"
 
 export function PropertyCard({ property }: { property: Property }) {
   const [showQuickView, setShowQuickView] = useState(false)
@@ -35,9 +36,9 @@ export function PropertyCard({ property }: { property: Property }) {
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
       {/* Favorite button */}
-      <button className="absolute top-4 right-4 z-20 rounded-full bg-white/20 backdrop-blur-md border border-white/30 p-2 hover:bg-white/30 transition-colors shadow-lg">
-        <Heart className="h-5 w-5 text-white" />
-      </button>
+      <div className="absolute top-4 right-4 z-20">
+        <FavoriteButton propertyId={property.id} variant="card" />
+      </div>
 
       {/* Trust Badges - Top Left */}
       <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">

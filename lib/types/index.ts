@@ -1,22 +1,10 @@
-export const EXPERIENCE_CATEGORIES = [
-  "Hiking & Trails",
-  "Mountain Lodges",
-  "Island Getaways",
-  "Glamping",
-  "Wine Country",
-  "Wellness Retreats",
-  "Culinary Experiences",
-  "Remote Work Retreats",
-  "Adventure Sports",
-  "Cultural Immersion",
-  "Waterfront Escapes",
-  "Desert Solitude",
-  "Historic Stays",
-  "Eco-Tourism",
-  "Ski Chalets",
-] as const
+// Import shared constants to ensure consistency across the app
+import { EXPERIENCE_CATEGORIES as SHARED_EXPERIENCE_CATEGORIES, PROPERTY_TYPES } from "@/lib/data/property-constants"
 
+// Export for backwards compatibility
+export const EXPERIENCE_CATEGORIES = SHARED_EXPERIENCE_CATEGORIES
 export type ExperienceCategory = (typeof EXPERIENCE_CATEGORIES)[number]
+export type PropertyTypeValue = keyof typeof PROPERTY_TYPES
 
 export interface FilterState {
   experience: string
@@ -44,7 +32,7 @@ export interface Property {
 
   images: string[]
   experiences: ExperienceCategory[]
-  propertyType: "cabin" | "villa" | "apartment" | "lodge" | "glamping" | "treehouse" | "historic" | "unique-stay" | "other"
+  propertyType: PropertyTypeValue
 
   pricing: {
     baseNightlyRate: number

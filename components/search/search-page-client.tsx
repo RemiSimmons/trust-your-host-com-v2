@@ -14,8 +14,13 @@ import { filterProperties, sortProperties, INITIAL_FILTERS, type FilterState } f
 import { Button } from "@/components/ui/button"
 import { fifaCities } from "@/lib/data/fifa-cities"
 
-// Dynamically import MapView to avoid SSR issues with Leaflet
+// Dynamically import MapView and SplitView to avoid SSR issues with Leaflet
 const MapView = dynamic(() => import("@/components/search/map-view").then(mod => ({ default: mod.MapView })), {
+  ssr: false,
+  loading: () => <div className="h-[calc(100vh-240px)] w-full rounded-xl bg-gray-100 animate-pulse" />
+})
+
+const SplitView = dynamic(() => import("@/components/search/split-view").then(mod => ({ default: mod.SplitView })), {
   ssr: false,
   loading: () => <div className="h-[calc(100vh-240px)] w-full rounded-xl bg-gray-100 animate-pulse" />
 })
@@ -29,7 +34,7 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS)
   const [sortBy, setSortBy] = useState("relevance")
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false)
-  const [view, setView] = useState<"list" | "map">("list")
+  const [view, setView] = useState<"list" | "map" | "split">("list")
 
   // Apply URL parameters on mount
   useEffect(() => {
@@ -129,7 +134,7 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-12">
       {/* Top Bar */}
-      <div className="sticky top-[72px] z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 py-4 mb-8">
+      <div className="sticky top-[72px] z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 py-4 mb-8">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             {/* Left: Results count + active filters */}
@@ -170,19 +175,30 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
       </div>
 
       {/* Content area */}
-      <div className="relative">
+      <div className="relative overflow-hidden">
         <div className="container mx-auto px-6">
           <div className="flex gap-8">
             {/* Desktop Sidebar */}
-            <aside className="hidden md:block w-80 shrink-0 sticky top-[140px] h-[calc(100vh-160px)]">
+            <aside className="hidden md:block w-80 shrink-0 sticky top-[140px] h-[calc(100vh-160px)] z-10">
               <FilterSidebar filters={filters} setFilters={setFilters} />
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1">
+            <main className="flex-1 relative z-0">
               {/* Map View */}
               {view === "map" ? (
                 <MapView
+                  properties={filteredProperties}
+                  stadiumCoords={filters.cities.length === 1 ? fifaCities.find(c => c.id === filters.cities[0])?.stadium.coordinates ? {
+                    lat: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![0],
+                    lng: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![1]
+                  } : undefined : undefined}
+                  radiusMiles={filters.radiusMiles}
+                  distanceFrom={filters.distanceFrom}
+                />
+              ) : view === "split" ? (
+                /* Split View */
+                <SplitView
                   properties={filteredProperties}
                   stadiumCoords={filters.cities.length === 1 ? fifaCities.find(c => c.id === filters.cities[0])?.stadium.coordinates ? {
                     lat: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![0],

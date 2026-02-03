@@ -3,6 +3,7 @@ import { Check, Trophy, MapPin, Target } from "lucide-react"
 import type { FilterState } from "@/lib/utils/search"
 import { cn } from "@/lib/utils"
 import { fifaCities } from "@/lib/data/fifa-cities"
+import { EXPERIENCE_CATEGORIES, AMENITIES, PROPERTY_TYPES, PROPERTY_TYPE_VALUES } from "@/lib/data/property-constants"
 
 interface FilterSidebarProps {
   filters: FilterState
@@ -10,45 +11,6 @@ interface FilterSidebarProps {
   className?: string
   propertyCounts?: Record<string, number>
 }
-
-const EXPERIENCE_CATEGORIES = [
-  "Hiking & Trails",
-  "Wellness Retreats",
-  "Mountain Lodges",
-  "Island Getaways",
-  "Waterfront Escapes",
-  "Glamping",
-  "Desert Solitude",
-  "Adventure Sports",
-  "Culinary Experiences",
-  "Eco-Tourism",
-]
-
-const PROPERTY_TYPES = ["cabin", "villa", "apartment", "lodge", "glamping", "treehouse", "historic", "unique-stay"]
-
-const PROPERTY_TYPE_LABELS: Record<string, string> = {
-  "cabin": "Cabin",
-  "villa": "Villa",
-  "apartment": "Apartment/Condo",
-  "lodge": "Lodge",
-  "glamping": "Glamping",
-  "treehouse": "Treehouse",
-  "historic": "Historic",
-  "unique-stay": "Unique Stay",
-}
-
-const AMENITIES = [
-  "Hot Tub",
-  "Pool",
-  "Wifi",
-  "Kitchen",
-  "Fireplace",
-  "Mountain Views",
-  "Pet Friendly",
-  "Washer/Dryer",
-  "Air Conditioning",
-  "Beach Access",
-]
 
 const SPECIAL_EVENTS = [
   { id: "fifa-2026", name: "FIFA World Cup 2026", icon: Trophy }
@@ -242,7 +204,7 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
       <div className="mb-8">
         <h4 className="font-semibold text-gray-900 mb-3">Property Type</h4>
         <div className="space-y-2">
-          {PROPERTY_TYPES.map((type) => (
+          {PROPERTY_TYPE_VALUES.map((type) => (
             <label key={type} className="flex items-center gap-2 cursor-pointer group">
               <div
                 className={cn(
@@ -260,7 +222,7 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
                 checked={filters.propertyTypes.includes(type)}
                 onChange={() => toggleArrayFilter("propertyTypes", type)}
               />
-              <span className="text-sm text-gray-700 group-hover:text-gray-900">{PROPERTY_TYPE_LABELS[type] || type}</span>
+              <span className="text-sm text-gray-700 group-hover:text-gray-900">{PROPERTY_TYPES[type]}</span>
             </label>
           ))}
         </div>

@@ -19,12 +19,37 @@ export function ContactForm() {
     event.preventDefault()
     setIsLoading(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    const formData = new FormData(event.currentTarget)
+    const data = {
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      subject: formData.get("subject") as string,
+      message: formData.get("message") as string,
+    }
 
-    setIsLoading(false)
-    setSubmitted(true)
-    toast.success("Message sent successfully!")
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to send message")
+      }
+
+      setSubmitted(true)
+      toast.success("Message sent successfully! We'll get back to you within 24 hours.")
+    } catch (error) {
+      console.error("Contact form error:", error)
+      toast.error(error instanceof Error ? error.message : "Failed to send message. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (submitted) {
@@ -68,23 +93,25 @@ export function ContactForm() {
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="grid gap-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" placeholder="Your name" required />
+            <Input id="name" name="name" placeholder="Your name" required maxLength={100} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="your@email.com" required />
+            <Input id="email" name="email" type="email" placeholder="your@email.com" required />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="subject">Subject</Label>
-            <Input id="subject" placeholder="How can we help?" required />
+            <Input id="subject" name="subject" placeholder="How can we help?" required maxLength={200} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="message">Message</Label>
             <Textarea
               id="message"
+              name="message"
               placeholder="Tell us more about your inquiry..."
               className="min-h-[120px]"
               required
+              maxLength={5000}
             />
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>

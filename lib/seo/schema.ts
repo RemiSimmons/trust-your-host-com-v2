@@ -141,7 +141,7 @@ export function generateOrganizationSchema(): SchemaOrganization {
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "Customer Service",
-      email: "support@trustyourhost.com",
+      email: "hello@trustyourhost.com",
     },
   }
 }

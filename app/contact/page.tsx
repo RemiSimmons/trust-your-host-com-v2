@@ -34,7 +34,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-medium">Email</h3>
-                    <p className="text-muted-foreground">support@trustyourhost.com</p>
+                    <p className="text-muted-foreground">hello@trustyourhost.com</p>
                     <p className="text-sm text-muted-foreground">Response time: within 24 hours</p>
                   </div>
                 </div>
@@ -45,7 +45,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-medium">Phone</h3>
-                    <p className="text-muted-foreground">+1 (555) 123-4567</p>
+                    <p className="text-muted-foreground">404-301-0535</p>
                     <p className="text-sm text-muted-foreground">Mon-Fri, 9am-6pm EST</p>
                   </div>
                 </div>
@@ -57,9 +57,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-medium">Office</h3>
                     <p className="text-muted-foreground">
-                      123 Innovation Drive
-                      <br />
-                      San Francisco, CA 94103
+                      Atlanta, GA
                     </p>
                   </div>
                 </div>

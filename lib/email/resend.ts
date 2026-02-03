@@ -375,3 +375,123 @@ export async function sendSubscriptionFailedNotification(host: {
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
   }
 }
+
+// Contact form email functions
+export async function sendContactEmail(data: {
+  to: string
+  from: string
+  fromName: string
+  subject: string
+  message: string
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    console.log('[Email Mock] Contact email:', data)
+    return { success: false, error: 'No API key configured' }
+  }
+
+  try {
+    console.log('[Email] Attempting to send contact email to:', data.to)
+    
+    const client = getResendClient()
+    if (!client) {
+      return { success: false, error: 'Resend client not initialized' }
+    }
+    
+    const result = await client.emails.send({
+      from: 'TrustYourHost <hello@trustyourhost.com>',
+      to: data.to,
+      replyTo: data.from,
+      subject: `Contact Form: ${data.subject}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #ea580c;">New Contact Form Submission</h2>
+          
+          <div style="background-color: #f3f4f6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+            <p style="margin: 0 0 10px 0;"><strong>From:</strong> ${data.fromName}</p>
+            <p style="margin: 0 0 10px 0;"><strong>Email:</strong> ${data.from}</p>
+            <p style="margin: 0;"><strong>Subject:</strong> ${data.subject}</p>
+          </div>
+          
+          <h3>Message:</h3>
+          <div style="background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; white-space: pre-wrap;">
+${data.message}
+          </div>
+          
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+          
+          <p style="font-size: 14px; color: #6b7280;">
+            Reply directly to this email to respond to ${data.fromName}
+          </p>
+        </div>
+      `
+    })
+    
+    console.log('[Email] Contact email sent successfully! ID:', result.data?.id)
+    return { success: true, emailId: result.data?.id }
+  } catch (error) {
+    console.error('[Email] Failed to send contact email:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+  }
+}
+
+export async function sendContactConfirmation(data: {
+  userEmail: string
+  userName: string
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    console.log('[Email Mock] Contact confirmation:', data)
+    return { success: false, error: 'No API key configured' }
+  }
+
+  try {
+    console.log('[Email] Attempting to send confirmation email to:', data.userEmail)
+    
+    const client = getResendClient()
+    if (!client) {
+      return { success: false, error: 'Resend client not initialized' }
+    }
+    
+    const result = await client.emails.send({
+      from: 'TrustYourHost <hello@trustyourhost.com>',
+      to: data.userEmail,
+      subject: 'We received your message',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #ea580c;">Thanks for contacting TrustYourHost!</h2>
+          
+          <p>Hi ${data.userName},</p>
+          
+          <p>We've received your message and our support team will get back to you within 24 hours.</p>
+          
+          <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 20px 0;">
+            <p style="margin: 0;"><strong>💡 In the meantime:</strong></p>
+            <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+              <li>Check out our <a href="${process.env.NEXT_PUBLIC_APP_URL}/help" style="color: #ea580c;">Help Center</a> for quick answers</li>
+              <li>Browse our <a href="${process.env.NEXT_PUBLIC_APP_URL}/faq" style="color: #ea580c;">FAQ</a> for common questions</li>
+              <li>Visit <a href="${process.env.NEXT_PUBLIC_APP_URL}/how-it-works" style="color: #ea580c;">How It Works</a> to learn more</li>
+            </ul>
+          </div>
+          
+          <p>We appreciate your patience!</p>
+          
+          <p style="margin-top: 30px;">
+            Best regards,<br />
+            <strong>The TrustYourHost Team</strong>
+          </p>
+          
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+          
+          <p style="font-size: 14px; color: #6b7280;">
+            <strong>Questions?</strong> Feel free to reply to this email
+          </p>
+        </div>
+      `
+    })
+    
+    console.log('[Email] Confirmation email sent successfully! ID:', result.data?.id)
+    return { success: true, emailId: result.data?.id }
+  } catch (error) {
+    console.error('[Email] Failed to send confirmation email:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+  }
+}

@@ -12,6 +12,8 @@ import { AmenitiesList } from "@/components/property/amenities-list"
 import { HouseRulesCard } from "@/components/property/house-rules-card"
 import { RelatedProperties } from "@/components/property/related-properties"
 import { LocationMap } from "@/components/property/location-map"
+import { useFavorites } from "@/hooks/use-favorites"
+import { useToast } from "@/hooks/use-toast"
 
 interface PropertyDetailClientProps {
   property: Property
@@ -21,7 +23,11 @@ interface PropertyDetailClientProps {
 export function PropertyDetailClient({ property, relatedProperties }: PropertyDetailClientProps) {
   const router = useRouter()
   const [showFullDescription, setShowFullDescription] = useState(false)
-  const [isSaved, setIsSaved] = useState(false)
+  const [isToggling, setIsToggling] = useState(false)
+  const { isFavorite, toggleFavorite, isLoading } = useFavorites()
+  const { toast } = useToast()
+
+  const isSaved = isFavorite(property.id)
 
   useEffect(() => {
     // Track page view
@@ -35,9 +41,27 @@ export function PropertyDetailClient({ property, relatedProperties }: PropertyDe
     }
   }, [property])
 
-  const handleSave = () => {
-    setIsSaved(!isSaved)
-    // TODO: Implement save to favorites
+  const handleSave = async () => {
+    if (isLoading || isToggling) return
+    
+    setIsToggling(true)
+    const { success, error } = await toggleFavorite(property.id)
+    setIsToggling(false)
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: error,
+        variant: "destructive",
+      })
+    } else if (success) {
+      toast({
+        title: isSaved ? "Removed from favorites" : "Added to favorites",
+        description: isSaved
+          ? "Property has been removed from your saved list"
+          : "Property has been saved to your favorites",
+      })
+    }
   }
 
   const descriptionWords = property.description.full.split(" ")
@@ -126,12 +150,20 @@ export function PropertyDetailClient({ property, relatedProperties }: PropertyDe
                     ⚡ Quick Response Host
                   </div>
                 )}
+
+                {property.typical_response_hours && (
+                  <div className="px-3 py-1.5 rounded-full bg-purple-100 text-purple-700 text-sm font-semibold flex items-center gap-1.5">
+                    ⏱️ Responds within {property.typical_response_hours === 1 ? '1 hour' : `${property.typical_response_hours} hours`}
+                  </div>
+                )}
               </div>
             </div>
 
             <button
               onClick={handleSave}
-              className="p-3 rounded-full border-2 border-gray-300 hover:border-red-500 hover:bg-red-50 transition-all"
+              disabled={isLoading || isToggling}
+              className={`p-3 rounded-full border-2 border-gray-300 hover:border-red-500 hover:bg-red-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${isToggling ? "animate-pulse" : ""}`}
+              aria-label={isSaved ? "Remove from favorites" : "Add to favorites"}
             >
               <Heart
                 className={`h-6 w-6 ${isSaved ? "fill-red-500 text-red-500" : "text-gray-600"}`}

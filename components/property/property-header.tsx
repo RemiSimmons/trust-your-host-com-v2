@@ -1,6 +1,7 @@
-import { MapPin, Star, ShieldCheck, Share2, Heart } from "lucide-react"
+import { MapPin, Star, ShieldCheck, Share2 } from "lucide-react"
 import type { Property } from "@/lib/types"
 import { Button } from "@/components/ui/button"
+import { FavoriteButton } from "@/components/favorites/favorite-button"
 
 interface PropertyHeaderProps {
   property: Property
@@ -19,10 +20,7 @@ export function PropertyHeader({ property }: PropertyHeaderProps) {
             <Share2 className="h-4 w-4" />
             Share
           </Button>
-          <Button variant="outline" size="sm" className="gap-2 bg-transparent">
-            <Heart className="h-4 w-4" />
-            Save
-          </Button>
+          <FavoriteButton propertyId={property.id} variant="header" />
         </div>
       </div>
 

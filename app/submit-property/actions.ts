@@ -20,7 +20,10 @@ export async function submitPropertyListing(formData: FormData) {
     externalUrl = `https://${externalUrl}`
   }
   
-  if (!externalUrl.startsWith('http://') && !externalUrl.startsWith('https://')) {
+  // Basic URL validation
+  try {
+    new URL(externalUrl)
+  } catch {
     return { error: 'Please provide a valid website URL' }
   }
   
@@ -88,6 +91,18 @@ export async function submitPropertyListing(formData: FormData) {
   const responseHoursStr = formData.get('typical_response_hours') as string | null
   const typicalResponseHours = responseHoursStr ? Number(responseHoursStr) : null
   
+  // Build capacity object
+  // Check if "Pet Friendly" is in amenities to set allowsPets
+  const allowsPets = amenities.includes('Pet Friendly')
+  
+  const capacity = {
+    guests: Number(formData.get('max_guests')),
+    bedrooms: Number(formData.get('bedrooms')),
+    beds: Number(formData.get('beds')),
+    bathrooms: Number(formData.get('bathrooms')),
+    allowsPets: allowsPets
+  }
+  
   try {
     // Insert submission
     const { data, error } = await supabase
@@ -111,7 +126,8 @@ export async function submitPropertyListing(formData: FormData) {
         description: description,
         nightly_rate_min: Number(formData.get('nightly_rate_min')),
         nightly_rate_max: Number(formData.get('nightly_rate_max')),
-        max_guests: Number(formData.get('max_guests')),
+        max_guests: capacity.guests,
+        capacity: capacity,
         amenities: amenities,
         available_for_fifa_2026: formData.get('available_for_fifa_2026') === 'on',
         listed_on_platforms: listedPlatforms.length > 0 ? listedPlatforms : null,

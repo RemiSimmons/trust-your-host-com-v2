@@ -16,15 +16,22 @@ export async function updateProfile(formData: FormData) {
   if (!user) throw new Error("Unauthorized")
 
   const fullName = formData.get("fullName") as string
-  const avatarUrl = formData.get("avatarUrl") as string
+  const avatarUrl = formData.get("avatarUrl") as string | null
+
+  // Build update object - only include avatar_url if it's explicitly provided
+  const updateData: { full_name: string; avatar_url?: string | null } = {
+    full_name: fullName,
+  }
+
+  // Only update avatar_url if it was explicitly set in the form
+  if (formData.has("avatarUrl")) {
+    updateData.avatar_url = avatarUrl || null
+  }
 
   // Update the 'profiles' table
   const { error } = await supabase
     .from("profiles")
-    .update({
-      full_name: fullName,
-      avatar_url: avatarUrl,
-    })
+    .update(updateData)
     .eq("id", user.id)
 
   if (error) {
@@ -32,12 +39,20 @@ export async function updateProfile(formData: FormData) {
   }
 
   // Also update Auth metadata if you want it to sync
+  const authUpdateData: { full_name: string; avatar_url?: string | null } = {
+    full_name: fullName,
+  }
+  if (formData.has("avatarUrl")) {
+    authUpdateData.avatar_url = avatarUrl || null
+  }
+
   await supabase.auth.updateUser({
-    data: { full_name: fullName, avatar_url: avatarUrl },
+    data: authUpdateData,
   })
 
   revalidatePath("/dashboard")
   revalidatePath("/host")
+  revalidatePath("/host/settings")
   revalidatePath("/settings")
 }
 

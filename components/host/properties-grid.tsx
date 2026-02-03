@@ -42,7 +42,7 @@ export function PropertiesGrid({ properties, totalMonthlyCost }: PropertiesGridP
           </p>
         </div>
         <Button asChild size="lg">
-          <Link href="/submit-property">
+          <Link href="/host/properties/new">
             <Plus className="h-5 w-5 mr-2" />
             Add Property
           </Link>
@@ -157,6 +157,9 @@ export function PropertiesGrid({ properties, totalMonthlyCost }: PropertiesGridP
                 Submit Your First Property
               </Link>
             </Button>
+            <p className="text-xs text-muted-foreground mt-2">
+              Already have a property listed? <Link href="/host/properties/new" className="text-primary hover:underline">Add another property</Link>
+            </p>
           </CardContent>
         </Card>
       ) : (
@@ -198,12 +201,6 @@ function PropertyCard({ property, clicks, isPrimary }: PropertyCardProps) {
           fill
           className="object-cover"
         />
-        {/* Pricing Badge */}
-        <div className="absolute top-3 right-3">
-          <Badge variant={isPrimary ? 'default' : 'secondary'} className="bg-white/90 text-gray-900">
-            ${isPrimary ? 49 : 39}/mo
-          </Badge>
-        </div>
       </div>
 
       {/* Property Info */}

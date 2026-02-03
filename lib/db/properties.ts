@@ -181,31 +181,79 @@ export async function getHostProperties(hostId: string): Promise<Property[]> {
   return data.map(mapDatabasePropertyToProperty)
 }
 
-// Added function to fetch favorite properties for a user
+// Fetch favorite properties for a user
 export async function getFavoriteProperties(userId: string): Promise<Property[]> {
-  // In a real app, we would join a 'favorites' table.
-  // For now, we'll mock this or return a random subset if using mock data.
   const supabase = await createServerClient()
 
-  // Example: const { data } = await supabase.from('favorites').select('property_id').eq('user_id', userId)
-  // Then fetch properties.
-  // Since we don't have a favorites table defined in previous steps, we'll assume we return a subset of properties for demo.
+  try {
+    // First, get the favorite property IDs for this user
+    const { data: favorites, error: favoritesError } = await supabase
+      .from("favorites")
+      .select("property_id")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
 
-  const { data, error } = await supabase.from("properties").select("*, host:profiles(*)").limit(3)
-
-  if (error) {
-    if (
-      error.code === "PGRST205" ||
-      error.code === "SUPABASE_NOT_CONFIGURED" ||
-      error.message.includes("Could not find the table")
-    ) {
-      // Fallback to mock data: return first 3 as favorites
-      return mockProperties.slice(0, 3)
+    if (favoritesError) {
+      // If favorites table doesn't exist yet, return empty array
+      if (
+        favoritesError.code === "PGRST205" ||
+        favoritesError.code === "42P01" ||
+        favoritesError.message.includes("Could not find the table")
+      ) {
+        console.log("[v0] Favorites table not found, returning empty array")
+        return []
+      }
+      console.error("[v0] Error fetching favorites:", favoritesError)
+      return []
     }
+
+    if (!favorites || favorites.length === 0) {
+      return []
+    }
+
+    const propertyIds = favorites.map((f) => f.property_id)
+
+    // Fetch the actual properties
+    const { data: properties, error: propertiesError } = await supabase
+      .from("properties")
+      .select("*, host:profiles(*)")
+      .in("id", propertyIds)
+
+    if (propertiesError) {
+      // Fall back to mock data if properties table doesn't exist
+      if (
+        propertiesError.code === "PGRST205" ||
+        propertiesError.message.includes("Could not find the table")
+      ) {
+        // Return mock properties that match the favorite IDs
+        return mockProperties.filter((p) => propertyIds.includes(p.id))
+      }
+      console.error("[v0] Error fetching favorite properties:", propertiesError)
+      return []
+    }
+
+    // Map and maintain the order from favorites (most recent first)
+    const propertyMap = new Map(properties.map((p) => [p.id, p]))
+    const orderedProperties: Property[] = []
+    
+    for (const id of propertyIds) {
+      const dbProp = propertyMap.get(id)
+      if (dbProp) {
+        orderedProperties.push(mapDatabasePropertyToProperty(dbProp))
+      } else {
+        // Check if it's a mock property
+        const mockProp = mockProperties.find((p) => p.id === id)
+        if (mockProp) {
+          orderedProperties.push(mockProp)
+        }
+      }
+    }
+
+    return orderedProperties
+  } catch (err) {
+    console.error("[v0] Exception in getFavoriteProperties:", err)
     return []
   }
-
-  return data.map(mapDatabasePropertyToProperty)
 }
 
 function mapDatabasePropertyToProperty(dbProp: any): Property {

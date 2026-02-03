@@ -7,7 +7,7 @@ import { FifaBadgeOverlay } from "@/components/home/fifa-badge-overlay"
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-screen flex flex-col justify-center pt-24 sm:pt-32 pb-16 sm:pb-20 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col justify-center pt-44 sm:pt-48 md:pt-52 lg:pt-32 pb-16 sm:pb-20 overflow-hidden">
       {/* FIFA 2026 Badge Overlay */}
       <FifaBadgeOverlay />
       

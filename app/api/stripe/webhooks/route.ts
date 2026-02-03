@@ -76,34 +76,47 @@ export async function POST(req: NextRequest) {
         
         const { data: property } = await supabase
           .from('properties')
-          .select('id, name, host_id, host:profiles(email, full_name)')
+          .select('id, name, host_id, subscription_status, host:profiles(email, full_name)')
           .eq('stripe_subscription_id', subscription.id)
           .single()
 
         if (property) {
           let newStatus = 'active'
+          let isActive = true
           
-          // Map Stripe subscription status to our status
-          if (subscription.status === 'trialing') {
-            newStatus = 'trial'
-          } else if (subscription.status === 'active') {
-            newStatus = 'active'
-          } else if (['past_due', 'unpaid', 'incomplete', 'incomplete_expired'].includes(subscription.status)) {
-            newStatus = 'paused'
-          } else if (['canceled', 'ended'].includes(subscription.status)) {
+          // Check if subscription is set to cancel at period end
+          if (subscription.cancel_at_period_end) {
+            // Subscription is scheduled to cancel but still active until period ends
             newStatus = 'canceled'
+            isActive = true // Keep listing visible until subscription actually ends
+            console.log(`⚠️ Subscription ${subscription.id} scheduled to cancel at period end`)
+          } else {
+            // Map Stripe subscription status to our status
+            if (subscription.status === 'trialing') {
+              newStatus = 'trial'
+              isActive = true
+            } else if (subscription.status === 'active') {
+              newStatus = 'active'
+              isActive = true
+            } else if (['past_due', 'unpaid', 'incomplete', 'incomplete_expired'].includes(subscription.status)) {
+              newStatus = 'paused'
+              isActive = false
+            } else if (['canceled', 'ended'].includes(subscription.status)) {
+              newStatus = 'canceled'
+              isActive = false
+            }
           }
 
           await supabase
             .from('properties')
             .update({
               subscription_status: newStatus,
-              is_active: newStatus === 'active' || newStatus === 'trial',
+              is_active: isActive,
               updated_at: new Date().toISOString(),
             })
             .eq('id', property.id)
 
-          console.log(`✅ Subscription ${subscription.id} updated to ${newStatus}`)
+          console.log(`✅ Subscription ${subscription.id} updated to ${newStatus}, is_active: ${isActive}`)
         }
         break
       }

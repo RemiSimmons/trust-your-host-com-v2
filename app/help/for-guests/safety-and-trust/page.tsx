@@ -200,7 +200,7 @@ export default function SafetyAndTrust() {
           <li><strong>1. Stop immediately</strong> - Don't proceed with booking</li>
           <li><strong>2. Don't send money</strong> - Especially outside booking website</li>
           <li><strong>3. Screenshot everything</strong> - Document what you saw</li>
-          <li><strong>4. Report to us</strong> - Email support@trustyourhost.com</li>
+          <li><strong>4. Report to us</strong> - Email hello@trustyourhost.com</li>
           <li><strong>5. If you paid:</strong> Contact credit card company for chargeback</li>
         </ol>
       </div>
@@ -259,7 +259,7 @@ export default function SafetyAndTrust() {
           If you encounter anything concerning, report it immediately.
         </p>
         <p className="font-semibold mb-2">
-          Email: <a href="mailto:support@trustyourhost.com" className="text-blue-600 hover:underline">support@trustyourhost.com</a>
+          Email: <a href="mailto:hello@trustyourhost.com" className="text-blue-600 hover:underline">hello@trustyourhost.com</a>
         </p>
         <p className="text-sm text-gray-600">
           We review all reports within 24 hours and take action when needed.

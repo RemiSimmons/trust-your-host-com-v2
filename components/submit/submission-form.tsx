@@ -10,36 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { submitPropertyListing } from '@/app/submit-property/actions'
 import { Loader2, CheckCircle } from 'lucide-react'
-
-const EXPERIENCE_CATEGORIES = [
-  'Mountain Retreats',
-  'Beachfront Escapes',
-  'Wine Country',
-  'Historic Charm',
-  'Desert Oasis',
-  'Lakefront Leisure',
-  'Urban Exploration',
-  'Countryside Calm',
-  'Island Paradise',
-  'Forest Hideaways',
-  'Ski & Snow',
-  'Coastal Towns'
-]
-
-const AMENITIES = [
-  'WiFi',
-  'Full Kitchen',
-  'Free Parking',
-  'Pet Friendly',
-  'Washer/Dryer',
-  'Air Conditioning',
-  'Pool',
-  'Hot Tub',
-  'EV Charging',
-  'Fireplace',
-  'BBQ Grill',
-  'Gym/Fitness'
-]
+import { EXPERIENCE_CATEGORIES, AMENITIES, PROPERTY_TYPES } from '@/lib/data/property-constants'
 
 export function SubmissionForm() {
   const [isLoading, setIsLoading] = useState(false)
@@ -177,11 +148,11 @@ export function SubmissionForm() {
               id="external_booking_url" 
               name="external_booking_url" 
               type="url" 
-              placeholder="yourwebsite.com or booking.com/your-property" 
+              placeholder="https://yourwebsite.com/booking" 
               required 
             />
             <p className="text-sm text-muted-foreground">
-              Where travelers will book your property. Don't worry about https:// - we'll add it automatically!
+              Include the full URL with https:// (we'll auto-add it if you forget)
             </p>
           </div>
 
@@ -228,17 +199,11 @@ export function SubmissionForm() {
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="villa">Villa</SelectItem>
-                <SelectItem value="cabin">Cabin</SelectItem>
-                <SelectItem value="apartment">Apartment/Condo</SelectItem>
-                <SelectItem value="house">House</SelectItem>
-                <SelectItem value="townhouse">Townhouse</SelectItem>
-                <SelectItem value="lodge">Lodge</SelectItem>
-                <SelectItem value="glamping">Glamping</SelectItem>
-                <SelectItem value="treehouse">Treehouse</SelectItem>
-                <SelectItem value="historic">Historic Home</SelectItem>
-                <SelectItem value="unique-stay">Unique Stay</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
+                {Object.entries(PROPERTY_TYPES).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -294,9 +259,28 @@ export function SubmissionForm() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="max_guests">Maximum Guests *</Label>
-            <Input id="max_guests" name="max_guests" type="number" min="1" max="50" required />
+          <div className="space-y-4 pt-4 border-t">
+            <h3 className="font-semibold text-sm">Property Capacity</h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="max_guests">Maximum Guests *</Label>
+                <Input id="max_guests" name="max_guests" type="number" min="1" max="50" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bedrooms">Bedrooms *</Label>
+                <Input id="bedrooms" name="bedrooms" type="number" min="0" required />
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="beds">Beds *</Label>
+                <Input id="beds" name="beds" type="number" min="1" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bathrooms">Bathrooms *</Label>
+                <Input id="bathrooms" name="bathrooms" type="number" min="0.5" step="0.5" required />
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

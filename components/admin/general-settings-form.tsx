@@ -32,12 +32,12 @@ export function GeneralSettingsForm() {
 
           <div className="space-y-2">
             <Label htmlFor="support-email">Support Email</Label>
-            <Input id="support-email" type="email" defaultValue="support@trustyourhost.com" />
+            <Input id="support-email" type="email" defaultValue="hello@trustyourhost.com" />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="contact-phone">Contact Phone</Label>
-            <Input id="contact-phone" type="tel" defaultValue="+1 (555) 123-4567" />
+            <Input id="contact-phone" type="tel" defaultValue="404-301-0535" />
           </div>
         </CardContent>
       </Card>

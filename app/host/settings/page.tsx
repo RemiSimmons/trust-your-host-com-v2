@@ -15,13 +15,20 @@ export default async function HostSettingsPage() {
     redirect("/login")
   }
 
+  // Fetch profile data from the profiles table
+  const { data: profileData } = await supabase
+    .from("profiles")
+    .select("avatar_url, full_name")
+    .eq("id", user.id)
+    .single()
+
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
         <h1 className="text-3xl font-serif font-bold">Host Settings</h1>
         <p className="text-muted-foreground">Manage your host profile and account details</p>
       </div>
-      <SettingsForm user={user} />
+      <SettingsForm user={user} profileData={profileData} />
       
       {/* Danger Zone */}
       <Card className="border-red-200 bg-red-50/50">
