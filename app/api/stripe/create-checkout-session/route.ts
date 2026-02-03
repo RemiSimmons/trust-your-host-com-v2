@@ -106,7 +106,7 @@ export async function POST(req: Request) {
       allow_promotion_codes: true,
     })
 
-    return NextResponse.json({ sessionId: session.id })
+    return NextResponse.json({ sessionId: session.id, url: session.url })
   } catch (error: any) {
     console.error('Error creating checkout session:', error)
     const errorMessage = error?.message || 'Unknown error'

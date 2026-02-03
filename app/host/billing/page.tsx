@@ -2,14 +2,12 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { createBrowserClient } from '@/lib/supabase/client'
-import { loadStripe } from '@stripe/stripe-js'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Loader2, CheckCircle, CreditCard } from 'lucide-react'
 import { NavBar } from '@/components/navigation/nav-bar'
 import { Footer } from '@/components/navigation/footer'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { getStripePublishableKey } from '@/lib/stripe-config'
 
 function BillingSetupContent() {
   const [isLoading, setIsLoading] = useState(false)
@@ -101,39 +99,16 @@ function BillingSetupContent() {
         return
       }
 
-      const { sessionId } = data
+      const { url } = data
       
-      if (!sessionId) {
-        alert('No session ID returned from server')
+      if (!url) {
+        alert('No checkout URL returned from server')
         setIsLoading(false)
         return
       }
       
-      // Redirect to Stripe Checkout
-      const stripeKey = getStripePublishableKey()
-      
-      if (!stripeKey) {
-        console.error('Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY')
-        alert('Payment system not configured. The site needs to be redeployed with Stripe credentials.')
-        setIsLoading(false)
-        return
-      }
-      
-      console.log('Loading Stripe with key:', stripeKey.substring(0, 20) + '...')
-      const stripe = await loadStripe(stripeKey)
-      if (!stripe) {
-        alert('Failed to load Stripe. Please check your connection.')
-        setIsLoading(false)
-        return
-      }
-
-      const { error } = await stripe.redirectToCheckout({ sessionId })
-      
-      if (error) {
-        console.error('Stripe checkout error:', error)
-        alert(`Stripe Error: ${error.message}`)
-        setIsLoading(false)
-      }
+      // Redirect directly to Stripe Checkout URL
+      window.location.href = url
     } catch (error: any) {
       console.error('Error creating checkout session:', error)
       alert(`Error: ${error.message || 'Failed to create checkout session. Please try again.'}`)
