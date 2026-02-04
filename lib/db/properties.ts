@@ -113,6 +113,7 @@ export async function getFeaturedProperties(): Promise<Property[]> {
 }
 
 export async function getPropertyBySlug(slug: string): Promise<Property | null> {
+  console.log("[getPropertyBySlug] Looking for slug:", slug)
   const supabase = await createServerClient()
 
   try {
@@ -122,25 +123,42 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
       .eq("slug", slug)
       .single()
 
+    console.log("[getPropertyBySlug] Query result - data:", data ? "found" : "null", "error:", error?.code, error?.message)
+
     if (error) {
+      console.log("[getPropertyBySlug] Error occurred:", error)
       if (error.code === "PGRST205" || error.message.includes("Could not find the table")) {
-        return mockProperties.find((p) => p.slug === slug) || null
+        const mockResult = mockProperties.find((p) => p.slug === slug)
+        console.log("[getPropertyBySlug] Falling back to mock, found:", !!mockResult)
+        return mockResult || null
       }
+      // Try without the join to see if that's the issue
+      console.log("[getPropertyBySlug] Trying query without join...")
+      const { data: simpleData, error: simpleError } = await supabase
+        .from("properties")
+        .select("*")
+        .eq("slug", slug)
+        .single()
+      console.log("[getPropertyBySlug] Simple query result:", simpleData ? "found" : "null", simpleError?.message)
       return null
     }
 
     if (!data) {
-      return mockProperties.find((p) => p.slug === slug) || null
+      const mockResult = mockProperties.find((p) => p.slug === slug)
+      console.log("[getPropertyBySlug] No data, falling back to mock, found:", !!mockResult)
+      return mockResult || null
     }
 
+    console.log("[getPropertyBySlug] Mapping property:", data.name)
     return mapDatabasePropertyToProperty(data)
   } catch (err) {
-    console.log("[v0] Exception in getPropertyBySlug, using mock data:", err)
+    console.log("[v0] Exception in getPropertyBySlug:", err)
     return mockProperties.find((p) => p.slug === slug) || null
   }
 }
 
 export async function getPropertyById(id: string): Promise<Property | null> {
+  console.log("[getPropertyById] Looking for id:", id)
   const supabase = await createServerClient()
 
   try {
@@ -150,7 +168,10 @@ export async function getPropertyById(id: string): Promise<Property | null> {
       .eq("id", id)
       .single()
 
+    console.log("[getPropertyById] Query result - data:", data ? "found" : "null", "error:", error?.code, error?.message)
+
     if (error) {
+      console.log("[getPropertyById] Error:", error)
       if (error.code === "PGRST205" || error.message.includes("Could not find the table")) {
         return mockProperties.find((p) => p.id === id) || null
       }
@@ -161,9 +182,10 @@ export async function getPropertyById(id: string): Promise<Property | null> {
       return mockProperties.find((p) => p.id === id) || null
     }
 
+    console.log("[getPropertyById] Mapping property:", data.name, "host_id:", data.host_id)
     return mapDatabasePropertyToProperty(data)
   } catch (err) {
-    console.log("[v0] Exception in getPropertyById, using mock data:", err)
+    console.log("[v0] Exception in getPropertyById:", err)
     return mockProperties.find((p) => p.id === id) || null
   }
 }
