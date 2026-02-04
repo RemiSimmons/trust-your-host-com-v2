@@ -72,27 +72,34 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
 
   async function handleInstantUpdate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    console.log('[PropertyEditForm] Form submitted, starting update...')
     setIsSubmitting(true)
     setMessage(null)
 
     const formData = new FormData(e.currentTarget)
     
+    const updateData = {
+      description: formData.get('description') as string,
+      amenities: formData.getAll('amenities') as string[],
+      house_rules: formData.get('house_rules') as string,
+      pricing: {
+        baseNightlyRate: Number(formData.get('baseNightlyRate')),
+        weeklyDiscount: Number(formData.get('weeklyDiscount')) || 0,
+        monthlyDiscount: Number(formData.get('monthlyDiscount')) || 0,
+      },
+      minimum_stay: Number(formData.get('minimum_stay')),
+      external_booking_url: formData.get('external_booking_url') as string,
+      contact_email: formData.get('contact_email') as string,
+      contact_phone: formData.get('contact_phone') as string,
+      typical_response_hours: Number(formData.get('typical_response_hours')) || 24,
+    }
+    
+    console.log('[PropertyEditForm] Update data:', updateData)
+    
     try {
-      const result = await updatePropertyInstant(property.id, {
-        description: formData.get('description') as string,
-        amenities: formData.getAll('amenities') as string[],
-        house_rules: formData.get('house_rules') as string,
-        pricing: {
-          baseNightlyRate: Number(formData.get('baseNightlyRate')),
-          weeklyDiscount: Number(formData.get('weeklyDiscount')) || 0,
-          monthlyDiscount: Number(formData.get('monthlyDiscount')) || 0,
-        },
-        minimum_stay: Number(formData.get('minimum_stay')),
-        external_booking_url: formData.get('external_booking_url') as string,
-        contact_email: formData.get('contact_email') as string,
-        contact_phone: formData.get('contact_phone') as string,
-        typical_response_hours: Number(formData.get('typical_response_hours')) || 24,
-      })
+      console.log('[PropertyEditForm] Calling updatePropertyInstant...')
+      const result = await updatePropertyInstant(property.id, updateData)
+      console.log('[PropertyEditForm] Result:', result)
 
       if (result.success) {
         setMessage({ type: 'success', text: 'Changes saved successfully!' })
@@ -101,7 +108,8 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
         setMessage({ type: 'error', text: result.error || 'Failed to save changes' })
       }
     } catch (error) {
-      setMessage({ type: 'error', text: 'An error occurred. Please try again.' })
+      console.error('[PropertyEditForm] Error:', error)
+      setMessage({ type: 'error', text: `An error occurred: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setIsSubmitting(false)
     }

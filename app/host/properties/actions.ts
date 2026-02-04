@@ -24,46 +24,66 @@ export async function updatePropertyInstant(
     typical_response_hours?: number
   }
 ) {
+  console.log('[updatePropertyInstant] Starting update for property:', propertyId)
+  console.log('[updatePropertyInstant] Data received:', JSON.stringify(data, null, 2))
+  
   const supabase = await createServerClient()
   
   // Verify user owns this property
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError) {
+    console.error('[updatePropertyInstant] Auth error:', authError)
+    return { success: false, error: 'Authentication error' }
+  }
   if (!user) {
+    console.log('[updatePropertyInstant] No user found')
     return { success: false, error: 'Unauthorized' }
   }
+  console.log('[updatePropertyInstant] User authenticated:', user.id)
 
-  const { data: property } = await supabase
+  const { data: property, error: fetchError } = await supabase
     .from('properties')
     .select('host_id')
     .eq('id', propertyId)
     .single()
 
-  if (!property || property.host_id !== user.id) {
-    return { success: false, error: 'Property not found or unauthorized' }
+  if (fetchError) {
+    console.error('[updatePropertyInstant] Error fetching property:', fetchError)
+    return { success: false, error: `Failed to fetch property: ${fetchError.message}` }
   }
 
+  if (!property || property.host_id !== user.id) {
+    console.log('[updatePropertyInstant] Ownership check failed. Property host_id:', property?.host_id, 'User id:', user.id)
+    return { success: false, error: 'Property not found or unauthorized' }
+  }
+  console.log('[updatePropertyInstant] Ownership verified')
+
   // Update property
+  const updatePayload = {
+    description: data.description,
+    amenities: data.amenities,
+    house_rules: data.house_rules,
+    pricing: data.pricing,
+    minimum_stay: data.minimum_stay,
+    external_booking_url: data.external_booking_url,
+    contact_email: data.contact_email,
+    contact_phone: data.contact_phone,
+    typical_response_hours: data.typical_response_hours,
+    updated_at: new Date().toISOString(),
+  }
+  console.log('[updatePropertyInstant] Update payload:', JSON.stringify(updatePayload, null, 2))
+
   const { error } = await supabase
     .from('properties')
-    .update({
-      description: data.description,
-      amenities: data.amenities,
-      house_rules: data.house_rules,
-      pricing: data.pricing,
-      minimum_stay: data.minimum_stay,
-      external_booking_url: data.external_booking_url,
-      contact_email: data.contact_email,
-      contact_phone: data.contact_phone,
-      typical_response_hours: data.typical_response_hours,
-      updated_at: new Date().toISOString(),
-    })
+    .update(updatePayload)
     .eq('id', propertyId)
 
   if (error) {
-    console.error('Error updating property:', error)
-    return { success: false, error: 'Failed to update property' }
+    console.error('[updatePropertyInstant] Error updating property:', error)
+    return { success: false, error: `Failed to update property: ${error.message}` }
   }
 
+  console.log('[updatePropertyInstant] Update successful!')
   revalidatePath('/host/properties')
   revalidatePath(`/properties/${propertyId}`)
   
