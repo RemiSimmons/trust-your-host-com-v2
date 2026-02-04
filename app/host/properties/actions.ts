@@ -59,18 +59,34 @@ export async function updatePropertyInstant(
   }
   console.log('[updatePropertyInstant] Ownership verified')
 
+  // Normalize URL if provided
+  const updates = { ...data }
+  if (updates.external_booking_url) {
+    let normalizedUrl = updates.external_booking_url.trim()
+    if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
+      normalizedUrl = `https://${normalizedUrl}`
+    }
+    // Validate URL
+    try {
+      new URL(normalizedUrl)
+    } catch {
+      return { success: false, error: 'Invalid URL format' }
+    }
+    updates.external_booking_url = normalizedUrl
+  }
+
   // Update property
   const updatePayload = {
-    description: data.description,
-    amenities: data.amenities,
-    house_rules: data.house_rules,
-    standard_house_rules: data.standard_house_rules,
-    pricing: data.pricing,
-    minimum_stay: data.minimum_stay,
-    external_booking_url: data.external_booking_url,
-    contact_email: data.contact_email,
-    contact_phone: data.contact_phone,
-    typical_response_hours: data.typical_response_hours,
+    description: updates.description,
+    amenities: updates.amenities,
+    house_rules: updates.house_rules,
+    standard_house_rules: updates.standard_house_rules,
+    pricing: updates.pricing,
+    minimum_stay: updates.minimum_stay,
+    external_booking_url: updates.external_booking_url,
+    contact_email: updates.contact_email,
+    contact_phone: updates.contact_phone,
+    typical_response_hours: updates.typical_response_hours,
     updated_at: new Date().toISOString(),
   }
   console.log('[updatePropertyInstant] Update payload:', JSON.stringify(updatePayload, null, 2))

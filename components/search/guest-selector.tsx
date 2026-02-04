@@ -69,7 +69,7 @@ export function GuestSelector({
         aria-label={`Decrease guests to ${value - 1}`}
         aria-disabled={isMinDisabled}
         className={cn(
-          "min-w-[36px] min-h-[36px] w-9 h-9 min-[900px]:w-9 min-[900px]:h-9 rounded border flex items-center justify-center",
+          "min-w-[44px] min-h-[44px] w-11 h-11 rounded border flex items-center justify-center",
           "transition-all duration-150 motion-reduce:transition-none",
           "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent/50",
           "touch-manipulation", // Better touch handling
@@ -78,11 +78,11 @@ export function GuestSelector({
             : "border-gray-300 bg-white text-gray-700 hover:border-[#2C5F7C] hover:text-[#2C5F7C] hover:bg-[#2C5F7C]/5"
         )}
       >
-        <Minus className="h-4 w-4 min-[900px]:h-4 min-[900px]:w-4" aria-hidden="true" />
+        <Minus className="h-4 w-4" aria-hidden="true" />
       </button>
 
-      <div className="min-w-[80px] min-[900px]:min-w-[80px] text-center">
-        <span className="text-xs min-[900px]:text-sm text-gray-900 font-medium leading-[1.5]" aria-live="polite" aria-atomic="true">
+      <div className="min-w-[80px] text-center">
+        <span className="text-sm text-gray-900 font-medium leading-[1.5]" aria-live="polite" aria-atomic="true">
           {value} {value === 1 ? "Guest" : "Guests"}
         </span>
       </div>
@@ -95,7 +95,7 @@ export function GuestSelector({
         aria-label={`Increase guests to ${value + 1}`}
         aria-disabled={isMaxDisabled}
         className={cn(
-          "min-w-[36px] min-h-[36px] w-9 h-9 min-[900px]:w-9 min-[900px]:h-9 rounded border flex items-center justify-center",
+          "min-w-[44px] min-h-[44px] w-11 h-11 rounded border flex items-center justify-center",
           "transition-all duration-150 motion-reduce:transition-none",
           "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent/50",
           "touch-manipulation", // Better touch handling
@@ -104,7 +104,7 @@ export function GuestSelector({
             : "border-gray-300 bg-white text-gray-700 hover:border-[#2C5F7C] hover:text-[#2C5F7C] hover:bg-[#2C5F7C]/5"
         )}
       >
-        <Plus className="h-4 w-4 min-[900px]:h-4 min-[900px]:w-4" aria-hidden="true" />
+        <Plus className="h-4 w-4" aria-hidden="true" />
       </button>
     </div>
   )

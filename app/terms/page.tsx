@@ -2,11 +2,13 @@ import type { Metadata } from "next"
 import { NavBar } from "@/components/navigation/nav-bar"
 import { Footer } from "@/components/navigation/footer"
 import Link from "next/link"
+import { generateMetadata } from "@/lib/seo/metadata"
 
-export const metadata: Metadata = {
-  title: "Terms of Service - TrustYourHost",
+export const metadata: Metadata = generateMetadata({
+  title: "Terms of Service",
   description: "Read our terms of service and conditions for using the TrustYourHost directory platform. Clear terms for hosts and travelers.",
-}
+  url: "/terms",
+})
 
 export default function TermsPage() {
   return (

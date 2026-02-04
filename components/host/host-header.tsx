@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Bell, Search, LogOut } from "lucide-react"
+import { Bell, Search, LogOut, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -16,7 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export function HostHeader() {
+interface HostHeaderProps {
+  onMenuClick?: () => void
+}
+
+export function HostHeader({ onMenuClick }: HostHeaderProps = {}) {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const router = useRouter()
@@ -58,9 +62,20 @@ export function HostHeader() {
     .slice(0, 2)
 
   return (
-    <header className="h-16 border-b bg-card flex items-center justify-between px-6 md:px-8 sticky top-0 z-10">
-      <div className="flex items-center gap-4 w-full max-w-md">
-        <BackButton className="shrink-0" />
+    <header className="h-16 border-b bg-card flex items-center justify-between px-4 md:px-6 lg:px-8 sticky top-0 z-10">
+      <div className="flex items-center gap-2 md:gap-4 w-full max-w-md">
+        {/* Mobile Menu Button */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="md:hidden shrink-0 min-h-[44px] min-w-[44px]"
+          onClick={onMenuClick}
+        >
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Open menu</span>
+        </Button>
+
+        <BackButton className="shrink-0 hidden md:flex" />
 
         <div className="relative w-full">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -71,8 +86,8 @@ export function HostHeader() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="text-muted-foreground">
+      <div className="flex items-center gap-2 md:gap-4">
+        <Button variant="ghost" size="icon" className="text-muted-foreground min-h-[44px] min-w-[44px]">
           <Bell className="h-5 w-5" />
         </Button>
         

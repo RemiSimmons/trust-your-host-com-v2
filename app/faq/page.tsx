@@ -5,11 +5,13 @@ import { HelpCircle, Users, Home, Trophy, DollarSign, Shield } from "lucide-reac
 import Link from "next/link"
 import { generateFAQPageSchema } from "@/lib/seo/schema"
 import { SchemaMarkup } from "@/components/seo/schema-markup"
+import { generateMetadata } from "@/lib/seo/metadata"
 
-export const metadata: Metadata = {
-  title: "Frequently Asked Questions | TrustYourHost",
+export const metadata: Metadata = generateMetadata({
+  title: "Frequently Asked Questions",
   description: "Get answers to common questions about TrustYourHost. Learn how our platform works for hosts and guests, FIFA 2026 bookings, fees, and more.",
-}
+  url: "/faq",
+})
 
 // FAQ data with individual page slugs
 const faqCategories = [

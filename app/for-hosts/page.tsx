@@ -10,11 +10,9 @@ import { MultiPropertyPricing } from "@/components/home/multi-property-pricing"
 import { DetailedHostFAQ } from "@/components/faq/detailed-host-faq"
 import { HostCTA } from "@/components/home/host-cta"
 import { FloatingPromo } from "@/components/home/floating-promo"
+import { generateForHostsMetadata } from "@/lib/seo/metadata"
 
-export const metadata: Metadata = {
-  title: "For Hosts - List Your Property | TrustYourHost",
-  description: "Keep your direct booking website. Get discovered by travelers. Pay $49/month, not 15% commissions. Start with 60 days free.",
-}
+export const metadata: Metadata = generateForHostsMetadata()
 
 export default function ForHostsPage() {
   return (

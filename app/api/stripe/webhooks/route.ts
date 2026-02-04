@@ -36,11 +36,26 @@ export async function POST(req: NextRequest) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         
+        console.log('📥 Checkout session completed:', {
+          sessionId: session.id,
+          mode: session.mode,
+          customer: session.customer,
+          metadata: session.metadata,
+        })
+        
         if (session.mode === 'subscription') {
           const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
           const customerId = session.customer as string
           const propertyId = session.metadata?.property_id
           const hostId = session.metadata?.host_id
+
+          console.log('📋 Subscription details:', {
+            subscriptionId: subscription.id,
+            status: subscription.status,
+            trialEnd: subscription.trial_end,
+            propertyId,
+            hostId,
+          })
 
           if (propertyId && hostId) {
             // Use Stripe's trial end timestamp (more accurate, handles timezone correctly)
@@ -48,25 +63,50 @@ export async function POST(req: NextRequest) {
               ? new Date(subscription.trial_end * 1000).toISOString()
               : null
 
-            console.log(`🔄 Updating property ${propertyId} with subscription ${subscription.id}`)
+            const updateData = {
+              stripe_subscription_id: subscription.id,
+              stripe_customer_id: customerId,
+              subscription_status: subscription.trial_end ? 'trial' : 'active',
+              trial_ends_at: trialEndsAt,
+              is_active: true,
+              updated_at: new Date().toISOString(),
+            }
+
+            console.log(`🔄 Updating property ${propertyId} with:`, updateData)
 
             // Update property with subscription info
-            const { error: propertyError } = await supabase
+            const { error: propertyError, data: updatedProperty } = await supabase
               .from('properties')
-              .update({
-                stripe_subscription_id: subscription.id,
-                stripe_customer_id: customerId,
-                subscription_status: subscription.trial_end ? 'trial' : 'active',
-                trial_ends_at: trialEndsAt,
-                is_active: true,
-                updated_at: new Date().toISOString(),
-              })
+              .update(updateData)
               .eq('id', propertyId)
+              .select('id, name, subscription_status')
+              .single()
 
             if (propertyError) {
-              console.error(`❌ Failed to update property ${propertyId}:`, propertyError)
+              console.error(`❌ CRITICAL: Failed to update property ${propertyId}:`, {
+                error: propertyError,
+                code: propertyError.code,
+                message: propertyError.message,
+                details: propertyError.details,
+                hint: propertyError.hint,
+              })
+              
+              // Retry once after 2 seconds
+              console.log('🔁 Retrying property update...')
+              await new Promise(resolve => setTimeout(resolve, 2000))
+              
+              const { error: retryError } = await supabase
+                .from('properties')
+                .update(updateData)
+                .eq('id', propertyId)
+              
+              if (retryError) {
+                console.error(`❌ CRITICAL: Retry failed for property ${propertyId}:`, retryError)
+              } else {
+                console.log(`✅ Property ${propertyId} updated successfully on retry`)
+              }
             } else {
-              console.log(`✅ Property ${propertyId} updated successfully`)
+              console.log(`✅ Property ${propertyId} updated successfully:`, updatedProperty)
             }
 
             // Update host profile
@@ -86,7 +126,11 @@ export async function POST(req: NextRequest) {
 
             console.log(`✅ Trial started for property ${propertyId}`)
           } else {
-            console.error(`❌ Missing metadata - propertyId: ${propertyId}, hostId: ${hostId}`)
+            console.error(`❌ CRITICAL: Missing metadata in session ${session.id}:`, {
+              propertyId,
+              hostId,
+              allMetadata: session.metadata,
+            })
           }
         }
         break

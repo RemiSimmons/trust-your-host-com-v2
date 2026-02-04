@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 
@@ -12,6 +12,8 @@ interface PropertyGalleryProps {
 export function PropertyGallery({ images, propertyName }: PropertyGalleryProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const touchStartX = useRef<number>(0)
+  const touchEndX = useRef<number>(0)
 
   const openLightbox = (index: number) => {
     setCurrentIndex(index)
@@ -30,6 +32,33 @@ export function PropertyGallery({ images, propertyName }: PropertyGalleryProps) 
 
   const goToNext = () => {
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+  }
+
+  // Touch/swipe handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return
+    
+    const distance = touchStartX.current - touchEndX.current
+    const isLeftSwipe = distance > 50
+    const isRightSwipe = distance < -50
+
+    if (isLeftSwipe) {
+      goToNext()
+    } else if (isRightSwipe) {
+      goToPrevious()
+    }
+
+    // Reset
+    touchStartX.current = 0
+    touchEndX.current = 0
   }
 
   // Keyboard navigation
@@ -108,11 +137,16 @@ export function PropertyGallery({ images, propertyName }: PropertyGalleryProps) 
 
       {/* Lightbox Modal */}
       {lightboxOpen && (
-        <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center">
+        <div 
+          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           {/* Close Button */}
           <button
             onClick={closeLightbox}
-            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px]"
             aria-label="Close gallery"
           >
             <X className="h-6 w-6 text-white" />
@@ -121,14 +155,14 @@ export function PropertyGallery({ images, propertyName }: PropertyGalleryProps) 
           {/* Previous Button */}
           <button
             onClick={goToPrevious}
-            className="absolute left-4 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            className="absolute left-4 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px]"
             aria-label="Previous photo"
           >
             <ChevronLeft className="h-8 w-8 text-white" />
           </button>
 
           {/* Image */}
-          <div className="relative w-full h-full flex items-center justify-center p-12">
+          <div className="relative w-full h-full flex items-center justify-center p-12 md:p-16">
             <Image
               src={images[currentIndex]}
               alt={`${propertyName} - Photo ${currentIndex + 1}`}
@@ -142,7 +176,7 @@ export function PropertyGallery({ images, propertyName }: PropertyGalleryProps) 
           {/* Next Button */}
           <button
             onClick={goToNext}
-            className="absolute right-4 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            className="absolute right-4 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px]"
             aria-label="Next photo"
           >
             <ChevronRight className="h-8 w-8 text-white" />
@@ -151,6 +185,11 @@ export function PropertyGallery({ images, propertyName }: PropertyGalleryProps) 
           {/* Counter */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 px-4 py-2 rounded-full text-white text-sm">
             Photo {currentIndex + 1} of {images.length}
+          </div>
+
+          {/* Swipe hint (only show for first few seconds on mobile) */}
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-white/60 text-xs md:hidden animate-pulse">
+            Swipe to navigate
           </div>
         </div>
       )}

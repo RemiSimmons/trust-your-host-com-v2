@@ -12,11 +12,19 @@ export interface SchemaOrganization {
   url: string
   logo: string
   description?: string
+  telephone?: string
   sameAs?: string[]
+  address?: {
+    "@type": "PostalAddress"
+    addressLocality: string
+    addressRegion: string
+    addressCountry: string
+  }
   contactPoint?: {
     "@type": "ContactPoint"
     contactType: string
     email?: string
+    telephone?: string
   }
 }
 
@@ -133,15 +141,24 @@ export function generateOrganizationSchema(): SchemaOrganization {
     url: "https://trustyourhost.com",
     logo: "https://trustyourhost.com/logo.png",
     description: "A trusted directory for vacation rental hosts offering direct bookings. Find unique stays from verified hosts for FIFA 2026 and beyond.",
+    telephone: "+1-404-301-0535",
     sameAs: [
-      // Add social media URLs when available
+      "https://www.facebook.com/trustyourhost",
+      // Add more social media URLs when available
       // "https://twitter.com/trustyourhost",
-      // "https://facebook.com/trustyourhost",
+      // "https://instagram.com/trustyourhost",
     ],
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Atlanta",
+      addressRegion: "GA",
+      addressCountry: "US",
+    },
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "Customer Service",
       email: "hello@trustyourhost.com",
+      telephone: "+1-404-301-0535",
     },
   }
 }

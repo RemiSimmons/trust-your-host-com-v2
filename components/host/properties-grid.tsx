@@ -1,10 +1,12 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Plus, Edit, BarChart3, Eye, Calendar, Info, AlertCircle } from 'lucide-react'
+import { Plus, Edit, BarChart3, Eye, Calendar, Info, AlertCircle, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Property } from '@/lib/types'
@@ -21,6 +23,11 @@ interface PropertiesGridProps {
 }
 
 export function PropertiesGrid({ properties, totalMonthlyCost }: PropertiesGridProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [isSyncing, setIsSyncing] = useState(false)
+  const [syncError, setSyncError] = useState<string | null>(null)
+  
   const propertyCount = properties.length
   const activeCount = properties.filter(p => p.property.verified).length
   const totalClicks = properties.reduce((sum, p) => sum + (p.clicks.allTime || 0), 0)
@@ -30,6 +37,43 @@ export function PropertiesGrid({ properties, totalMonthlyCost }: PropertiesGridP
   const hasPendingPayment = properties.some(p => 
     p.property.subscription_status === 'pending_payment'
   )
+
+  // Auto-sync subscription status after Stripe checkout
+  useEffect(() => {
+    const setupSuccess = searchParams.get('setup')
+    
+    // If user just completed Stripe setup AND still shows pending payment, sync from Stripe
+    if (setupSuccess === 'success' && hasPendingPayment && !isSyncing) {
+      syncSubscriptionStatus()
+    }
+  }, [searchParams, hasPendingPayment])
+
+  const syncSubscriptionStatus = async () => {
+    setIsSyncing(true)
+    setSyncError(null)
+    
+    try {
+      const response = await fetch('/api/stripe/sync-subscription', {
+        method: 'POST',
+      })
+      
+      const data = await response.json()
+      
+      if (data.synced) {
+        console.log('✅ Subscription synced:', data.message)
+        // Refresh the page to show updated data
+        router.refresh()
+      } else {
+        console.warn('⚠️ Sync completed but no changes:', data.message)
+        setSyncError(data.message || 'Failed to sync subscription')
+      }
+    } catch (error) {
+      console.error('❌ Sync failed:', error)
+      setSyncError('Failed to sync subscription status')
+    } finally {
+      setIsSyncing(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -60,14 +104,49 @@ export function PropertiesGrid({ properties, totalMonthlyCost }: PropertiesGridP
                   Complete Your Billing Setup
                 </p>
                 <p className="text-sm text-orange-700 dark:text-orange-300 mt-1">
-                  Your property is approved! Set up billing to go live and start receiving traffic.
+                  {isSyncing 
+                    ? 'Syncing subscription status...' 
+                    : 'Your property is approved! Set up billing to go live and start receiving traffic.'}
                 </p>
+                {syncError && (
+                  <p className="text-xs text-orange-600 mt-1">
+                    ⚠️ {syncError} - Try refreshing the page or{' '}
+                    <button 
+                      onClick={syncSubscriptionStatus}
+                      className="underline hover:no-underline"
+                    >
+                      click here to sync
+                    </button>
+                  </p>
+                )}
               </div>
-              <Button asChild className="ml-4 shrink-0 bg-orange-600 hover:bg-orange-700">
-                <Link href="/host/billing">
-                  Complete Setup
-                </Link>
-              </Button>
+              <div className="flex gap-2 ml-4 shrink-0">
+                {searchParams.get('setup') === 'success' && (
+                  <Button 
+                    onClick={syncSubscriptionStatus}
+                    disabled={isSyncing}
+                    variant="outline"
+                    className="border-orange-600 text-orange-600 hover:bg-orange-100"
+                  >
+                    {isSyncing ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        Syncing...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Sync Status
+                      </>
+                    )}
+                  </Button>
+                )}
+                <Button asChild className="bg-orange-600 hover:bg-orange-700">
+                  <Link href="/host/billing">
+                    Complete Setup
+                  </Link>
+                </Button>
+              </div>
             </div>
           </AlertDescription>
         </Alert>
@@ -192,7 +271,7 @@ function PropertyCard({ property, clicks, isPrimary }: PropertyCardProps) {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       {/* Property Image */}
-      <div className="relative h-48 w-full">
+      <div className="relative aspect-[4/3] w-full">
         <Image
           src={property.images[0] || '/placeholder.jpg'}
           alt={property.name}

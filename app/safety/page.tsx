@@ -2,11 +2,13 @@ import type { Metadata } from "next"
 import { NavBar } from "@/components/navigation/nav-bar"
 import { Footer } from "@/components/navigation/footer"
 import Link from "next/link"
+import { generateMetadata } from "@/lib/seo/metadata"
 
-export const metadata: Metadata = {
-  title: "Trust & Safety - TrustYourHost",
-  description: "Learn how we keep our community safe.",
-}
+export const metadata: Metadata = generateMetadata({
+  title: "Trust & Safety",
+  description: "Learn how TrustYourHost keeps our community safe. Manual property verification, secure direct booking, and transparent host reviews.",
+  url: "/safety",
+})
 
 export default function SafetyPage() {
   return (

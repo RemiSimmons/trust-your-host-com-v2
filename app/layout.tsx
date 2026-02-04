@@ -9,10 +9,37 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" })
 
 export const metadata: Metadata = {
-  title: "TrustYourHost - Discover Authentic Stays with Trusted Hosts",
+  title: {
+    default: "TrustYourHost - Find Your Perfect Getaway",
+    template: "%s | TrustYourHost",
+  },
   description:
-    "Find verified vacation rentals and connect directly with trusted local hosts. Curated properties, real experiences, and direct connections.",
+    "Discover unique homes and unforgettable experiences curated just for you. Book directly with verified hosts and save on fees.",
   generator: "v0.app",
+  metadataBase: new URL("https://trustyourhost.com"),
+  openGraph: {
+    type: "website",
+    siteName: "TrustYourHost",
+    title: "TrustYourHost - Find Your Perfect Getaway",
+    description:
+      "Discover unique homes and unforgettable experiences curated just for you. Book directly with verified hosts and save on fees.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "TrustYourHost - Find Your Perfect Getaway",
+      },
+    ],
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TrustYourHost - Find Your Perfect Getaway",
+    description:
+      "Discover unique homes and unforgettable experiences curated just for you. Book directly with verified hosts and save on fees.",
+    images: ["/og-image.png"],
+  },
   icons: {
     icon: [
       {

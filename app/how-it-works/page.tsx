@@ -5,11 +5,13 @@ import { DetailedGuestFAQ } from "@/components/faq/detailed-guest-faq"
 import { Search, Heart, ExternalLink, Shield, Users, CreditCard, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { generateMetadata } from "@/lib/seo/metadata"
 
-export const metadata: Metadata = {
-  title: "How It Works - TrustYourHost",
+export const metadata: Metadata = generateMetadata({
+  title: "How It Works",
   description: "Discover verified properties and book directly with hosts. Simple, transparent, and commission-free directory for travelers.",
-}
+  url: "/how-it-works",
+})
 
 export default function HowItWorksPage() {
   return (

@@ -73,18 +73,18 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
         {filters.event === "fifa-2026" && (
           <div className="mt-4 space-y-2">
             <label className="text-xs text-gray-600 font-medium block">Host Cities</label>
-            <div className="max-h-64 overflow-y-auto space-y-2 border border-gray-200 rounded-lg p-3">
+            <div className="max-h-64 overflow-y-auto space-y-1 border border-gray-200 rounded-lg p-3">
               {fifaCities.map((city) => (
-                <label key={city.id} className="flex items-center gap-2 cursor-pointer group">
+                <label key={city.id} className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
                   <div
                     className={cn(
-                      "w-4 h-4 rounded border flex items-center justify-center transition-colors",
+                      "w-5 h-5 rounded border flex items-center justify-center transition-colors shrink-0",
                       filters.cities.includes(city.id)
                         ? "bg-accent border-accent text-white"
                         : "border-gray-300 group-hover:border-accent",
                     )}
                   >
-                    {filters.cities.includes(city.id) && <Check className="h-3 w-3" />}
+                    {filters.cities.includes(city.id) && <Check className="h-3.5 w-3.5" />}
                   </div>
                   <input
                     type="checkbox"
@@ -142,18 +142,18 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
       {/* Experience Categories */}
       <div className="mb-8">
         <h4 className="font-semibold text-gray-900 mb-3">Experiences</h4>
-        <div className="space-y-2">
+        <div className="space-y-1">
           {EXPERIENCE_CATEGORIES.map((category) => (
-            <label key={category} className="flex items-center gap-2 cursor-pointer group">
+            <label key={category} className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
               <div
                 className={cn(
-                  "w-4 h-4 rounded border flex items-center justify-center transition-colors",
+                  "w-5 h-5 rounded border flex items-center justify-center transition-colors shrink-0",
                   filters.experiences.includes(category)
                     ? "bg-accent border-accent text-white"
                     : "border-gray-300 group-hover:border-accent",
                 )}
               >
-                {filters.experiences.includes(category) && <Check className="h-3 w-3" />}
+                {filters.experiences.includes(category) && <Check className="h-3.5 w-3.5" />}
               </div>
               <input
                 type="checkbox"
@@ -203,18 +203,18 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
       {/* Property Type */}
       <div className="mb-8">
         <h4 className="font-semibold text-gray-900 mb-3">Property Type</h4>
-        <div className="space-y-2">
+        <div className="space-y-1">
           {PROPERTY_TYPE_VALUES.map((type) => (
-            <label key={type} className="flex items-center gap-2 cursor-pointer group">
+            <label key={type} className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
               <div
                 className={cn(
-                  "w-4 h-4 rounded border flex items-center justify-center transition-colors",
+                  "w-5 h-5 rounded border flex items-center justify-center transition-colors shrink-0",
                   filters.propertyTypes.includes(type)
                     ? "bg-accent border-accent text-white"
                     : "border-gray-300 group-hover:border-accent",
                 )}
               >
-                {filters.propertyTypes.includes(type) && <Check className="h-3 w-3" />}
+                {filters.propertyTypes.includes(type) && <Check className="h-3.5 w-3.5" />}
               </div>
               <input
                 type="checkbox"
@@ -237,7 +237,7 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
               key={num}
               onClick={() => updateFilter("bedrooms", num)}
               className={cn(
-                "px-3 py-1.5 border rounded-lg text-sm transition-colors",
+                "px-4 py-2.5 border rounded-lg text-sm transition-colors min-h-[44px] min-w-[44px]",
                 filters.bedrooms === num
                   ? "bg-accent text-white border-accent"
                   : "border-gray-300 text-gray-700 hover:border-accent hover:bg-accent/5",
@@ -252,18 +252,18 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
       {/* Amenities */}
       <div className="mb-8">
         <h4 className="font-semibold text-gray-900 mb-3">Amenities</h4>
-        <div className="space-y-2">
+        <div className="space-y-1">
           {AMENITIES.map((amenity) => (
-            <label key={amenity} className="flex items-center gap-2 cursor-pointer group">
+            <label key={amenity} className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
               <div
                 className={cn(
-                  "w-4 h-4 rounded border flex items-center justify-center transition-colors",
+                  "w-5 h-5 rounded border flex items-center justify-center transition-colors shrink-0",
                   filters.amenities.includes(amenity)
                     ? "bg-accent border-accent text-white"
                     : "border-gray-300 group-hover:border-accent",
                 )}
               >
-                {filters.amenities.includes(amenity) && <Check className="h-3 w-3" />}
+                {filters.amenities.includes(amenity) && <Check className="h-3.5 w-3.5" />}
               </div>
               <input
                 type="checkbox"
@@ -278,15 +278,15 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
       </div>
 
       {/* Other Filters */}
-      <div className="space-y-3 pt-4 border-t border-gray-100">
-        <label className="flex items-center gap-2 cursor-pointer group">
+      <div className="space-y-1 pt-4 border-t border-gray-100">
+        <label className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
           <div
             className={cn(
-              "w-4 h-4 rounded border flex items-center justify-center transition-colors",
+              "w-5 h-5 rounded border flex items-center justify-center transition-colors shrink-0",
               filters.verifiedOnly ? "bg-accent border-accent text-white" : "border-gray-300 group-hover:border-accent",
             )}
           >
-            {filters.verifiedOnly && <Check className="h-3 w-3" />}
+            {filters.verifiedOnly && <Check className="h-3.5 w-3.5" />}
           </div>
           <input
             type="checkbox"
@@ -297,14 +297,14 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
           <span className="text-sm text-gray-700 group-hover:text-gray-900">Verified Properties Only</span>
         </label>
 
-        <label className="flex items-center gap-2 cursor-pointer group">
+        <label className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
           <div
             className={cn(
-              "w-4 h-4 rounded border flex items-center justify-center transition-colors",
+              "w-5 h-5 rounded border flex items-center justify-center transition-colors shrink-0",
               filters.petFriendly ? "bg-accent border-accent text-white" : "border-gray-300 group-hover:border-accent",
             )}
           >
-            {filters.petFriendly && <Check className="h-3 w-3" />}
+            {filters.petFriendly && <Check className="h-3.5 w-3.5" />}
           </div>
           <input
             type="checkbox"

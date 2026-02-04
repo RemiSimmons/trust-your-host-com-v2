@@ -210,7 +210,8 @@ export function NavBar() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-accent/10 transition-colors"
+            className="md:hidden min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-accent/10 transition-colors"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           >
             {isMenuOpen ? (
               <X className={cn("h-6 w-6", (scrolled || !isHomePage) ? "text-foreground" : "text-white")} />
@@ -227,14 +228,14 @@ export function NavBar() {
           <div className="px-4 py-4 space-y-3">
             <Link
               href="/search"
-              className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="block py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-h-[44px] flex items-center"
               onClick={() => setIsMenuOpen(false)}
             >
               Search Properties
             </Link>
             <Link
               href="/#experiences"
-              className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="block py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-h-[44px] flex items-center"
               onClick={(e) => {
                 setIsMenuOpen(false)
                 // If already on homepage, smooth scroll instead of reload
@@ -250,14 +251,14 @@ export function NavBar() {
             </Link>
             <Link
               href="/how-it-works"
-              className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="block py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-h-[44px] flex items-center"
               onClick={() => setIsMenuOpen(false)}
             >
               How It Works
             </Link>
             <Link
               href="/fifa-2026"
-              className="block py-2 text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-2"
+              className="block py-3 text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors min-h-[44px] flex items-center gap-2"
               onClick={() => setIsMenuOpen(false)}
             >
               <span>🏆</span>
@@ -265,7 +266,7 @@ export function NavBar() {
             </Link>
             <Link
               href="/for-hosts"
-              className="block py-2 text-sm font-medium text-muted-foreground hover:text-orange-600 transition-colors"
+              className="block py-3 text-sm font-medium text-muted-foreground hover:text-orange-600 transition-colors min-h-[44px] flex items-center"
               onClick={() => setIsMenuOpen(false)}
             >
               For Hosts
@@ -287,13 +288,13 @@ export function NavBar() {
               {user ? (
                 <>
                   <Link href="/host" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Button variant="ghost" size="sm" className="w-full justify-start min-h-[44px]">
                       <LayoutDashboard className="h-4 w-4 mr-2" />
                       Dashboard
                     </Button>
                   </Link>
                   <Link href="/host/properties" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Button variant="ghost" size="sm" className="w-full justify-start min-h-[44px]">
                       <Building className="h-4 w-4 mr-2" />
                       My Properties
                     </Button>
@@ -301,7 +302,7 @@ export function NavBar() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start text-destructive"
+                    className="w-full justify-start text-destructive min-h-[44px]"
                     onClick={() => {
                       handleLogout()
                       setIsMenuOpen(false)
@@ -314,7 +315,7 @@ export function NavBar() {
               ) : (
                 <>
                   <Link href="/host/login" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="ghost" size="sm" className="w-full">
+                    <Button variant="ghost" size="sm" className="w-full min-h-[44px]">
                       Host Login
                     </Button>
                   </Link>

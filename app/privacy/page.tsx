@@ -2,11 +2,13 @@ import type { Metadata } from "next"
 import { NavBar } from "@/components/navigation/nav-bar"
 import { Footer } from "@/components/navigation/footer"
 import Link from "next/link"
+import { generateMetadata } from "@/lib/seo/metadata"
 
-export const metadata: Metadata = {
-  title: "Privacy Policy - TrustYourHost",
+export const metadata: Metadata = generateMetadata({
+  title: "Privacy Policy",
   description: "Learn how TrustYourHost collects, uses, and protects your personal information. Transparent privacy practices for our directory platform.",
-}
+  url: "/privacy",
+})
 
 export default function PrivacyPage() {
   return (

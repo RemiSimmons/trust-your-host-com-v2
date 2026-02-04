@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Heart, Facebook, Twitter, Instagram } from "lucide-react"
+import { Heart, Facebook, Twitter, Instagram, Mail, Phone, MapPin } from "lucide-react"
 
 export function Footer() {
   return (
@@ -16,13 +16,13 @@ export function Footer() {
               Experience authentic stays with trusted local hosts. Your journey to memorable moments starts here.
             </p>
             <div className="flex items-center gap-4">
-              <Link href="https://www.facebook.com/trustyourhost" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors">
+              <Link href="https://www.facebook.com/trustyourhost" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors" aria-label="Facebook">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-accent transition-colors">
+              <Link href="#" className="text-muted-foreground hover:text-accent transition-colors" aria-label="Twitter">
                 <Twitter className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-accent transition-colors">
+              <Link href="#" className="text-muted-foreground hover:text-accent transition-colors" aria-label="Instagram">
                 <Instagram className="h-5 w-5" />
               </Link>
               <Link href="https://2minapp.com/" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-accent transition-colors">
@@ -31,37 +31,33 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Explore */}
+          {/* Contact */}
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Explore</h3>
+            <h3 className="font-semibold text-foreground mb-4">Contact</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/search" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Search Properties
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/#experiences"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                <a
+                  href="mailto:hello@trustyourhost.com"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
                 >
-                  Experiences
-                </Link>
+                  <Mail className="h-4 w-4" />
+                  <span>hello@trustyourhost.com</span>
+                </a>
               </li>
               <li>
-                <Link href="/guides" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  City Guides
-                </Link>
+                <a
+                  href="tel:+14043010535"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                >
+                  <Phone className="h-4 w-4" />
+                  <span>404-301-0535</span>
+                </a>
               </li>
               <li>
-                <Link href="/journal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Travel Journal
-                </Link>
-              </li>
-              <li>
-                <Link href="/fifa-2026" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  FIFA 2026
-                </Link>
+                <div className="text-sm text-muted-foreground flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span>Atlanta, GA</span>
+                </div>
               </li>
             </ul>
           </div>
@@ -110,26 +106,23 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Support */}
+          {/* Company */}
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Support</h3>
+            <h3 className="font-semibold text-foreground mb-4">Company</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  Help Center
+                <Link href="/how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  How It Works
+                </Link>
+              </li>
+              <li>
+                <Link href="/safety" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  Safety & Trust
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/cancellation"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Cancellation Policy
                 </Link>
               </li>
               <li>

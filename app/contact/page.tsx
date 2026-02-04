@@ -3,15 +3,22 @@ import { NavBar } from "@/components/navigation/nav-bar"
 import { Footer } from "@/components/navigation/footer"
 import { ContactForm } from "@/components/support/contact-form"
 import { Mail, MapPin, Phone } from "lucide-react"
+import { generateMetadata } from "@/lib/seo/metadata"
+import { generateOrganizationSchema } from "@/lib/seo/schema"
+import { SchemaMarkup } from "@/components/seo/schema-markup"
 
-export const metadata: Metadata = {
-  title: "Contact Us - TrustYourHost",
-  description: "Get in touch with the TrustYourHost team for support or inquiries.",
-}
+export const metadata: Metadata = generateMetadata({
+  title: "Contact Us",
+  description: "Get in touch with the TrustYourHost team. We're here to help hosts and guests with any questions or support needs.",
+  url: "/contact",
+})
 
 export default function ContactPage() {
+  const organizationSchema = generateOrganizationSchema()
+
   return (
     <div className="flex min-h-screen flex-col">
+      <SchemaMarkup schema={organizationSchema} />
       <NavBar />
       <main className="flex-1 py-12 md:py-20">
         <div className="container mx-auto px-4">

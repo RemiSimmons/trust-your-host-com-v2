@@ -66,15 +66,15 @@ export function PropertyCard({ property }: { property: Property }) {
       </div>
 
       {/* DEFAULT STATE: Minimal text */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+      <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
         {/* Title + Price (same row) */}
-        <div className="flex items-start justify-between mb-2 gap-4">
-          <h3 className="font-serif text-2xl text-white font-bold drop-shadow-lg flex-1 line-clamp-1">
+        <div className="flex items-start justify-between mb-2 gap-3 sm:gap-4">
+          <h3 className="font-serif text-xl sm:text-2xl text-white font-bold drop-shadow-lg flex-1 line-clamp-1">
             {property.name}
           </h3>
-          <p className="text-white font-bold text-xl drop-shadow-lg whitespace-nowrap shrink-0">
+          <p className="text-white font-bold text-lg sm:text-xl drop-shadow-lg whitespace-nowrap shrink-0">
             {formatCurrency(property.pricing.baseNightlyRate)}
-            <span className="text-white/80 text-sm font-normal"> / night</span>
+            <span className="text-white/80 text-xs sm:text-sm font-normal"> / night</span>
           </p>
         </div>
 

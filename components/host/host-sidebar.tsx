@@ -8,6 +8,7 @@ import { LayoutDashboard, Building, BarChart3, CreditCard, Settings, LogOut, Hea
 import { Button } from "@/components/ui/button"
 import { createBrowserClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { Sheet, SheetContent, SheetHeader, SheetFooter } from "@/components/ui/sheet"
 
 type SubscriptionStatus = 'pending_payment' | 'trial' | 'active' | 'canceled' | 'paused' | null
 
@@ -18,7 +19,12 @@ const baseSidebarItems = [
   { icon: Settings, label: "Account", href: "/host/settings" },
 ]
 
-export function HostSidebar() {
+interface HostSidebarProps {
+  mobileOpen?: boolean
+  onMobileClose?: () => void
+}
+
+export function HostSidebar({ mobileOpen = false, onMobileClose }: HostSidebarProps = {}) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createBrowserClient()
@@ -87,24 +93,30 @@ export function HostSidebar() {
     ...baseSidebarItems.slice(3), // Account
   ]
 
-  return (
-    <aside className="hidden md:flex w-64 flex-col border-r bg-card">
-      <div className="p-6 flex items-center gap-2">
+  const handleNavClick = () => {
+    if (onMobileClose) {
+      onMobileClose()
+    }
+  }
+
+  const sidebarContent = (
+    <>
+      <div className="p-6 flex items-center gap-2 border-b md:border-b-0">
         <Heart className="h-6 w-6 text-accent fill-accent" />
         <span className="font-serif text-xl font-bold">TrustYourHost</span>
       </div>
 
       <nav className="flex-1 px-4 space-y-2 py-4">
         {sidebarItems.map((item) => (
-          <Link key={item.href} href={item.href}>
+          <Link key={item.href} href={item.href} onClick={handleNavClick}>
             <Button
               variant="ghost"
               className={cn(
-                "w-full justify-start gap-3 text-muted-foreground hover:text-foreground",
+                "w-full justify-start gap-3 text-muted-foreground hover:text-foreground min-h-[44px]",
                 pathname === item.href && "bg-accent/10 text-accent hover:bg-accent/15 hover:text-accent",
               )}
             >
-              <item.icon className="h-4 w-4" />
+              <item.icon className="h-5 w-5" />
               {item.label}
             </Button>
           </Link>
@@ -112,11 +124,34 @@ export function HostSidebar() {
       </nav>
 
       <div className="p-4 border-t">
-        <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground" onClick={handleLogout}>
-          <LogOut className="h-4 w-4" />
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start gap-3 text-muted-foreground min-h-[44px]" 
+          onClick={() => {
+            handleLogout()
+            handleNavClick()
+          }}
+        >
+          <LogOut className="h-5 w-5" />
           Log Out
         </Button>
       </div>
-    </aside>
+    </>
+  )
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex w-64 flex-col border-r bg-card">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile Sheet */}
+      <Sheet open={mobileOpen} onOpenChange={(open) => !open && onMobileClose?.()}>
+        <SheetContent side="left" className="w-64 p-0 flex flex-col md:hidden">
+          {sidebarContent}
+        </SheetContent>
+      </Sheet>
+    </>
   )
 }
