@@ -116,14 +116,22 @@ export function FifaCitiesSection() {
           {/* Subtle Inner Glow */}
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500/5 via-transparent to-green-500/5 pointer-events-none" />
           
-          {/* City Cards Grid */}
-          <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {/* City Cards Container - Horizontal scroll on mobile, grid on tablet+ */}
+          <div className="relative flex overflow-x-auto snap-x snap-mandatory gap-3 pb-4 -mx-6 px-6
+                         sm:grid sm:grid-cols-2 sm:overflow-visible sm:mx-0 sm:px-0 sm:gap-6
+                         lg:grid-cols-3 xl:grid-cols-4 
+                         scrollbar-hide"
+               style={{
+                 scrollbarWidth: 'none',
+                 msOverflowStyle: 'none'
+               }}>
           {/* Multi-City Tour Card */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
+            className="min-w-[280px] flex-shrink-0 snap-center sm:min-w-0 sm:flex-shrink"
           >
             <button
               onClick={() => setIsMultiCityDialogOpen(true)}
@@ -199,6 +207,7 @@ export function FifaCitiesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.05 }}
+              className="min-w-[280px] flex-shrink-0 snap-center sm:min-w-0 sm:flex-shrink"
             >
               <Link
                 href={`/search?event=fifa-2026&city=${city.id}`}

@@ -156,7 +156,10 @@ export function ExperienceCategories() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4
+                         md:grid md:grid-cols-3 md:overflow-visible md:mx-0 md:px-0 md:gap-6
+                         lg:grid-cols-4
+                         scrollbar-hide">
             {categories.map((category, index) => {
               const Icon = category.icon
               return (
@@ -175,7 +178,8 @@ export function ExperienceCategories() {
                       handleCardClick(category, index)
                     }
                   }}
-                  className="group relative aspect-[3/4] overflow-hidden rounded-xl cursor-pointer 
+                  className="group relative min-w-[280px] flex-shrink-0 snap-center aspect-[4/5] overflow-hidden rounded-xl cursor-pointer 
+                             md:min-w-0 md:flex-shrink md:aspect-[3/4]
                              border border-white/20 
                              shadow-[0_8px_30px_rgba(255,255,255,0.1),0_4px_12px_rgba(0,0,0,0.3)]
                              hover:shadow-[0_20px_60px_rgba(255,255,255,0.15),0_8px_20px_rgba(0,0,0,0.4)]
@@ -201,9 +205,9 @@ export function ExperienceCategories() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
                   {/* Content - bottom overlay only */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
                     {/* Category name - large, dramatic */}
-                    <h3 className="font-serif text-3xl text-white font-bold mb-2 drop-shadow-2xl">{category.title}</h3>
+                    <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-white font-bold mb-2 drop-shadow-2xl line-clamp-2">{category.title}</h3>
 
                     {/* Property count - subtle */}
                     <p className="text-white/80 text-sm drop-shadow-md flex items-center gap-1">
