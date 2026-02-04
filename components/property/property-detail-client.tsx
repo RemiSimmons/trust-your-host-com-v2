@@ -64,7 +64,11 @@ export function PropertyDetailClient({ property, relatedProperties }: PropertyDe
     }
   }
 
-  const descriptionWords = property.description.full.split(" ")
+  // Handle both string and object description formats
+  const descriptionText = typeof property.description === 'string' 
+    ? property.description 
+    : (property.description?.full || property.description?.short || '')
+  const descriptionWords = descriptionText.split(" ")
   const shouldTruncate = descriptionWords.length > 300
 
   return (
@@ -195,7 +199,7 @@ export function PropertyDetailClient({ property, relatedProperties }: PropertyDe
                     </button>
                   </>
                 ) : (
-                  <p>{property.description.full}</p>
+                  <p>{descriptionText}</p>
                 )}
               </div>
             </div>

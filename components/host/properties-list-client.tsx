@@ -46,13 +46,19 @@ export function PropertiesListClient({ properties }: PropertiesListClientProps) 
         <Card key={property.id} className="overflow-hidden">
           <div className="flex flex-col md:flex-row">
             {/* Property Image */}
-            <div className="relative w-full md:w-64 h-48 md:h-auto flex-shrink-0">
-              <Image
-                src={property.images[0]}
-                alt={property.name}
-                fill
-                className="object-cover"
-              />
+            <div className="relative w-full md:w-64 h-48 md:h-auto flex-shrink-0 bg-gray-100">
+              {property.images && property.images[0] ? (
+                <Image
+                  src={property.images[0]}
+                  alt={property.name}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                  <span>No image</span>
+                </div>
+              )}
             </div>
 
             {/* Property Details */}
