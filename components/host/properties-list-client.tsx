@@ -1,13 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Edit, ExternalLink, Eye } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import type { Property } from '@/lib/types'
 
 interface PropertiesListClientProps {
@@ -31,11 +29,12 @@ export function PropertiesListClient({ properties }: PropertiesListClientProps) 
           <p className="text-muted-foreground mb-4">
             Submit your first property to start receiving qualified traffic
           </p>
-          <Button asChild>
-            <Link href="/submit-property">
-              Submit a Property
-            </Link>
-          </Button>
+          <a 
+            href="/submit-property"
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            Submit a Property
+          </a>
         </CardContent>
       </Card>
     )
@@ -101,47 +100,39 @@ export function PropertiesListClient({ properties }: PropertiesListClientProps) 
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-2">
-                <Button 
-                  variant="default" 
-                  size="sm" 
-                  onClick={() => {
-                    console.log('[PropertiesListClient] Edit clicked, navigating to:', `/host/properties/${property.id}/edit`)
-                    window.location.href = `/host/properties/${property.id}/edit`
-                  }}
+                <a 
+                  href={`/host/properties/${property.id}/edit`}
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 bg-primary text-primary-foreground hover:bg-primary/90"
                 >
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Property
-                </Button>
+                </a>
                 {property.slug ? (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => {
-                      console.log('[PropertiesListClient] View Listing clicked, opening:', `/properties/${property.slug}`)
-                      window.open(`/properties/${property.slug}`, '_blank')
-                    }}
+                  <a 
+                    href={`/properties/${property.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground"
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     View Listing
-                  </Button>
+                  </a>
                 ) : (
-                  <Button variant="outline" size="sm" disabled>
+                  <span className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background opacity-50 cursor-not-allowed">
                     <Eye className="h-4 w-4 mr-2" />
                     Not Published
-                  </Button>
+                  </span>
                 )}
                 {property.external_booking_url && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => {
-                      console.log('[PropertiesListClient] Your Website clicked, opening:', property.external_booking_url)
-                      window.open(property.external_booking_url, '_blank')
-                    }}
+                  <a 
+                    href={property.external_booking_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground"
                   >
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Your Website
-                  </Button>
+                  </a>
                 )}
               </div>
             </div>
