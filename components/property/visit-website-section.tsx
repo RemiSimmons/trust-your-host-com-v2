@@ -64,7 +64,9 @@ export function VisitWebsiteSection({ property }: VisitWebsiteSectionProps) {
       <div className="mt-8 prose prose-gray dark:prose-invert max-w-none">
         <h4 className="font-serif text-xl font-bold mb-4">About this property</h4>
         <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-          {property.description.full}
+          {typeof property.description === 'string' 
+            ? property.description 
+            : (property.description?.full || property.description?.short || '')}
         </p>
       </div>
     </div>

@@ -5,15 +5,16 @@ interface PropertyDescriptionProps {
 }
 
 export function PropertyDescription({ description }: PropertyDescriptionProps) {
+  // Handle both string and object formats
+  const descriptionText = typeof description === 'string' 
+    ? description 
+    : (description?.full || description?.short || '')
+  
   return (
     <div className="space-y-4">
       <h2 className="font-serif text-2xl font-bold text-primary">About this place</h2>
       <div className="prose prose-gray max-w-none">
-        <p className="text-gray-700 leading-relaxed text-lg">{description.full}</p>
-        <p className="text-gray-700 leading-relaxed mt-4">
-          Experience the perfect blend of comfort and adventure. Whether you're looking to relax or explore, this
-          property offers everything you need for an unforgettable stay.
-        </p>
+        <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-wrap">{descriptionText}</p>
       </div>
     </div>
   )

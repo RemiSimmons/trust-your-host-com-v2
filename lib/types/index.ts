@@ -52,10 +52,12 @@ export interface Property {
   amenities: string[]
   quickHighlights: string[]
 
-  description: {
+  description: string | {
     short: string
     full: string
   }
+  
+  house_rules?: string
 
   rating: {
     average: number
@@ -103,6 +105,13 @@ export interface Property {
   listed_on_platforms?: string[] // Platforms host currently lists on
   other_platforms?: string // Other platforms (freeform text)
   typical_response_hours?: number // Expected response time in hours
+  
+  // Additional host editable fields
+  contact_email?: string
+  contact_phone?: string
+  minimum_stay?: number
+  approval_status?: string
+  pending_changes?: Record<string, any>
 }
 
 export interface Booking {

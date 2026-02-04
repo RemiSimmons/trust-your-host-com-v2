@@ -31,7 +31,10 @@ export default async function AdminChangeRequestsPage() {
 
   if (error) {
     console.error('Error fetching change requests:', error)
+    console.error('Error details:', JSON.stringify(error, null, 2))
   }
+
+  console.log('[AdminChangeRequests] Found', requests?.length || 0, 'pending requests')
 
   return (
     <div className="space-y-6">

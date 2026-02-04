@@ -1,6 +1,7 @@
 import { createServerClient } from "@/lib/supabase/server"
 import type { Property } from "@/lib/types"
 import { mockProperties } from "@/lib/data/properties"
+import { getHostAvatar } from "@/lib/utils/avatar"
 
 export async function getProperties(): Promise<Property[]> {
   console.log("[v0] getProperties called")
@@ -295,6 +296,7 @@ function mapDatabasePropertyToProperty(dbProp: any): Property {
     amenities: dbProp.amenities || [],
     quickHighlights: dbProp.quick_highlights || [],
     description: dbProp.description,
+    house_rules: dbProp.house_rules,
     rating: {
       average: Number(dbProp.rating_average) || 0,
       count: dbProp.rating_count || 0,
@@ -302,7 +304,11 @@ function mapDatabasePropertyToProperty(dbProp: any): Property {
     host: {
       id: dbProp.host?.id || dbProp.host_id,
       name: dbProp.host?.full_name || "Host",
-      photo: dbProp.host?.avatar_url || "https://i.pravatar.cc/150",
+      photo: getHostAvatar(
+        dbProp.host?.id || dbProp.host_id, 
+        dbProp.host?.avatar_url,
+        dbProp.host?.full_name
+      ),
       verified: true, // Assuming trusted hosts for now
       rating: 4.9, // Placeholder until we have host ratings
       responseTime: "within an hour", // Placeholder
@@ -312,9 +318,15 @@ function mapDatabasePropertyToProperty(dbProp: any): Property {
     // Additional fields for host dashboard
     external_booking_url: dbProp.external_booking_url,
     typical_response_hours: dbProp.typical_response_hours,
+    contact_email: dbProp.contact_email,
+    contact_phone: dbProp.contact_phone,
+    minimum_stay: dbProp.minimum_stay,
     subscription_status: dbProp.subscription_status,
     stripe_subscription_id: dbProp.stripe_subscription_id,
     trial_ends_at: dbProp.trial_ends_at,
     is_active: dbProp.is_active,
+    approval_status: dbProp.approval_status,
+    pending_changes: dbProp.pending_changes,
+    postal_code: dbProp.postal_code,
   }
 }

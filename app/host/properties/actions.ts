@@ -121,7 +121,7 @@ export async function updatePropertyRequiresApproval(
 
   const { data: property } = await supabase
     .from('properties')
-    .select('host_id, name, property_type, location, capacity')
+    .select('host_id, name, property_type, location, capacity, postal_code')
     .eq('id', propertyId)
     .single()
 
@@ -131,25 +131,53 @@ export async function updatePropertyRequiresApproval(
 
   // Create a pending changes record
   const pendingChanges: any = {}
+  const currentValues: any = {}
   
   if (data.name && data.name !== property.name) {
     pendingChanges.name = data.name
+    currentValues.name = property.name
   }
   if (data.property_type && data.property_type !== property.property_type) {
     pendingChanges.property_type = data.property_type
+    currentValues.property_type = property.property_type
   }
   if (data.postal_code) {
     pendingChanges.postal_code = data.postal_code
+    currentValues.postal_code = property.postal_code
   }
   if (data.location) {
     pendingChanges.location = data.location
+    currentValues.location = property.location
   }
   if (data.capacity) {
     pendingChanges.capacity = data.capacity
+    currentValues.capacity = property.capacity
   }
 
-  // Store pending changes and mark property as pending approval
-  const { error } = await supabase
+  // If no changes were made, return early
+  if (Object.keys(pendingChanges).length === 0) {
+    return { success: false, error: 'No changes detected' }
+  }
+
+  // Insert into property_change_requests table for admin review
+  const { error: insertError } = await supabase
+    .from('property_change_requests')
+    .insert({
+      property_id: propertyId,
+      host_id: user.id,
+      requested_changes: pendingChanges,
+      current_values: currentValues,
+      status: 'pending',
+      requested_at: new Date().toISOString(),
+    })
+
+  if (insertError) {
+    console.error('Error creating change request:', insertError)
+    return { success: false, error: 'Failed to submit changes for approval' }
+  }
+
+  // Also update property table to mark it has pending changes
+  const { error: updateError } = await supabase
     .from('properties')
     .update({
       pending_changes: pendingChanges,
@@ -158,15 +186,16 @@ export async function updatePropertyRequiresApproval(
     })
     .eq('id', propertyId)
 
-  if (error) {
-    console.error('Error submitting property changes:', error)
-    return { success: false, error: 'Failed to submit changes for approval' }
+  if (updateError) {
+    console.error('Error updating property status:', updateError)
+    // Don't fail here since the change request was created
   }
 
   // TODO: Send email notification to admin about pending changes
   // await sendPendingChangesNotification({ propertyId, propertyName: property.name, changes: pendingChanges })
 
   revalidatePath('/host/properties')
+  revalidatePath('/admin/change-requests')
   revalidatePath(`/properties/${propertyId}`)
   
   return { success: true }

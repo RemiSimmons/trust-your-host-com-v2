@@ -9,11 +9,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertCircle, CheckCircle2, Lock, Save, Clock, Loader2 } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { AlertCircle, CheckCircle2, Lock, Save, Clock, Loader2, ExternalLink } from 'lucide-react'
 import { updatePropertyInstant, updatePropertyRequiresApproval, getPendingChangeRequests, updatePropertyImages } from '@/app/host/properties/actions'
 import { useRouter } from 'next/navigation'
 import type { Property } from '@/lib/types'
 import { ImageManager } from './image-manager'
+import { AMENITIES } from '@/lib/data/property-constants'
+import Link from 'next/link'
 
 interface PropertyEditFormProps {
   property: Property
@@ -35,6 +38,14 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
   const [pendingChanges, setPendingChanges] = useState<ChangeRequest[]>([])
   const [images, setImages] = useState<string[]>(property.images || [])
   const [imagesChanged, setImagesChanged] = useState(false)
+
+  // Handle description - can be string or object
+  const descriptionText = typeof property.description === 'string' 
+    ? property.description 
+    : (property.description?.full || property.description?.short || '')
+  
+  // Get house rules with fallback
+  const houseRulesText = (property as any).house_rules || ''
 
   // Fetch pending change requests
   useEffect(() => {
@@ -227,7 +238,7 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
               <CardContent>
                 <Textarea
                   name="description"
-                  defaultValue={property.description}
+                  defaultValue={descriptionText}
                   rows={6}
                   placeholder="Describe your property..."
                   required
@@ -294,7 +305,7 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
                     name="minimum_stay"
                     type="number"
                     min="1"
-                    defaultValue={1}
+                    defaultValue={property.minimum_stay || property.pricing.minStay || 1}
                     required
                   />
                 </div>
@@ -328,6 +339,7 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
                     id="contact_email"
                     name="contact_email"
                     type="email"
+                    defaultValue={property.contact_email || ''}
                     placeholder="host@example.com"
                   />
                 </div>
@@ -337,6 +349,7 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
                     id="contact_phone"
                     name="contact_phone"
                     type="tel"
+                    defaultValue={property.contact_phone || ''}
                     placeholder="404-301-0535"
                   />
                 </div>
@@ -395,25 +408,71 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
               </CardContent>
             </Card>
 
+            {/* Amenities */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Amenities</CardTitle>
+                <CardDescription>Select all amenities your property offers</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {AMENITIES.map((amenity) => (
+                    <div key={amenity} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`amenity-${amenity}`}
+                        name="amenities"
+                        value={amenity}
+                        defaultChecked={property.amenities?.includes(amenity)}
+                      />
+                      <label
+                        htmlFor={`amenity-${amenity}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        {amenity}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* House Rules */}
             <Card>
               <CardHeader>
                 <CardTitle>House Rules</CardTitle>
-                <CardDescription>Set expectations for guests</CardDescription>
+                <CardDescription>Set expectations for guests (will be displayed prominently on your listing)</CardDescription>
               </CardHeader>
               <CardContent>
                 <Textarea
                   name="house_rules"
+                  defaultValue={houseRulesText}
                   rows={4}
                   placeholder="No smoking, No parties, Check-in after 3pm..."
                 />
+                <p className="text-xs text-muted-foreground mt-2">
+                  These rules will be shown in a highlighted section on your property listing
+                </p>
               </CardContent>
             </Card>
 
-            <Button type="submit" disabled={isSubmitting} className="w-full">
-              <Save className="h-4 w-4 mr-2" />
-              {isSubmitting ? 'Saving...' : 'Save Changes (Updates Immediately)'}
-            </Button>
+            <div className="flex gap-3">
+              <Button type="submit" disabled={isSubmitting} className="flex-1">
+                <Save className="h-4 w-4 mr-2" />
+                {isSubmitting ? 'Saving...' : 'Save Changes (Updates Immediately)'}
+              </Button>
+              {property.slug && (
+                <Link 
+                  href={`/properties/${property.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button type="button" variant="outline" className="w-full">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    View Public Listing
+                  </Button>
+                </Link>
+              )}
+            </div>
           </form>
 
           {/* Image Management Section - Separate from main form */}

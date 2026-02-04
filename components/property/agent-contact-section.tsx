@@ -49,8 +49,10 @@ export function AgentContactSection({ property }: AgentContactSectionProps) {
 
           {/* Property Description */}
           <div className="prose prose-gray max-w-none">
-            <p className="text-gray-700 leading-relaxed">
-              {property.description.full || property.description.short}
+            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+              {typeof property.description === 'string' 
+                ? property.description 
+                : (property.description?.full || property.description?.short || '')}
             </p>
           </div>
         </div>

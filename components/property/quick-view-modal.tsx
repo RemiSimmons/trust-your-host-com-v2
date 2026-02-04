@@ -225,7 +225,9 @@ export function QuickViewModal({ property, isOpen, onClose }: QuickViewModalProp
             <div>
               <h4 className="font-semibold text-gray-900 mb-2">About</h4>
               <p className="text-gray-700 text-sm leading-relaxed line-clamp-4">
-                {property.description.short}
+                {typeof property.description === 'string' 
+                  ? property.description 
+                  : (property.description?.short || property.description?.full || '')}
               </p>
             </div>
 

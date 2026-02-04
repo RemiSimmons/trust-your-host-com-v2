@@ -1,53 +1,86 @@
 "use client"
 
-import { Clock, BanIcon, Dog, Shield } from "lucide-react"
+import { useState } from "react"
+import { Clock, BanIcon, Dog, Shield, ChevronDown, ChevronUp } from "lucide-react"
 import Link from "next/link"
 import type { Property } from "@/lib/types"
+import { Button } from "@/components/ui/button"
 
 interface HouseRulesCardProps {
   property: Property
 }
 
 export function HouseRulesCard({ property }: HouseRulesCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
+  
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm space-y-6">
       <h2 className="text-2xl font-bold text-gray-900">Important Information</h2>
 
-      {/* House Rules */}
+      {/* House Rules - Collapsible */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-800">House Rules</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-800">House Rules</h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-sm"
+          >
+            {isExpanded ? (
+              <>
+                Show less <ChevronUp className="h-4 w-4 ml-1" />
+              </>
+            ) : (
+              <>
+                Show all <ChevronDown className="h-4 w-4 ml-1" />
+              </>
+            )}
+          </Button>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-start gap-3">
-            <Clock className="h-5 w-5 text-gray-600 mt-0.5" />
-            <div>
-              <div className="font-medium text-gray-900">Check-in</div>
-              <div className="text-sm text-gray-600">After 3:00 PM</div>
-            </div>
+        {/* Custom House Rules - Always visible if present */}
+        {property.house_rules && (
+          <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <p className="text-sm text-gray-800 font-medium mb-1">Host's Rules:</p>
+            <p className="text-sm text-gray-700 whitespace-pre-wrap">{property.house_rules}</p>
           </div>
-          
-          <div className="flex items-start gap-3">
-            <Clock className="h-5 w-5 text-gray-600 mt-0.5" />
-            <div>
-              <div className="font-medium text-gray-900">Check-out</div>
-              <div className="text-sm text-gray-600">Before 11:00 AM</div>
+        )}
+        
+        {/* Default House Rules - Preview when collapsed */}
+        <div className={`space-y-4 ${isExpanded ? '' : 'max-h-32 overflow-hidden'}`}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-start gap-3">
+              <Clock className="h-5 w-5 text-gray-600 mt-0.5" />
+              <div>
+                <div className="font-medium text-gray-900">Check-in</div>
+                <div className="text-sm text-gray-600">After 3:00 PM</div>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex items-start gap-3">
-            <BanIcon className="h-5 w-5 text-gray-600 mt-0.5" />
-            <div>
-              <div className="font-medium text-gray-900">Smoking</div>
-              <div className="text-sm text-gray-600">Not allowed</div>
+            
+            <div className="flex items-start gap-3">
+              <Clock className="h-5 w-5 text-gray-600 mt-0.5" />
+              <div>
+                <div className="font-medium text-gray-900">Check-out</div>
+                <div className="text-sm text-gray-600">Before 11:00 AM</div>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex items-start gap-3">
-            <Dog className="h-5 w-5 text-gray-600 mt-0.5" />
-            <div>
-              <div className="font-medium text-gray-900">Pets</div>
-              <div className="text-sm text-gray-600">
-                {property.capacity.allowsPets ? "Allowed" : "Not allowed"}
+            
+            <div className="flex items-start gap-3">
+              <BanIcon className="h-5 w-5 text-gray-600 mt-0.5" />
+              <div>
+                <div className="font-medium text-gray-900">Smoking</div>
+                <div className="text-sm text-gray-600">Not allowed</div>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <Dog className="h-5 w-5 text-gray-600 mt-0.5" />
+              <div>
+                <div className="font-medium text-gray-900">Pets</div>
+                <div className="text-sm text-gray-600">
+                  {property.capacity.allowsPets ? "Allowed" : "Not allowed"}
+                </div>
               </div>
             </div>
           </div>
