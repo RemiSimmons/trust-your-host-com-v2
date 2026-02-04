@@ -6,11 +6,13 @@ import { PropertyEditForm } from '@/components/host/property-edit-form'
 // Force dynamic rendering - requires authentication
 export const dynamic = 'force-dynamic'
 
-export default async function EditPropertyPage({ params }: { params: { id: string } }) {
+export default async function EditPropertyPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const supabase = await createServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   
   console.log('[EditPropertyPage] User:', user?.id, user?.email)
+  console.log('[EditPropertyPage] Property ID:', id)
   
   if (!user) {
     console.log('[EditPropertyPage] No user, redirecting to login')
@@ -21,7 +23,7 @@ export default async function EditPropertyPage({ params }: { params: { id: strin
   const { data: dbProperty } = await supabase
     .from('properties')
     .select('id, host_id, name')
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
   
   console.log('[EditPropertyPage] DB Property:', dbProperty)
@@ -30,7 +32,7 @@ export default async function EditPropertyPage({ params }: { params: { id: strin
   console.log('[EditPropertyPage] Match:', dbProperty?.host_id === user.id)
   
   // Get full property for the form
-  const property = await getPropertyById(params.id)
+  const property = await getPropertyById(id)
   
   if (!property) {
     console.log('[EditPropertyPage] Property not found, redirecting')

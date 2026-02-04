@@ -13,13 +13,14 @@ import { findArticlesForProperty } from "@/lib/seo/related-content"
 import { RelatedContent } from "@/components/seo/related-content"
 
 interface PropertyPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
-  const property = await getPropertyBySlug(params.slug)
+  const { slug } = await params
+  const property = await getPropertyBySlug(slug)
 
   if (!property) {
     return {
@@ -31,7 +32,8 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
 }
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
-  const property = await getPropertyBySlug(params.slug)
+  const { slug } = await params
+  const property = await getPropertyBySlug(slug)
 
   if (!property) {
     notFound()
