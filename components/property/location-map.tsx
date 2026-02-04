@@ -1,26 +1,42 @@
 "use client"
 
-import { MapPin, Navigation } from "lucide-react"
+import { useMemo } from "react"
+import dynamic from "next/dynamic"
+import { MapPin, Navigation, Maximize2 } from "lucide-react"
 import type { Property } from "@/lib/types"
 
 interface LocationMapProps {
   property: Property
 }
 
-export function LocationMap({ property }: LocationMapProps) {
-  // Create approximate map center (offset for privacy - 0.25 mile radius)
-  const approxLat = property.location.coordinates.lat + (Math.random() - 0.5) * 0.01
-  const approxLng = property.location.coordinates.lng + (Math.random() - 0.5) * 0.01
+// Dynamically import map to avoid SSR issues
+const DynamicMap = dynamic(() => import("./property-map-view"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-96 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center">
+      <div className="text-gray-500">Loading map...</div>
+    </div>
+  ),
+})
 
-  // Google Maps static API URL (you may need to add API key in production)
-  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${approxLat},${approxLng}&zoom=14&size=600x400&markers=color:red%7C${approxLat},${approxLng}&key=YOUR_API_KEY`
-  
-  // Fallback: OpenStreetMap
-  const osmUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${approxLng - 0.01},${approxLat - 0.01},${approxLng + 0.01},${approxLat + 0.01}&layer=mapnik&marker=${approxLat},${approxLng}`
+export function LocationMap({ property }: LocationMapProps) {
+  const approxLat = property.location.coordinates.lat
+  const approxLng = property.location.coordinates.lng
 
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm">
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">Location</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold text-gray-900">Location</h2>
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${approxLat},${approxLng}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-sm text-accent hover:underline"
+        >
+          <Maximize2 className="h-4 w-4" />
+          Open in Maps
+        </a>
+      </div>
       
       <div className="space-y-4">
         {/* Address */}
@@ -39,16 +55,12 @@ export function LocationMap({ property }: LocationMapProps) {
           </div>
         </div>
 
-        {/* Map Container */}
-        <div className="aspect-video w-full rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
-          <iframe
-            src={osmUrl}
-            className="w-full h-full"
-            style={{ border: 0 }}
-            loading="lazy"
-            title="Property location map"
-          />
-        </div>
+        {/* Interactive Map */}
+        <DynamicMap
+          lat={approxLat}
+          lng={approxLng}
+          city={property.location.city}
+        />
 
         {/* Distance Info */}
         {property.distance_to_stadium && (

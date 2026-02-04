@@ -58,6 +58,7 @@ export interface Property {
   }
   
   house_rules?: string
+  standard_house_rules?: string[]
 
   rating: {
     average: number

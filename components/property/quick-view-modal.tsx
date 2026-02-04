@@ -65,11 +65,20 @@ export function QuickViewModal({ property, isOpen, onClose }: QuickViewModalProp
     <div
       className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200"
       onClick={handleBackdropClick}
-      style={{ pointerEvents: "auto" }}
+      style={{ 
+        pointerEvents: "auto",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        margin: 0
+      }}
     >
       <div 
-        className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-300"
+        className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-300 mx-auto"
         onClick={(e) => e.stopPropagation()}
+        style={{ position: "relative" }}
       >
         {/* Header */}
         <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between z-10">

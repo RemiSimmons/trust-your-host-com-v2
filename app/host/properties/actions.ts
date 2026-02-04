@@ -12,6 +12,7 @@ export async function updatePropertyInstant(
     description?: string
     amenities?: string[]
     house_rules?: string
+    standard_house_rules?: string[]
     pricing?: {
       baseNightlyRate: number
       weeklyDiscount?: number
@@ -63,6 +64,7 @@ export async function updatePropertyInstant(
     description: data.description,
     amenities: data.amenities,
     house_rules: data.house_rules,
+    standard_house_rules: data.standard_house_rules,
     pricing: data.pricing,
     minimum_stay: data.minimum_stay,
     external_booking_url: data.external_booking_url,

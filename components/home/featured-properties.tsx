@@ -139,17 +139,26 @@ export function PropertyCard({ property }: { property: Property }) {
             ))}
           </ul>
 
-          {/* Action button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              setShowQuickView(true)
-            }}
-            className="w-full bg-accent text-white py-3 px-4 rounded-lg hover:bg-accent/90 transition-colors text-sm font-medium shadow-lg"
-          >
-            View Details
-          </button>
+          {/* Action buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setShowQuickView(true)
+              }}
+              className="flex-1 bg-accent text-white py-3 px-4 rounded-lg hover:bg-accent/80 transition-colors text-sm font-medium shadow-lg"
+            >
+              Quick View
+            </button>
+            <Link
+              href={`/properties/${property.slug}`}
+              className="flex-1 text-center bg-gray-50 border-2 border-accent text-accent py-3 px-4 rounded-lg hover:bg-accent/10 hover:border-accent transition-colors text-sm font-medium shadow-sm"
+              onClick={(e) => e.stopPropagation()}
+            >
+              View Details
+            </Link>
+          </div>
         </div>
       </div>
 

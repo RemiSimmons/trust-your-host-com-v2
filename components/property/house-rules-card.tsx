@@ -1,89 +1,91 @@
 "use client"
 
 import { useState } from "react"
-import { Clock, BanIcon, Dog, Shield, ChevronDown, ChevronUp } from "lucide-react"
+import { Clock, Shield, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import type { Property } from "@/lib/types"
-import { Button } from "@/components/ui/button"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 
 interface HouseRulesCardProps {
   property: Property
 }
 
 export function HouseRulesCard({ property }: HouseRulesCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  
+  const hasStandardRules = property.standard_house_rules && property.standard_house_rules.length > 0
+  const hasCustomRules = property.house_rules && property.house_rules.trim() !== ''
+  const hasAnyRules = hasStandardRules || hasCustomRules
   
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm space-y-6">
       <h2 className="text-2xl font-bold text-gray-900">Important Information</h2>
 
-      {/* House Rules - Collapsible */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800">House Rules</h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="text-sm"
-          >
-            {isExpanded ? (
-              <>
-                Show less <ChevronUp className="h-4 w-4 ml-1" />
-              </>
-            ) : (
-              <>
-                Show all <ChevronDown className="h-4 w-4 ml-1" />
-              </>
+      {/* House Rules - Minimalistic Collapsible */}
+      {hasAnyRules && (
+        <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-2">
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-gray-50 rounded-lg transition-colors group">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                <Clock className="h-5 w-5 text-orange-600" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-lg font-semibold text-gray-900">House Rules</h3>
+                <p className="text-sm text-gray-600">
+                  {hasStandardRules && hasCustomRules 
+                    ? `${property.standard_house_rules?.length} rules + custom guidelines`
+                    : hasStandardRules 
+                    ? `${property.standard_house_rules?.length} rules`
+                    : 'Custom guidelines'}
+                </p>
+              </div>
+            </div>
+            <ChevronRight 
+              className={`h-5 w-5 text-gray-600 transition-transform ${isOpen ? 'rotate-90' : ''}`}
+            />
+          </CollapsibleTrigger>
+          
+          <CollapsibleContent className="px-4 pb-4 space-y-4">
+            {/* Standard House Rules */}
+            {hasStandardRules && (
+              <div className="space-y-2">
+                <ul className="space-y-2">
+                  {property.standard_house_rules?.map((rule, index) => (
+                    <li key={index} className="flex items-start gap-2 text-sm text-gray-700">
+                      <span className="text-green-600 mt-0.5 font-bold">✓</span>
+                      <span>{rule}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
-          </Button>
+            
+            {/* Custom House Rules */}
+            {hasCustomRules && (
+              <div className="pt-3 border-t">
+                <p className="text-sm font-semibold text-gray-800 mb-2">Additional Guidelines:</p>
+                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                  {property.house_rules}
+                </p>
+              </div>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+
+      {/* Default Info - Check-in/Check-out */}
+      <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+        <div>
+          <div className="text-xs text-gray-600 uppercase font-semibold mb-1">Check-in</div>
+          <div className="text-sm text-gray-900">After 3:00 PM</div>
         </div>
-        
-        {/* Custom House Rules - Always visible if present */}
-        {property.house_rules && (
-          <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-sm text-gray-800 font-medium mb-1">Host's Rules:</p>
-            <p className="text-sm text-gray-700 whitespace-pre-wrap">{property.house_rules}</p>
-          </div>
-        )}
-        
-        {/* Default House Rules - Preview when collapsed */}
-        <div className={`space-y-4 ${isExpanded ? '' : 'max-h-32 overflow-hidden'}`}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-start gap-3">
-              <Clock className="h-5 w-5 text-gray-600 mt-0.5" />
-              <div>
-                <div className="font-medium text-gray-900">Check-in</div>
-                <div className="text-sm text-gray-600">After 3:00 PM</div>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3">
-              <Clock className="h-5 w-5 text-gray-600 mt-0.5" />
-              <div>
-                <div className="font-medium text-gray-900">Check-out</div>
-                <div className="text-sm text-gray-600">Before 11:00 AM</div>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3">
-              <BanIcon className="h-5 w-5 text-gray-600 mt-0.5" />
-              <div>
-                <div className="font-medium text-gray-900">Smoking</div>
-                <div className="text-sm text-gray-600">Not allowed</div>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3">
-              <Dog className="h-5 w-5 text-gray-600 mt-0.5" />
-              <div>
-                <div className="font-medium text-gray-900">Pets</div>
-                <div className="text-sm text-gray-600">
-                  {property.capacity.allowsPets ? "Allowed" : "Not allowed"}
-                </div>
-              </div>
-            </div>
-          </div>
+        <div>
+          <div className="text-xs text-gray-600 uppercase font-semibold mb-1">Check-out</div>
+          <div className="text-sm text-gray-900">Before 11:00 AM</div>
         </div>
       </div>
 

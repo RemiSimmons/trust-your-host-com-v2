@@ -209,12 +209,12 @@ export function MapView({
                         🏟️ {property.distance_to_stadium} mi to stadium
                       </p>
                     )}
-                    <Link
-                      href={`/properties/${property.slug}`}
-                      className="block w-full text-center bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-lg text-sm font-semibold transition-colors"
-                    >
-                      View Details →
-                    </Link>
+                  <Link
+                    href={`/properties/${property.slug}`}
+                    className="block w-full text-center bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-lg text-sm font-semibold transition-colors"
+                  >
+                    Quick View →
+                  </Link>
                   </div>
                 </Popup>
               </Marker>

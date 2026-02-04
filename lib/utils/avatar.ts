@@ -1,6 +1,6 @@
 /**
  * Generate a consistent avatar for a host
- * If no avatar URL is provided, generates a consistent avatar based on host ID
+ * If no avatar URL is provided, generates an SVG with initials
  */
 export function getHostAvatar(hostId: string, avatarUrl?: string | null, hostName?: string): string {
   // If host has uploaded an avatar, use it
@@ -8,13 +8,45 @@ export function getHostAvatar(hostId: string, avatarUrl?: string | null, hostNam
     return avatarUrl
   }
   
-  // Generate a consistent avatar based on host ID
-  // Use DiceBear API for consistent, nice-looking avatars
-  // Alternative: use a hash of the ID to pick a consistent pravatar number
+  // Generate initials-based avatar
+  const initials = getInitials(hostName || 'Host')
   const hash = hashString(hostId)
-  const avatarNumber = (hash % 70) + 1 // pravatar has 70 avatars
   
-  return `https://i.pravatar.cc/150?img=${avatarNumber}`
+  // Generate consistent colors based on host ID
+  const colors = [
+    { bg: '#FF6B35', text: '#FFFFFF' }, // Orange
+    { bg: '#4A90E2', text: '#FFFFFF' }, // Blue
+    { bg: '#50C878', text: '#FFFFFF' }, // Green
+    { bg: '#9B59B6', text: '#FFFFFF' }, // Purple
+    { bg: '#E74C3C', text: '#FFFFFF' }, // Red
+    { bg: '#F39C12', text: '#FFFFFF' }, // Yellow
+    { bg: '#1ABC9C', text: '#FFFFFF' }, // Teal
+    { bg: '#34495E', text: '#FFFFFF' }, // Dark Gray
+  ]
+  
+  const colorIndex = hash % colors.length
+  const { bg, text } = colors[colorIndex]
+  
+  // Create SVG data URL with initials
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <rect width="100" height="100" fill="${bg}"/>
+      <text
+        x="50"
+        y="50"
+        font-family="system-ui, -apple-system, sans-serif"
+        font-size="40"
+        font-weight="600"
+        fill="${text}"
+        text-anchor="middle"
+        dominant-baseline="central"
+      >${initials}</text>
+    </svg>
+  `.trim()
+  
+  // Encode SVG as data URL
+  const encoded = encodeURIComponent(svg)
+  return `data:image/svg+xml,${encoded}`
 }
 
 /**

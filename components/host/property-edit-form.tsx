@@ -15,7 +15,7 @@ import { updatePropertyInstant, updatePropertyRequiresApproval, getPendingChange
 import { useRouter } from 'next/navigation'
 import type { Property } from '@/lib/types'
 import { ImageManager } from './image-manager'
-import { AMENITIES } from '@/lib/data/property-constants'
+import { AMENITIES, STANDARD_HOUSE_RULES } from '@/lib/data/property-constants'
 import Link from 'next/link'
 
 interface PropertyEditFormProps {
@@ -46,6 +46,7 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
   
   // Get house rules with fallback
   const houseRulesText = (property as any).house_rules || ''
+  const standardHouseRules = property.standard_house_rules || []
 
   // Fetch pending change requests
   useEffect(() => {
@@ -93,6 +94,7 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
       description: formData.get('description') as string,
       amenities: formData.getAll('amenities') as string[],
       house_rules: formData.get('house_rules') as string,
+      standard_house_rules: formData.getAll('standard_house_rules') as string[],
       pricing: {
         baseNightlyRate: Number(formData.get('baseNightlyRate')),
         weeklyDiscount: Number(formData.get('weeklyDiscount')) || 0,
@@ -442,16 +444,46 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
                 <CardTitle>House Rules</CardTitle>
                 <CardDescription>Set expectations for guests (will be displayed prominently on your listing)</CardDescription>
               </CardHeader>
-              <CardContent>
-                <Textarea
-                  name="house_rules"
-                  defaultValue={houseRulesText}
-                  rows={4}
-                  placeholder="No smoking, No parties, Check-in after 3pm..."
-                />
-                <p className="text-xs text-muted-foreground mt-2">
-                  These rules will be shown in a highlighted section on your property listing
-                </p>
+              <CardContent className="space-y-6">
+                {/* Standard House Rules - Checkboxes */}
+                <div>
+                  <Label className="text-base mb-3 block">Standard Rules</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {STANDARD_HOUSE_RULES.map((rule) => (
+                      <div key={rule} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`rule-${rule}`}
+                          name="standard_house_rules"
+                          value={rule}
+                          defaultChecked={standardHouseRules.includes(rule)}
+                        />
+                        <label
+                          htmlFor={`rule-${rule}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                          {rule}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Custom House Rules - Free Text */}
+                <div>
+                  <Label htmlFor="house_rules" className="text-base mb-2 block">
+                    Additional Custom Rules
+                  </Label>
+                  <Textarea
+                    id="house_rules"
+                    name="house_rules"
+                    defaultValue={houseRulesText}
+                    rows={4}
+                    placeholder="Add any additional custom rules specific to your property..."
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    These rules will be shown in a collapsible section on your property listing
+                  </p>
+                </div>
               </CardContent>
             </Card>
 

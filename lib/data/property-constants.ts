@@ -76,8 +76,25 @@ export const AMENITIES = [
 ] as const
 
 /**
+ * Standard House Rules
+ * Used in: submission form, property edit form
+ */
+export const STANDARD_HOUSE_RULES = [
+  'No smoking',
+  'No pets',
+  'No parties or events',
+  'Quiet hours (10 PM - 8 AM)',
+  'No unregistered guests',
+  'Respect neighbors',
+  'Clean up after yourself',
+  'No shoes inside',
+  'Maximum occupancy strictly enforced'
+] as const
+
+/**
  * Property Type Helpers
  */
 export type PropertyType = keyof typeof PROPERTY_TYPES
 export type ExperienceCategory = typeof EXPERIENCE_CATEGORIES[number]
 export type Amenity = typeof AMENITIES[number]
+export type StandardHouseRule = typeof STANDARD_HOUSE_RULES[number]

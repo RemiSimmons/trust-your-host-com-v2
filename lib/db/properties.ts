@@ -297,6 +297,7 @@ function mapDatabasePropertyToProperty(dbProp: any): Property {
     quickHighlights: dbProp.quick_highlights || [],
     description: dbProp.description,
     house_rules: dbProp.house_rules,
+    standard_house_rules: dbProp.standard_house_rules || [],
     rating: {
       average: Number(dbProp.rating_average) || 0,
       count: dbProp.rating_count || 0,
