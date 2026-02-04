@@ -27,39 +27,22 @@ export async function submitPropertyListing(formData: FormData) {
     return { error: 'Please provide a valid website URL' }
   }
   
-  // Parse image URLs and convert share links to direct links
-  // Support both comma-separated and newline-separated URLs
-  const imageInput = formData.get('image_urls') as string
-  const imageUrls = imageInput
-    .split(/[,\n]/) // Split by comma or newline
-    .map(s => s.trim())
-    .filter(s => s.length > 0)
-    .map(url => {
-      // Convert Google Drive share links to direct download links
-      if (url.includes('drive.google.com')) {
-        const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/)
-        if (fileIdMatch) {
-          return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`
-        }
-      }
-      
-      // Convert Dropbox share links to direct download links
-      if (url.includes('dropbox.com')) {
-        return url.replace('www.dropbox.com', 'dl.dropboxusercontent.com').replace('?dl=0', '').replace('?dl=1', '')
-      }
-      
-      // OneDrive and WeTransfer links are typically already direct download links
-      // or can be used as-is for the submission review
-      
-      return url
-    })
+  // Parse uploaded images (JSON array of Supabase Storage URLs)
+  const uploadedImagesJson = formData.get('uploaded_images') as string
+  let imageUrls: string[] = []
+  
+  try {
+    imageUrls = JSON.parse(uploadedImagesJson || '[]')
+  } catch {
+    return { error: 'Invalid image data. Please re-upload your images.' }
+  }
   
   if (imageUrls.length < 3) {
-    return { error: 'Please provide at least 3 image URLs or download links' }
+    return { error: 'Please upload at least 3 images of your property' }
   }
 
   if (imageUrls.length > 5) {
-    return { error: 'Please provide no more than 5 image URLs or download links' }
+    return { error: 'Please upload no more than 5 images' }
   }
   
   // Validate description length

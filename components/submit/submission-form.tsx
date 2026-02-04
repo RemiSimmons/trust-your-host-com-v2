@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { submitPropertyListing } from '@/app/submit-property/actions'
 import { Loader2, CheckCircle } from 'lucide-react'
 import { EXPERIENCE_CATEGORIES, AMENITIES, PROPERTY_TYPES } from '@/lib/data/property-constants'
+import { SubmissionImageUploader } from './image-uploader'
 
 export function SubmissionForm() {
   const [isLoading, setIsLoading] = useState(false)
@@ -21,11 +22,20 @@ export function SubmissionForm() {
   const [wordCount, setWordCount] = useState(0)
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
   const [showOptionalSection, setShowOptionalSection] = useState(false)
+  const [uploadedImages, setUploadedImages] = useState<string[]>([])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setIsLoading(true)
     setError('')
+
+    // Validate minimum images
+    if (uploadedImages.length < 3) {
+      setError('Please upload at least 3 images of your property.')
+      setIsLoading(false)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
 
     const formData = new FormData(e.currentTarget)
     
@@ -35,6 +45,9 @@ export function SubmissionForm() {
     
     // Add selected platforms
     selectedPlatforms.forEach(platform => formData.append('listed_platforms', platform))
+    
+    // Add uploaded images
+    formData.set('uploaded_images', JSON.stringify(uploadedImages))
 
     const result = await submitPropertyListing(formData)
 
@@ -288,67 +301,18 @@ export function SubmissionForm() {
       {/* Images */}
       <Card>
         <CardHeader>
-          <CardTitle>Property Images</CardTitle>
-          <CardDescription>Provide 3-5 high-quality images of your property</CardDescription>
+          <CardTitle>Property Images *</CardTitle>
+          <CardDescription>
+            Upload 3-5 high-quality photos of your property. First image will be the main thumbnail.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="image_urls">Image URLs or Download Links *</Label>
-              <Textarea
-                id="image_urls"
-                name="image_urls"
-                rows={5}
-                placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg, https://example.com/image3.jpg&#10;&#10;Or enter one URL per line:&#10;https://drive.google.com/file/d/xxx/view&#10;https://www.dropbox.com/s/xxx/photo.jpg&#10;https://onedrive.live.com/download?...&#10;https://wetransfer.com/downloads/xxx"
-                className="font-mono text-sm"
-                required
-              />
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <p className="font-medium text-gray-700 dark:text-gray-300">
-                  ✅ Accepted: Direct image URLs, Google Drive, Dropbox, OneDrive, or WeTransfer links
-                </p>
-                <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li>Enter URLs separated by commas OR one URL per line</li>
-                  <li>Minimum 3 images, maximum 5</li>
-                  <li>Accepted formats: JPG, PNG, WebP</li>
-                  <li>For Google Drive: Share link with "Anyone with the link can view"</li>
-                  <li>For Dropbox: Use share link or direct download link</li>
-                  <li>For OneDrive: Use share or download link</li>
-                  <li>For WeTransfer: Copy the download link</li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Upload service icons/badges */}
-            <div className="flex flex-wrap gap-2 pt-2">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-full text-xs font-medium text-blue-700 dark:text-blue-300">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.545 10.239v3.821h5.445c-.712 2.315-2.647 3.972-5.445 3.972a6.033 6.033 0 110-12.064c1.498 0 2.866.549 3.921 1.453l2.814-2.814A9.969 9.969 0 0012.545 2C7.021 2 2.543 6.477 2.543 12s4.478 10 10.002 10c8.396 0 10.249-7.85 9.426-11.748l-9.426-.013z"/>
-                </svg>
-                Google Drive
-              </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-full text-xs font-medium text-blue-700 dark:text-blue-300">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2L4.5 8.5l3 3L12 8l4.5 3.5 3-3L12 2z"/>
-                  <path d="M4.5 15.5l3 3L12 16l4.5 2.5 3-3L12 10l-7.5 5.5z"/>
-                </svg>
-                Dropbox
-              </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-full text-xs font-medium text-blue-700 dark:text-blue-300">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"/>
-                  <path d="M14 8h-4v4H8v4h4v4h4v-4h4v-4h-4V8z"/>
-                </svg>
-                OneDrive
-              </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-900/20 rounded-full text-xs font-medium text-purple-700 dark:text-purple-300">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-                </svg>
-                WeTransfer
-              </div>
-            </div>
-          </div>
+          <SubmissionImageUploader
+            images={uploadedImages}
+            onImagesChange={setUploadedImages}
+            maxImages={5}
+            minImages={3}
+          />
         </CardContent>
       </Card>
 
