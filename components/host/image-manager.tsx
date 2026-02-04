@@ -218,19 +218,21 @@ export function ImageManager({
     try {
       const supabase = createBrowserClient()
       
-      // Extract file path from URL
-      const urlParts = urlToDelete.split('/property-images/')
-      if (urlParts.length === 2) {
-        const filePath = urlParts[1]
-        
-        // Delete from Supabase Storage
-        const { error: deleteError } = await supabase.storage
-          .from('property-images')
-          .remove([filePath])
+      // Only try to delete from Supabase Storage if it's a Supabase URL
+      if (urlToDelete.includes('/property-images/')) {
+        const urlParts = urlToDelete.split('/property-images/')
+        if (urlParts.length === 2) {
+          const filePath = urlParts[1]
+          
+          // Delete from Supabase Storage
+          const { error: deleteError } = await supabase.storage
+            .from('property-images')
+            .remove([filePath])
 
-        if (deleteError) {
-          console.error('Delete error:', deleteError)
-          // Continue anyway to remove from UI
+          if (deleteError) {
+            console.error('Delete error:', deleteError)
+            // Continue anyway to remove from UI
+          }
         }
       }
 
@@ -244,6 +246,12 @@ export function ImageManager({
     } finally {
       setIsDeletingUrl(null)
     }
+  }
+
+  const handleClearAll = () => {
+    setImages([])
+    onImagesChange([])
+    setError(null)
   }
 
   return (
@@ -285,44 +293,61 @@ export function ImageManager({
         </Card>
       )}
 
-      {/* Upload button */}
-      {images.length < maxImages && (
-        <div className="flex flex-col items-center gap-2">
-          <label htmlFor="image-upload" className="w-full">
-            <input
-              id="image-upload"
-              type="file"
-              accept="image/jpeg,image/jpg,image/png,image/webp"
-              multiple
-              onChange={handleFileSelect}
-              disabled={isUploading}
-              className="hidden"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={isUploading}
-              onClick={() => document.getElementById('image-upload')?.click()}
-            >
-              {isUploading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Image ({images.length}/{maxImages})
-                </>
-              )}
-            </Button>
-          </label>
-          <p className="text-xs text-muted-foreground">
-            Max 5MB per image. JPG, PNG, or WebP only. Drag images to reorder.
-          </p>
-        </div>
-      )}
+      {/* Action buttons */}
+      <div className="flex flex-col gap-2">
+        {images.length < maxImages && (
+          <div className="flex flex-col items-center gap-2">
+            <label htmlFor="image-upload" className="w-full">
+              <input
+                id="image-upload"
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                multiple
+                onChange={handleFileSelect}
+                disabled={isUploading}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                disabled={isUploading}
+                onClick={() => document.getElementById('image-upload')?.click()}
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Image ({images.length}/{maxImages})
+                  </>
+                )}
+              </Button>
+            </label>
+          </div>
+        )}
+        
+        {/* Clear all button - only show if there are images */}
+        {images.length > 0 && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            onClick={handleClearAll}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Clear All Images & Start Fresh
+          </Button>
+        )}
+        
+        <p className="text-xs text-muted-foreground text-center">
+          Max 5MB per image. JPG, PNG, or WebP only. Drag images to reorder.
+        </p>
+      </div>
     </div>
   )
 }
