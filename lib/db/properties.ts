@@ -280,11 +280,29 @@ export async function getFavoriteProperties(userId: string): Promise<Property[]>
 }
 
 function mapDatabasePropertyToProperty(dbProp: any): Property {
+  // Ensure location has valid coordinates
+  const location = dbProp.location || {}
+  const coordinates = location.coordinates || {}
+  
+  // Default to Atlanta if coordinates are missing or invalid
+  const lat = coordinates.lat != null && coordinates.lat !== 0 ? coordinates.lat : 33.7490
+  const lng = coordinates.lng != null && coordinates.lng !== 0 ? coordinates.lng : -84.3880
+  
+  if (!coordinates.lat || !coordinates.lng || coordinates.lat === 0 || coordinates.lng === 0) {
+    console.warn(`[mapDatabasePropertyToProperty] Property "${dbProp.name}" has invalid coordinates, using Atlanta fallback`)
+  }
+  
   return {
     id: dbProp.id,
     name: dbProp.name,
     slug: dbProp.slug,
-    location: dbProp.location,
+    location: {
+      city: location.city || 'Atlanta',
+      state: location.state || 'Georgia',
+      country: location.country || 'USA',
+      region: location.region || 'Southeast',
+      coordinates: { lat, lng }
+    },
     images: dbProp.images || [],
     experiences: dbProp.experiences || [],
     propertyType: dbProp.property_type,

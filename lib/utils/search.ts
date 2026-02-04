@@ -56,33 +56,40 @@ export function filterProperties(properties: Property[], filters: FilterState): 
     // Cities filter (for multi-city selection)
     if (filters.cities.length > 0) {
       const propertyMatchesCity = filters.cities.some(cityId => {
+        // Safety check: ensure location and city exist
+        if (!property.location?.city) return false
+        
+        const city = property.location.city
+        const state = property.location.state || ''
+        const cityLower = city.toLowerCase()
+        
         // Match city based on location - FIFA cities
         const fifaCityMatches: Record<string, boolean> = {
-          "new-york-new-jersey": property.location.city.toLowerCase().includes("new") || property.location.state === "New Jersey" || property.location.city === "Brooklyn" || property.location.city === "Hoboken",
-          "miami-gardens": property.location.city.toLowerCase().includes("miami") || property.location.city === "Coral Gables" || property.location.city === "Aventura" || property.location.city === "Key Biscayne" || property.location.city === "Coconut Grove",
-          "los-angeles": property.location.city.toLowerCase().includes("angeles") || property.location.city === "Inglewood" || property.location.city === "Santa Monica",
-          "atlanta": property.location.city === "Atlanta",
-          "boston": property.location.city === "Boston" || property.location.city === "Foxborough",
-          "philadelphia": property.location.city === "Philadelphia",
-          "kansas-city": property.location.city === "Kansas City",
-          "dallas": property.location.city === "Dallas" || property.location.city === "Arlington",
-          "houston": property.location.city === "Houston",
-          "seattle": property.location.city === "Seattle",
-          "san-francisco": property.location.city.toLowerCase().includes("san") || property.location.city === "Santa Clara"
+          "new-york-new-jersey": cityLower.includes("new") || state === "New Jersey" || city === "Brooklyn" || city === "Hoboken",
+          "miami-gardens": cityLower.includes("miami") || city === "Coral Gables" || city === "Aventura" || city === "Key Biscayne" || city === "Coconut Grove",
+          "los-angeles": cityLower.includes("angeles") || city === "Inglewood" || city === "Santa Monica",
+          "atlanta": city === "Atlanta",
+          "boston": city === "Boston" || city === "Foxborough",
+          "philadelphia": city === "Philadelphia",
+          "kansas-city": city === "Kansas City",
+          "dallas": city === "Dallas" || city === "Arlington",
+          "houston": city === "Houston",
+          "seattle": city === "Seattle",
+          "san-francisco": cityLower.includes("san") || city === "Santa Clara"
         }
         
         // Match city based on location - Other cities
         const otherCityMatches: Record<string, boolean> = {
-          "austin": property.location.city === "Austin",
-          "chicago": property.location.city === "Chicago",
-          "denver": property.location.city === "Denver",
-          "las-vegas": property.location.city === "Las Vegas" || property.location.city.toLowerCase().includes("vegas"),
-          "nashville": property.location.city === "Nashville",
-          "new-orleans": property.location.city === "New Orleans",
-          "orlando": property.location.city === "Orlando",
-          "portland": property.location.city === "Portland",
-          "san-diego": property.location.city === "San Diego",
-          "scottsdale": property.location.city === "Scottsdale" || property.location.city === "Phoenix",
+          "austin": city === "Austin",
+          "chicago": city === "Chicago",
+          "denver": city === "Denver",
+          "las-vegas": city === "Las Vegas" || cityLower.includes("vegas"),
+          "nashville": city === "Nashville",
+          "new-orleans": city === "New Orleans",
+          "orlando": city === "Orlando",
+          "portland": city === "Portland",
+          "san-diego": city === "San Diego",
+          "scottsdale": city === "Scottsdale" || city === "Phoenix",
         }
         
         return fifaCityMatches[cityId] || otherCityMatches[cityId] || false

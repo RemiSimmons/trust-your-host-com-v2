@@ -32,9 +32,21 @@ function MapInitializer() {
 }
 
 export default function PropertyMapView({ lat, lng, city }: PropertyMapViewProps) {
-  // Validate coordinates
-  const validLat = !isNaN(lat) && lat >= -90 && lat <= 90 ? lat : 33.7490
-  const validLng = !isNaN(lng) && lng >= -180 && lng <= 180 ? lng : -84.3880
+  // Debug logging
+  console.log('[PropertyMapView] Received coordinates:', { lat, lng, city })
+  
+  // Validate coordinates - check for null, undefined, 0, or out of range
+  const isValidLat = lat != null && !isNaN(lat) && lat !== 0 && lat >= -90 && lat <= 90
+  const isValidLng = lng != null && !isNaN(lng) && lng !== 0 && lng >= -180 && lng <= 180
+  
+  const validLat = isValidLat ? lat : 33.7490 // Default: Atlanta
+  const validLng = isValidLng ? lng : -84.3880 // Default: Atlanta
+  
+  if (!isValidLat || !isValidLng) {
+    console.warn('[PropertyMapView] Using fallback coordinates for:', city, 'Original:', { lat, lng })
+  }
+  
+  console.log('[PropertyMapView] Using coordinates:', { validLat, validLng })
   
   // Custom marker icon
   const customIcon = divIcon({
