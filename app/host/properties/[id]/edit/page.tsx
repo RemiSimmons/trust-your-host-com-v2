@@ -10,17 +10,38 @@ export default async function EditPropertyPage({ params }: { params: { id: strin
   const supabase = await createServerClient()
   const { data: { user } } = await supabase.auth.getUser()
   
-  if (!user) redirect('/host/login')
+  console.log('[EditPropertyPage] User:', user?.id, user?.email)
   
-  // Get property
+  if (!user) {
+    console.log('[EditPropertyPage] No user, redirecting to login')
+    redirect('/host/login')
+  }
+  
+  // Get property - first try direct database query to get host_id
+  const { data: dbProperty } = await supabase
+    .from('properties')
+    .select('id, host_id, name')
+    .eq('id', params.id)
+    .single()
+  
+  console.log('[EditPropertyPage] DB Property:', dbProperty)
+  console.log('[EditPropertyPage] Property host_id:', dbProperty?.host_id)
+  console.log('[EditPropertyPage] Current user.id:', user.id)
+  console.log('[EditPropertyPage] Match:', dbProperty?.host_id === user.id)
+  
+  // Get full property for the form
   const property = await getPropertyById(params.id)
   
   if (!property) {
+    console.log('[EditPropertyPage] Property not found, redirecting')
     redirect('/host/properties')
   }
   
-  // Verify ownership
-  if (property.host.id !== user.id) {
+  console.log('[EditPropertyPage] Property host.id from mapper:', property.host.id)
+  
+  // Verify ownership using the direct host_id from database
+  if (dbProperty?.host_id !== user.id) {
+    console.log('[EditPropertyPage] Ownership mismatch! host_id:', dbProperty?.host_id, 'user.id:', user.id)
     redirect('/host/properties')
   }
   
