@@ -44,7 +44,7 @@ export async function updatePropertyInstant(
 
   const { data: property, error: fetchError } = await supabase
     .from('properties')
-    .select('host_id')
+    .select('host_id, slug')
     .eq('id', propertyId)
     .single()
 
@@ -103,7 +103,11 @@ export async function updatePropertyInstant(
 
   console.log('[updatePropertyInstant] Update successful!')
   revalidatePath('/host/properties')
-  revalidatePath(`/properties/${propertyId}`)
+  revalidatePath(`/host/properties/${propertyId}/edit`)
+  if (property.slug) {
+    revalidatePath(`/properties/${property.slug}`)
+  }
+  revalidatePath('/search')
   
   return { success: true }
 }
@@ -139,7 +143,7 @@ export async function updatePropertyRequiresApproval(
 
   const { data: property } = await supabase
     .from('properties')
-    .select('host_id, name, property_type, location, capacity, postal_code')
+    .select('host_id, slug, name, property_type, location, capacity, postal_code')
     .eq('id', propertyId)
     .single()
 
@@ -230,7 +234,10 @@ export async function updatePropertyRequiresApproval(
 
   revalidatePath('/host/properties')
   revalidatePath('/admin/change-requests')
-  revalidatePath(`/properties/${propertyId}`)
+  if (property.slug) {
+    revalidatePath(`/properties/${property.slug}`)
+  }
+  revalidatePath('/search')
   
   return { success: true }
 }
@@ -310,7 +317,7 @@ export async function updatePropertyImages(
 
   const { data: property } = await supabase
     .from('properties')
-    .select('host_id')
+    .select('host_id, slug')
     .eq('id', propertyId)
     .single()
 
@@ -326,22 +333,40 @@ export async function updatePropertyImages(
   // Limit to max 5 images
   const validatedImages = images.slice(0, 5)
 
-  // Update property images
-  const { error } = await supabase
+  // Use admin client to bypass RLS for the update
+  const adminSupabase = createAdminClient()
+
+  // Update property images and verify the update took effect
+  const { data: updated, error } = await adminSupabase
     .from('properties')
     .update({
       images: validatedImages,
       updated_at: new Date().toISOString(),
     })
     .eq('id', propertyId)
+    .select('id, images')
+    .single()
 
   if (error) {
     console.error('Error updating property images:', error)
     return { success: false, error: 'Failed to update images' }
   }
 
+  if (!updated) {
+    console.error('Image update returned no data - update may not have applied')
+    return { success: false, error: 'Failed to update images - no rows affected' }
+  }
+
+  console.log(`[updatePropertyImages] Updated property ${propertyId} with ${validatedImages.length} images`)
+
+  // Revalidate all pages that show property images
   revalidatePath('/host/properties')
-  revalidatePath(`/properties/${propertyId}`)
+  revalidatePath(`/host/properties/${propertyId}/edit`)
+  if (property.slug) {
+    revalidatePath(`/properties/${property.slug}`)
+  }
+  revalidatePath('/search')
+  revalidatePath('/')
   
   return { success: true }
 }
