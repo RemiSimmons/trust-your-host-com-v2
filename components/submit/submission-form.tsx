@@ -165,7 +165,7 @@ export function SubmissionForm() {
               required 
             />
             <p className="text-sm text-muted-foreground">
-              Include the full URL with https:// (we'll auto-add it if you forget)
+              Please include the full URL starting with https:// (e.g., https://yourwebsite.com/booking)
             </p>
           </div>
 
