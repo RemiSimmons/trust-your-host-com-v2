@@ -89,7 +89,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     <div className="min-h-screen flex flex-col">
       <SchemaMarkup schema={[lodgingSchema, breadcrumbSchema]} />
       <NavBar />
-      <main className="flex-1">
+      <main className="flex-1 pt-[80px]">
         {/* Breadcrumbs */}
         <div className="container mx-auto px-4 py-4">
           <Breadcrumbs items={breadcrumbItems} />

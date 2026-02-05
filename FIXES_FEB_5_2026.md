@@ -2,24 +2,34 @@
 
 This document summarizes three critical fixes applied to the TrustYourHost platform.
 
-## 1. Search Page Scroll Behavior Fixed
+## 1. Navigation Bar Scroll Behavior Fixed (Search + Property Pages)
 
 ### Problem
-Property cards were scrolling behind the sticky navigation bar on the search results page, making them difficult to see and appearing broken.
+Content was scrolling behind the sticky navigation bar on multiple pages:
+- **Search page**: Property cards were scrolling behind the nav bar
+- **Property detail page**: Breadcrumbs and header were appearing behind the nav bar
 
 ### Solution
+
+#### Search Page
 - Added `pt-[80px]` padding to the main element in `app/search/page.tsx` to create a scroll boundary below the navigation
 - Removed redundant `pt-20` padding from `search-page-client.tsx` 
 - Adjusted sticky filter bar to `top-[80px]` to align correctly
 - Added proper spacing with `pt-8 pb-12` to the content area
 - Updated sidebar sticky positioning to `top-[160px]` and height to `h-[calc(100vh-180px)]`
 
+#### Property Detail Page
+- Added `pt-[80px]` padding to the main element in `app/properties/[slug]/page.tsx`
+- Adjusted sticky header positioning from `top-0` to `top-[80px]` in `property-detail-client.tsx`
+
 ### Files Modified
 - `/app/search/page.tsx` - Added main padding
+- `/app/properties/[slug]/page.tsx` - Added main padding
 - `/components/search/search-page-client.tsx` - Adjusted layout and sticky positioning
+- `/components/property/property-detail-client.tsx` - Adjusted sticky header positioning
 
 ### Result
-Property cards now respect the navigation bar boundary and never scroll behind it, creating a clean iOS Safari-like scrolling experience.
+All content now respects the navigation bar boundary and never scrolls behind it, creating a clean iOS Safari-like scrolling experience across the entire site.
 
 ---
 
