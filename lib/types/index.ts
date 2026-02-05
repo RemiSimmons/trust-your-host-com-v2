@@ -39,6 +39,8 @@ export interface Property {
     currency: "USD"
     cleaningFee?: number
     minStay: number
+    weeklyDiscount?: number
+    monthlyDiscount?: number
   }
 
   capacity: {

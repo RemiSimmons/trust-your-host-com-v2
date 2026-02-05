@@ -495,3 +495,219 @@ export async function sendContactConfirmation(data: {
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
   }
 }
+
+// Property change request email notifications
+export async function sendPropertyChangeRequestNotification(data: {
+  propertyId: string
+  propertyName: string
+  hostName: string
+  hostEmail: string
+  changes: Record<string, any>
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    console.log('[Email Mock] Property change request notification:', data)
+    return { success: false, error: 'No API key configured' }
+  }
+
+  try {
+    console.log('[Email] Sending change request notification to admin')
+    
+    const client = getResendClient()
+    if (!client) {
+      return { success: false, error: 'Resend client not initialized' }
+    }
+    
+    // Format changes for email
+    const changesHtml = Object.entries(data.changes)
+      .map(([field, value]) => {
+        const displayValue = typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)
+        return `<li><strong>${field.replace(/_/g, ' ')}:</strong> ${displayValue}</li>`
+      })
+      .join('')
+    
+    const result = await client.emails.send({
+      from: 'TrustYourHost <hello@trustyourhost.com>',
+      to: process.env.ADMIN_EMAIL || 'admin@trustyourhost.com',
+      subject: `⚠️ Property Change Request: ${data.propertyName}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #ea580c;">Property Change Request Requires Review</h2>
+          
+          <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 20px 0;">
+            <p style="margin: 0;"><strong>⚠️ Action Required:</strong> A host has requested changes that require admin approval.</p>
+          </div>
+          
+          <div style="background-color: #f3f4f6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+            <p style="margin: 0 0 10px 0;"><strong>Property:</strong> ${data.propertyName}</p>
+            <p style="margin: 0 0 10px 0;"><strong>Host:</strong> ${data.hostName} (${data.hostEmail})</p>
+          </div>
+          
+          <h3>Requested Changes:</h3>
+          <ul style="background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;">
+            ${changesHtml}
+          </ul>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/change-requests" style="display: inline-block; background-color: #ea580c; color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+              Review Change Request
+            </a>
+          </div>
+          
+          <p style="font-size: 14px; color: #6b7280;">
+            <strong>Note:</strong> The property has been temporarily removed from search results until this request is reviewed.
+          </p>
+          
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+          
+          <p style="font-size: 12px; color: #9ca3af;">
+            This is an automated notification from TrustYourHost admin system.
+          </p>
+        </div>
+      `
+    })
+    
+    console.log('[Email] Change request notification sent! ID:', result.data?.id)
+    return { success: true, emailId: result.data?.id }
+  } catch (error) {
+    console.error('[Email] Failed to send change request notification:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+  }
+}
+
+export async function sendPropertyChangeApprovedNotification(data: {
+  hostEmail: string
+  hostName: string
+  propertyName: string
+  adminNotes?: string
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    console.log('[Email Mock] Change approved notification:', data)
+    return { success: false, error: 'No API key configured' }
+  }
+
+  try {
+    console.log('[Email] Sending change approved notification to host:', data.hostEmail)
+    
+    const client = getResendClient()
+    if (!client) {
+      return { success: false, error: 'Resend client not initialized' }
+    }
+    
+    const result = await client.emails.send({
+      from: 'TrustYourHost <hello@trustyourhost.com>',
+      to: data.hostEmail,
+      subject: `✅ Property Changes Approved: ${data.propertyName}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #16a34a;">Your Property Changes Have Been Approved! ✅</h2>
+          
+          <p>Hi ${data.hostName},</p>
+          
+          <p>Great news! Your requested changes for <strong>${data.propertyName}</strong> have been reviewed and approved.</p>
+          
+          <div style="background-color: #dcfce7; border-left: 4px solid #16a34a; padding: 16px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">✓ Changes Applied</h3>
+            <p style="margin-bottom: 0;">Your property has been updated and is now live again in search results.</p>
+          </div>
+          
+          ${data.adminNotes ? `
+          <div style="background-color: #f3f4f6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+            <p style="margin: 0 0 10px 0;"><strong>Admin Note:</strong></p>
+            <p style="margin: 0; white-space: pre-wrap;">${data.adminNotes}</p>
+          </div>
+          ` : ''}
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.NEXT_PUBLIC_APP_URL}/host/properties" style="display: inline-block; background-color: #ea580c; color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+              View Your Property
+            </a>
+          </div>
+          
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+          
+          <p style="font-size: 14px; color: #6b7280;">
+            <strong>Questions?</strong> Reply to this email or contact us at hello@trustyourhost.com
+          </p>
+        </div>
+      `
+    })
+    
+    console.log('[Email] Change approved notification sent! ID:', result.data?.id)
+    return { success: true, emailId: result.data?.id }
+  } catch (error) {
+    console.error('[Email] Failed to send change approved notification:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+  }
+}
+
+export async function sendPropertyChangeRejectedNotification(data: {
+  hostEmail: string
+  hostName: string
+  propertyName: string
+  adminNotes: string
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    console.log('[Email Mock] Change rejected notification:', data)
+    return { success: false, error: 'No API key configured' }
+  }
+
+  try {
+    console.log('[Email] Sending change rejected notification to host:', data.hostEmail)
+    
+    const client = getResendClient()
+    if (!client) {
+      return { success: false, error: 'Resend client not initialized' }
+    }
+    
+    const result = await client.emails.send({
+      from: 'TrustYourHost <hello@trustyourhost.com>',
+      to: data.hostEmail,
+      subject: `Property Change Request Update: ${data.propertyName}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #dc2626;">Property Change Request Update</h2>
+          
+          <p>Hi ${data.hostName},</p>
+          
+          <p>Thank you for submitting changes for <strong>${data.propertyName}</strong>. After review, we're unable to approve the requested changes at this time.</p>
+          
+          <div style="background-color: #fee2e2; border-left: 4px solid #dc2626; padding: 16px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #dc2626;">Reason for Rejection:</h3>
+            <p style="margin-bottom: 0; white-space: pre-wrap;">${data.adminNotes}</p>
+          </div>
+          
+          <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 20px 0;">
+            <p style="margin: 0;"><strong>What happens now:</strong></p>
+            <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+              <li>Your property remains live with the original information</li>
+              <li>You can submit a revised change request if needed</li>
+              <li>Contact us if you have questions about this decision</li>
+            </ul>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.NEXT_PUBLIC_APP_URL}/host/properties" style="display: inline-block; background-color: #ea580c; color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+              View Your Property
+            </a>
+          </div>
+          
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+          
+          <p style="font-size: 14px; color: #6b7280;">
+            <strong>Questions?</strong> Reply to this email or contact us at hello@trustyourhost.com
+          </p>
+          
+          <p style="font-size: 12px; color: #9ca3af;">
+            We're here to help you maintain accurate and compliant property information on TrustYourHost.
+          </p>
+        </div>
+      `
+    })
+    
+    console.log('[Email] Change rejected notification sent! ID:', result.data?.id)
+    return { success: true, emailId: result.data?.id }
+  } catch (error) {
+    console.error('[Email] Failed to send change rejected notification:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+  }
+}

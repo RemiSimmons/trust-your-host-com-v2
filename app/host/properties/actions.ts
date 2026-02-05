@@ -2,7 +2,7 @@
 
 import { createServerClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { sendPropertySubmissionNotification } from '@/lib/email/resend'
+import { sendPropertySubmissionNotification, sendPropertyChangeRequestNotification } from '@/lib/email/resend'
 import { revalidatePath } from 'next/cache'
 
 // Fields that can be updated instantly without approval
@@ -147,6 +147,13 @@ export async function updatePropertyRequiresApproval(
     return { success: false, error: 'Property not found or unauthorized' }
   }
 
+  // Get host profile for email
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name, email')
+    .eq('id', user.id)
+    .single()
+
   // Create a pending changes record
   const pendingChanges: any = {}
   const currentValues: any = {}
@@ -194,12 +201,13 @@ export async function updatePropertyRequiresApproval(
     return { success: false, error: 'Failed to submit changes for approval' }
   }
 
-  // Also update property table to mark it has pending changes
+  // Also update property table to mark it has pending changes and hide from search
   const { error: updateError } = await supabase
     .from('properties')
     .update({
       pending_changes: pendingChanges,
       approval_status: 'pending_changes', // New status for properties with pending changes
+      is_active: false, // Hide from search results until approved
       updated_at: new Date().toISOString(),
     })
     .eq('id', propertyId)
@@ -209,8 +217,16 @@ export async function updatePropertyRequiresApproval(
     // Don't fail here since the change request was created
   }
 
-  // TODO: Send email notification to admin about pending changes
-  // await sendPendingChangesNotification({ propertyId, propertyName: property.name, changes: pendingChanges })
+  // Send email notification to admin about pending changes
+  if (profile) {
+    await sendPropertyChangeRequestNotification({
+      propertyId,
+      propertyName: property.name,
+      hostName: profile.full_name || 'Host',
+      hostEmail: profile.email || '',
+      changes: pendingChanges,
+    })
+  }
 
   revalidatePath('/host/properties')
   revalidatePath('/admin/change-requests')
