@@ -134,7 +134,7 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-12">
       {/* Top Bar */}
-      <div className="sticky top-20 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 py-4 mb-8">
+      <div className="sticky top-[72px] z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 py-4 mb-8">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             {/* Left: Results count + active filters */}
@@ -179,7 +179,7 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
         <div className="container mx-auto px-6">
           <div className="flex gap-8">
             {/* Desktop Sidebar */}
-            <aside className="hidden md:block w-80 shrink-0 sticky top-[148px] h-[calc(100vh-168px)] z-10 overflow-y-auto">
+            <aside className="hidden md:block w-80 shrink-0 sticky top-[140px] h-[calc(100vh-160px)] z-10 overflow-y-auto">
               <FilterSidebar filters={filters} setFilters={setFilters} />
             </aside>
 
