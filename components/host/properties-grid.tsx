@@ -38,16 +38,64 @@ export function PropertiesGrid({ properties, totalMonthlyCost }: PropertiesGridP
     p.property.subscription_status === 'pending_payment'
   )
 
-  // Auto-sync subscription status after Stripe checkout
+  // Auto-verify and sync subscription status after Stripe checkout
   useEffect(() => {
     const setupSuccess = searchParams.get('setup')
+    const sessionId = searchParams.get('session_id')
     
-    // If user just completed Stripe setup AND still shows pending payment, sync from Stripe
-    if (setupSuccess === 'success' && hasPendingPayment && !isSyncing) {
-      syncSubscriptionStatus()
+    // If user just completed Stripe setup, verify the checkout session directly
+    if (setupSuccess === 'success' && !isSyncing) {
+      if (sessionId) {
+        // Best path: verify the specific checkout session with Stripe
+        verifyCheckoutSession(sessionId)
+      } else if (hasPendingPayment) {
+        // Fallback: try general sync if no session_id available
+        syncSubscriptionStatus()
+      }
     }
   }, [searchParams, hasPendingPayment])
 
+  // Primary: Verify a specific Stripe checkout session and update DB directly
+  const verifyCheckoutSession = async (sessionId: string) => {
+    setIsSyncing(true)
+    setSyncError(null)
+    
+    try {
+      console.log('🔍 Verifying checkout session:', sessionId)
+      const response = await fetch('/api/stripe/verify-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId }),
+      })
+      
+      const data = await response.json()
+      
+      if (data.verified) {
+        console.log('✅ Checkout verified:', data.message)
+        // Refresh the page to show updated data
+        router.refresh()
+      } else {
+        console.warn('⚠️ Verification incomplete:', data.message)
+        // If verification says session not complete yet, retry after a delay
+        if (data.status === 'open' || data.payment_status === 'unpaid') {
+          console.log('⏳ Session not yet complete, retrying in 3 seconds...')
+          setTimeout(() => verifyCheckoutSession(sessionId), 3000)
+          return
+        }
+        // Fall back to sync endpoint
+        setSyncError(null)
+        await syncSubscriptionStatus()
+      }
+    } catch (error) {
+      console.error('❌ Verify checkout failed:', error)
+      // Fall back to sync endpoint
+      await syncSubscriptionStatus()
+    } finally {
+      setIsSyncing(false)
+    }
+  }
+
+  // Fallback: Sync subscription status from Stripe by customer ID or email
   const syncSubscriptionStatus = async () => {
     setIsSyncing(true)
     setSyncError(null)
@@ -123,7 +171,14 @@ export function PropertiesGrid({ properties, totalMonthlyCost }: PropertiesGridP
               <div className="flex gap-2 ml-4 shrink-0">
                 {searchParams.get('setup') === 'success' && (
                   <Button 
-                    onClick={syncSubscriptionStatus}
+                    onClick={() => {
+                      const sessionId = searchParams.get('session_id')
+                      if (sessionId) {
+                        verifyCheckoutSession(sessionId)
+                      } else {
+                        syncSubscriptionStatus()
+                      }
+                    }}
                     disabled={isSyncing}
                     variant="outline"
                     className="border-orange-600 text-orange-600 hover:bg-orange-100"

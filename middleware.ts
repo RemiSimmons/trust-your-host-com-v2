@@ -1,7 +1,17 @@
-import type { NextRequest } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 import { updateSession } from "@/lib/supabase/middleware"
 
 export async function middleware(request: NextRequest) {
+  // Skip middleware entirely for Stripe webhook routes
+  // Webhooks don't have user sessions and middleware can interfere with signature verification
+  const pathname = request.nextUrl.pathname
+  if (
+    pathname.startsWith('/api/stripe/webhooks') ||
+    pathname.startsWith('/api/webhooks/stripe')
+  ) {
+    return NextResponse.next()
+  }
+
   return await updateSession(request)
 }
 

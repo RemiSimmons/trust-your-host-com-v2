@@ -101,7 +101,7 @@ export async function POST(req: Request) {
         property_name: property.name,
         is_primary_property: property.is_primary_property.toString(),
       },
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/host?setup=success`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/host?setup=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/host/billing?canceled=true`,
       allow_promotion_codes: true,
     })

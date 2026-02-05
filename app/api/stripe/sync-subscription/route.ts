@@ -32,18 +32,64 @@ export async function POST(req: Request) {
       .eq('id', user.id)
       .single()
 
-    if (!profile?.stripe_customer_id) {
-      return NextResponse.json(
-        { error: 'No Stripe customer found', synced: false },
-        { status: 404 }
-      )
+    let stripeCustomerId = profile?.stripe_customer_id
+    const userEmail = profile?.email || user.email
+
+    // If no stripe_customer_id in profile, look up customer by email in Stripe
+    if (!stripeCustomerId && userEmail) {
+      console.log(`🔍 No stripe_customer_id in profile, searching Stripe by email: ${userEmail}`)
+      
+      const customers = await stripe.customers.list({
+        email: userEmail,
+        limit: 5,
+      })
+      
+      if (customers.data.length > 0) {
+        stripeCustomerId = customers.data[0].id
+        console.log(`✅ Found Stripe customer by email: ${stripeCustomerId}`)
+        
+        // Update profile with the found customer ID for future lookups
+        const adminSupabase = createAdminClient()
+        await adminSupabase
+          .from('profiles')
+          .update({ 
+            stripe_customer_id: stripeCustomerId,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', user.id)
+        console.log(`✅ Updated profile with stripe_customer_id: ${stripeCustomerId}`)
+      }
     }
 
-    console.log(`🔄 Syncing subscriptions for customer: ${profile.stripe_customer_id}`)
+    if (!stripeCustomerId) {
+      // Last resort: check recent checkout sessions for this user's email
+      console.log(`🔍 No Stripe customer found, checking recent checkout sessions for: ${userEmail}`)
+      
+      const sessions = await stripe.checkout.sessions.list({
+        limit: 10,
+      })
+      
+      const userSession = sessions.data.find(s => 
+        s.metadata?.host_id === user.id && 
+        s.status === 'complete'
+      )
+      
+      if (userSession?.customer) {
+        stripeCustomerId = userSession.customer as string
+        console.log(`✅ Found customer from checkout session: ${stripeCustomerId}`)
+      } else {
+        return NextResponse.json(
+          { error: 'No Stripe customer found', synced: false },
+          { status: 404 }
+        )
+      }
+    }
+
+    console.log(`🔄 Syncing subscriptions for customer: ${stripeCustomerId}`)
 
     // Get all subscriptions from Stripe for this customer
     const subscriptions = await stripe.subscriptions.list({
-      customer: profile.stripe_customer_id,
+      customer: stripeCustomerId,
       status: 'all',
       limit: 10,
     })

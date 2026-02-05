@@ -1,8 +1,9 @@
 import { stripe } from '@/lib/stripe'
-import { createServerClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { sendTrialEndingNotification, sendPaymentFailedNotification } from '@/lib/email/resend'
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
+import Stripe from 'stripe'
 
 export async function POST(request: Request) {
   const body = await request.text()
@@ -26,10 +27,72 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  const supabase = await createServerClient()
+  // Use admin client to bypass RLS - webhooks don't have user sessions
+  const supabase = createAdminClient()
 
   try {
     switch (event.type) {
+      // Handle checkout session completion (subscription created)
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session
+        
+        console.log('📥 [Secondary webhook] Checkout session completed:', {
+          sessionId: session.id,
+          mode: session.mode,
+          customer: session.customer,
+          metadata: session.metadata,
+        })
+        
+        if (session.mode === 'subscription') {
+          const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
+          const customerId = session.customer as string
+          const propertyId = session.metadata?.property_id
+          const hostId = session.metadata?.host_id
+
+          if (propertyId && hostId) {
+            const trialEndsAt = subscription.trial_end 
+              ? new Date(subscription.trial_end * 1000).toISOString()
+              : null
+
+            const updateData = {
+              stripe_subscription_id: subscription.id,
+              stripe_customer_id: customerId,
+              subscription_status: subscription.trial_end ? 'trial' : 'active',
+              trial_ends_at: trialEndsAt,
+              is_active: true,
+              updated_at: new Date().toISOString(),
+            }
+
+            console.log(`🔄 [Secondary webhook] Updating property ${propertyId}:`, updateData)
+
+            const { error: propertyError } = await supabase
+              .from('properties')
+              .update(updateData)
+              .eq('id', propertyId)
+
+            if (propertyError) {
+              console.error(`❌ [Secondary webhook] Failed to update property ${propertyId}:`, propertyError)
+            } else {
+              console.log(`✅ [Secondary webhook] Property ${propertyId} updated successfully`)
+            }
+
+            // Update host profile
+            await supabase
+              .from('profiles')
+              .update({
+                stripe_customer_id: customerId,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', hostId)
+
+            console.log(`✅ [Secondary webhook] Trial started for property ${propertyId}`)
+          } else {
+            console.error(`❌ [Secondary webhook] Missing metadata in session ${session.id}`)
+          }
+        }
+        break
+      }
+
       case 'customer.subscription.updated': {
         const subscription = event.data.object
         
