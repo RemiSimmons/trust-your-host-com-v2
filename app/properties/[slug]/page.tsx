@@ -92,11 +92,6 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       {/* Scroll container starts below nav - content cannot scroll above this boundary */}
       <div className="flex-1 overflow-y-auto mt-[72px]">
         <main>
-          {/* Breadcrumbs */}
-          <div className="container mx-auto px-4 py-4">
-            <Breadcrumbs items={breadcrumbItems} />
-          </div>
-
           <PropertyDetailClient property={property} relatedProperties={relatedProperties} />
 
           {/* Related articles for internal linking */}
