@@ -41,6 +41,8 @@ export interface Property {
     minStay: number
     weeklyDiscount?: number
     monthlyDiscount?: number
+    showWeeklyDiscount?: boolean
+    showMonthlyDiscount?: boolean
   }
 
   capacity: {

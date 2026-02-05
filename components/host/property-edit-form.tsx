@@ -99,6 +99,8 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
         baseNightlyRate: Number(formData.get('baseNightlyRate')),
         weeklyDiscount: Number(formData.get('weeklyDiscount')) || 0,
         monthlyDiscount: Number(formData.get('monthlyDiscount')) || 0,
+        showWeeklyDiscount: formData.get('showWeeklyDiscount') === 'on',
+        showMonthlyDiscount: formData.get('showMonthlyDiscount') === 'on',
       },
       minimum_stay: Number(formData.get('minimum_stay')),
       external_booking_url: formData.get('external_booking_url') as string,
@@ -288,6 +290,36 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
                       max="100"
                       defaultValue={property.pricing.monthlyDiscount || 0}
                     />
+                  </div>
+                </div>
+                
+                <div className="space-y-3 pt-4 border-t">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Control discount visibility on your property page:
+                  </p>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="showWeeklyDiscount"
+                      name="showWeeklyDiscount"
+                      defaultChecked={property.pricing.showWeeklyDiscount !== false}
+                      className="h-4 w-4 text-accent focus:ring-accent border-gray-300 rounded cursor-pointer"
+                    />
+                    <Label htmlFor="showWeeklyDiscount" className="font-normal cursor-pointer">
+                      Display weekly discount to guests
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="showMonthlyDiscount"
+                      name="showMonthlyDiscount"
+                      defaultChecked={property.pricing.showMonthlyDiscount !== false}
+                      className="h-4 w-4 text-accent focus:ring-accent border-gray-300 rounded cursor-pointer"
+                    />
+                    <Label htmlFor="showMonthlyDiscount" className="font-normal cursor-pointer">
+                      Display monthly discount to guests
+                    </Label>
                   </div>
                 </div>
               </CardContent>

@@ -132,9 +132,9 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
     (filters.event ? 1 : 0)
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 pb-12">
-      {/* Top Bar */}
-      <div className="sticky top-[72px] z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 py-4 mb-8">
+    <div className="min-h-screen bg-gray-50">
+      {/* Top Bar - Sticky below nav */}
+      <div className="sticky top-[80px] z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 py-4 shadow-sm">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             {/* Left: Results count + active filters */}
@@ -175,7 +175,7 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
       </div>
 
       {/* Content area - contained with proper overflow */}
-      <div className="relative">
+      <div className="relative pt-8 pb-12">
         <div className="container mx-auto px-6">
           <div className="flex gap-8">
             {/* Desktop Sidebar */}

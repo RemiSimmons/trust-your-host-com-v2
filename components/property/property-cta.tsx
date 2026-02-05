@@ -78,12 +78,12 @@ export function PropertyCTA({ property, compact = false }: PropertyCTAProps) {
             {property.pricing.minStay} night minimum stay
           </div>
         )}
-        {(property.pricing.weeklyDiscount !== undefined && property.pricing.weeklyDiscount !== null) && (
+        {typeof property.pricing.weeklyDiscount === 'number' && property.pricing.showWeeklyDiscount !== false && (
           <div className="text-sm text-green-600 mt-1 font-semibold">
             {property.pricing.weeklyDiscount}% discount for 7+ nights
           </div>
         )}
-        {(property.pricing.monthlyDiscount !== undefined && property.pricing.monthlyDiscount !== null) && (
+        {typeof property.pricing.monthlyDiscount === 'number' && property.pricing.showMonthlyDiscount !== false && (
           <div className="text-sm text-green-600 mt-1 font-semibold">
             {property.pricing.monthlyDiscount}% discount for 30+ nights
           </div>

@@ -11,7 +11,7 @@ export default async function SearchPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar />
-      <main className="flex-1">
+      <main className="flex-1 pt-[80px]">
         <Suspense fallback={<SearchLoadingSkeleton />}>
           <SearchPageClient initialProperties={properties} />
         </Suspense>

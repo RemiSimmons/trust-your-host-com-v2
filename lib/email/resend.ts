@@ -525,6 +525,7 @@ export async function sendPropertyChangeRequestNotification(data: {
       })
       .join('')
     
+    // Send admin notification
     const result = await client.emails.send({
       from: 'TrustYourHost <hello@trustyourhost.com>',
       to: process.env.ADMIN_EMAIL || 'admin@trustyourhost.com',
@@ -566,7 +567,56 @@ export async function sendPropertyChangeRequestNotification(data: {
       `
     })
     
-    console.log('[Email] Change request notification sent! ID:', result.data?.id)
+    console.log('[Email] Admin notification sent! ID:', result.data?.id)
+    
+    // Also send acknowledgment email to host
+    try {
+      const hostAck = await client.emails.send({
+        from: 'TrustYourHost <hello@trustyourhost.com>',
+        to: data.hostEmail,
+        subject: `We received your change request for ${data.propertyName}`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #ea580c;">Change Request Received</h2>
+            
+            <p>Hi ${data.hostName},</p>
+            
+            <p>We've received your requested changes for <strong>${data.propertyName}</strong> and our team will review them shortly.</p>
+            
+            <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; margin: 20px 0;">
+              <h3 style="margin-top: 0;">What happens next:</h3>
+              <ol style="margin: 10px 0 0 0; padding-left: 20px;">
+                <li>Our team reviews your changes (usually within 24-48 hours)</li>
+                <li>You'll receive an email with our decision</li>
+                <li>If approved, your changes go live immediately</li>
+              </ol>
+            </div>
+            
+            <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 20px 0;">
+              <p style="margin: 0;"><strong>⚠️ Please note:</strong> Your property is temporarily hidden from search results during the review process. It will be reactivated once the review is complete.</p>
+            </div>
+            
+            <p>If you have any questions, feel free to reply to this email.</p>
+            
+            <p style="margin-top: 30px;">
+              Best regards,<br />
+              <strong>The TrustYourHost Team</strong>
+            </p>
+            
+            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+            
+            <p style="font-size: 14px; color: #6b7280;">
+              <strong>Questions?</strong> Reply to this email or contact us at hello@trustyourhost.com
+            </p>
+          </div>
+        `
+      })
+      console.log('[Email] Host acknowledgment sent! ID:', hostAck.data?.id)
+    } catch (hostError) {
+      console.error('[Email] Failed to send host acknowledgment:', hostError)
+      // Don't fail the whole operation if host email fails
+    }
+    
     return { success: true, emailId: result.data?.id }
   } catch (error) {
     console.error('[Email] Failed to send change request notification:', error)

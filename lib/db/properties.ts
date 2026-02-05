@@ -311,6 +311,8 @@ function mapDatabasePropertyToProperty(dbProp: any): Property {
       baseNightlyRate: Number(dbProp.pricing?.baseNightlyRate || 0),
       weeklyDiscount: dbProp.pricing?.weeklyDiscount,
       monthlyDiscount: dbProp.pricing?.monthlyDiscount,
+      showWeeklyDiscount: dbProp.pricing?.showWeeklyDiscount,
+      showMonthlyDiscount: dbProp.pricing?.showMonthlyDiscount,
     },
     capacity: dbProp.capacity || { guests: 0, bedrooms: 0, beds: 0, bathrooms: 0, allowsPets: false },
     amenities: dbProp.amenities || [],
