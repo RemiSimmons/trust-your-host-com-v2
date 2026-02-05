@@ -6,6 +6,7 @@ import MarkerClusterGroup from "react-leaflet-cluster"
 import type { Property } from "@/lib/types"
 import Link from "next/link"
 import { formatCurrency } from "@/lib/utils"
+import { getPropertyMapCoordinates } from "@/lib/utils/zip-coordinates"
 import "leaflet/dist/leaflet.css"
 
 interface MapViewProps {
@@ -157,10 +158,14 @@ export function MapView({
               })
             }}
           >
-            {properties.map((property) => (
+            {properties.map((property) => {
+              // Use zip code center coordinates for privacy
+              const displayCoords = getPropertyMapCoordinates(property)
+              
+              return (
               <Marker
                 key={property.id}
-                position={[property.location.coordinates.lat, property.location.coordinates.lng]}
+                position={[displayCoords.lat, displayCoords.lng]}
                 icon={createPropertyIcon(property.pricing.baseNightlyRate)}
               >
                 {/* Hover Tooltip */}
@@ -218,7 +223,8 @@ export function MapView({
                   </div>
                 </Popup>
               </Marker>
-            ))}
+              )
+            })}
           </MarkerClusterGroup>
         </MapContainer>
       </div>

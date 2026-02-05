@@ -96,10 +96,10 @@ export default function PropertyMapView({ lat, lng, city }: PropertyMapViewProps
           crossOrigin={true}
         />
         
-        {/* Approximate area circle (0.5 mile radius) */}
+        {/* Approximate area circle (1 mile radius for zip code area) */}
         <Circle
           center={[validLat, validLng]}
-          radius={800}
+          radius={1600}
           pathOptions={{
             color: '#ff6b35',
             fillColor: '#ff6b35',
@@ -113,7 +113,7 @@ export default function PropertyMapView({ lat, lng, city }: PropertyMapViewProps
           <Popup>
             <div style={{ fontFamily: 'sans-serif', textAlign: 'center' }}>
               <strong>{city}</strong><br />
-              <small>Approximate location</small>
+              <small>Zip code area (approximate)</small>
             </div>
           </Popup>
         </Marker>

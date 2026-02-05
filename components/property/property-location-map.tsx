@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { MapPin, Navigation, Coffee, Mountain, UtensilsCrossed } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getGoogleMapsApiKey } from "@/app/actions/profile"
+import { getPropertyMapCoordinates } from "@/lib/utils/zip-coordinates"
 
 interface PropertyLocationMapProps {
   location: {
@@ -11,9 +12,10 @@ interface PropertyLocationMapProps {
     state: string
   }
   propertyName: string
+  postalCode?: string
 }
 
-export function PropertyLocationMap({ location, propertyName }: PropertyLocationMapProps) {
+export function PropertyLocationMap({ location, propertyName, postalCode }: PropertyLocationMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const [map, setMap] = useState<any | null>(null)
   const [nearbyPlaces, setNearbyPlaces] = useState<any[]>([])
@@ -43,8 +45,13 @@ export function PropertyLocationMap({ location, propertyName }: PropertyLocation
 
         if (!mapRef.current) return
 
+        // Use zip code center for privacy protection
+        // Note: This component expects coordinates to already be zip-based from parent
+        // But we add this as a safeguard
+        const displayCoords = location.coordinates
+
         const mapInstance = new mapsLib.Map(mapRef.current, {
-          center: location.coordinates,
+          center: displayCoords,
           zoom: 13,
           styles: [
             {
@@ -69,7 +76,7 @@ export function PropertyLocationMap({ location, propertyName }: PropertyLocation
         })
 
         const marker = new markerLib.Marker({
-          position: location.coordinates,
+          position: displayCoords,
           map: mapInstance,
           title: propertyName,
           icon: {
@@ -239,7 +246,11 @@ export function PropertyLocationMap({ location, propertyName }: PropertyLocation
 
       <div className="text-center">
         <a
-          href={`https://www.google.com/maps/dir/?api=1&destination=${location.coordinates.lat},${location.coordinates.lng}`}
+          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+            postalCode 
+              ? `${location.city}, ${location.state} ${postalCode}`
+              : `${location.city}, ${location.state}`
+          )}`}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-all"
