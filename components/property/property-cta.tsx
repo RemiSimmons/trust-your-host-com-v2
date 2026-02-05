@@ -59,7 +59,7 @@ export function PropertyCTA({ property, compact = false }: PropertyCTAProps) {
   }
 
   return (
-    <div className="sticky top-24 bg-white rounded-xl shadow-lg border-2 border-gray-200 p-6 space-y-6">
+    <div className="sticky top-4 bg-white rounded-xl shadow-lg border-2 border-gray-200 p-6 space-y-6">
       {/* Price */}
       <div className="border-b pb-4">
         <div className="flex items-baseline gap-2">

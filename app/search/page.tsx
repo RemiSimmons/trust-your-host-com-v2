@@ -9,14 +9,17 @@ export default async function SearchPage() {
   const properties = await getProperties()
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       <NavBar />
-      <main className="flex-1 pt-[80px]">
-        <Suspense fallback={<SearchLoadingSkeleton />}>
-          <SearchPageClient initialProperties={properties} />
-        </Suspense>
-      </main>
-      <Footer />
+      {/* Scroll container starts below nav - content cannot scroll above this boundary */}
+      <div className="flex-1 overflow-y-auto mt-[72px]">
+        <main>
+          <Suspense fallback={<SearchLoadingSkeleton />}>
+            <SearchPageClient initialProperties={properties} />
+          </Suspense>
+        </main>
+        <Footer />
+      </div>
     </div>
   )
 }

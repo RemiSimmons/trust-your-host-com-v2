@@ -95,7 +95,7 @@ export function PropertyDetailClient({ property, relatedProperties }: PropertyDe
       </div>
 
       {/* Header Section */}
-      <div className="bg-white border-b sticky top-[80px] z-30">
+      <div className="bg-white border-b sticky top-0 z-30">
         <div className="container mx-auto px-6 py-6">
           <button
             onClick={() => router.back()}

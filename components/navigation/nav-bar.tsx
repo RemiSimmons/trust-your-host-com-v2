@@ -65,8 +65,12 @@ export function NavBar() {
     <motion.nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        // Always show glass effect on non-homepage, or when scrolled
-        scrolled || !isHomePage ? "glass py-4 shadow-lg" : "bg-transparent py-6",
+        // Solid white background on interior pages, glass only on homepage when scrolled
+        !isHomePage
+          ? "bg-white py-4 shadow-md border-b border-gray-100"
+          : scrolled
+            ? "glass py-4 shadow-lg"
+            : "bg-transparent py-6",
       )}
       initial={{ y: -100 }}
       animate={{ y: 0 }}

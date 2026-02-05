@@ -86,29 +86,32 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const relatedArticles = findArticlesForProperty(property, 3)
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       <SchemaMarkup schema={[lodgingSchema, breadcrumbSchema]} />
       <NavBar />
-      <main className="flex-1 pt-[80px]">
-        {/* Breadcrumbs */}
-        <div className="container mx-auto px-4 py-4">
-          <Breadcrumbs items={breadcrumbItems} />
-        </div>
-
-        <PropertyDetailClient property={property} relatedProperties={relatedProperties} />
-
-        {/* Related articles for internal linking */}
-        {relatedArticles.length > 0 && (
-          <div className="container mx-auto px-4 py-12">
-            <RelatedContent
-              articles={relatedArticles}
-              title="Local Guides & Tips"
-              description={`Discover more about ${property.location.city} and surrounding areas`}
-            />
+      {/* Scroll container starts below nav - content cannot scroll above this boundary */}
+      <div className="flex-1 overflow-y-auto mt-[72px]">
+        <main>
+          {/* Breadcrumbs */}
+          <div className="container mx-auto px-4 py-4">
+            <Breadcrumbs items={breadcrumbItems} />
           </div>
-        )}
-      </main>
-      <Footer />
+
+          <PropertyDetailClient property={property} relatedProperties={relatedProperties} />
+
+          {/* Related articles for internal linking */}
+          {relatedArticles.length > 0 && (
+            <div className="container mx-auto px-4 py-12">
+              <RelatedContent
+                articles={relatedArticles}
+                title="Local Guides & Tips"
+                description={`Discover more about ${property.location.city} and surrounding areas`}
+              />
+            </div>
+          )}
+        </main>
+        <Footer />
+      </div>
     </div>
   )
 }
