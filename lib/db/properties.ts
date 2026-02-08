@@ -127,21 +127,10 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
     console.log("[getPropertyBySlug] Query result - data:", data ? "found" : "null", "error:", error?.code, error?.message)
 
     if (error) {
-      console.log("[getPropertyBySlug] Error occurred:", error)
-      if (error.code === "PGRST205" || error.message.includes("Could not find the table")) {
-        const mockResult = mockProperties.find((p) => p.slug === slug)
-        console.log("[getPropertyBySlug] Falling back to mock, found:", !!mockResult)
-        return mockResult || null
-      }
-      // Try without the join to see if that's the issue
-      console.log("[getPropertyBySlug] Trying query without join...")
-      const { data: simpleData, error: simpleError } = await supabase
-        .from("properties")
-        .select("*")
-        .eq("slug", slug)
-        .single()
-      console.log("[getPropertyBySlug] Simple query result:", simpleData ? "found" : "null", simpleError?.message)
-      return null
+      console.log("[getPropertyBySlug] Database error, falling back to mock properties")
+      const mockResult = mockProperties.find((p) => p.slug === slug)
+      console.log("[getPropertyBySlug] Mock lookup result:", !!mockResult)
+      return mockResult || null
     }
 
     if (!data) {
@@ -172,11 +161,8 @@ export async function getPropertyById(id: string): Promise<Property | null> {
     console.log("[getPropertyById] Query result - data:", data ? "found" : "null", "error:", error?.code, error?.message)
 
     if (error) {
-      console.log("[getPropertyById] Error:", error)
-      if (error.code === "PGRST205" || error.message.includes("Could not find the table")) {
-        return mockProperties.find((p) => p.id === id) || null
-      }
-      return null
+      console.log("[getPropertyById] Database error, falling back to mock properties")
+      return mockProperties.find((p) => p.id === id) || null
     }
 
     if (!data) {
