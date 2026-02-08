@@ -71,6 +71,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: true,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "2",
@@ -141,6 +142,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "3",
@@ -212,6 +214,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: true,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
 
   // Tybee Island, GA
@@ -285,6 +288,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: true,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "5",
@@ -355,6 +359,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "6",
@@ -425,6 +430,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: true,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
 
   // Joshua Tree, CA
@@ -497,6 +503,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: true,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "8",
@@ -566,6 +573,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "9",
@@ -637,6 +645,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: true,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
 
   // Breckenridge, CO
@@ -710,6 +719,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: true,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "11",
@@ -780,6 +790,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "12",
@@ -850,6 +861,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
 
   // Napa Valley, CA
@@ -923,6 +935,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: true,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "14",
@@ -993,6 +1006,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "15",
@@ -1063,6 +1077,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
 
   // Asheville, NC
@@ -1135,6 +1150,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: true,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "17",
@@ -1204,6 +1220,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "18",
@@ -1274,6 +1291,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
 
   // Additional properties to reach 30 total
@@ -1347,6 +1365,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
 
   // Lake Tahoe, CA
@@ -1420,6 +1439,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: true,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
 
   // Portland, OR
@@ -1492,6 +1512,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
 
   // Charleston, SC
@@ -1563,6 +1584,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "23",
@@ -1633,6 +1655,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: true,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
 
   // Additional unique properties
@@ -1706,6 +1729,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "25",
@@ -1777,6 +1801,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "26",
@@ -1848,6 +1873,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: true,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "27",
@@ -1918,6 +1944,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "28",
@@ -1988,6 +2015,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "29",
@@ -2057,6 +2085,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
   {
     id: "30",
@@ -2127,6 +2156,7 @@ export const properties: Property[] = [
     },
     verified: true,
     featured: false,
+    external_booking_url: "https://bookingtemplate.remisimmons.com/",
   },
 ]
 
