@@ -1,6 +1,6 @@
 import { createServerClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { RevenueChart, OccupancyChart } from "@/components/host/analytics-chart"
+import { RevenueChart, OccupancyChart } from "@/components/host/analytics-chart-wrapper"
 
 export default async function HostInsightsPage() {
   const supabase = await createServerClient()

@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Explore our top destinations.",
 }
 
+export const revalidate = 3600
+
 export default function DestinationsPage() {
   const destinations = ["New York", "London", "Paris", "Tokyo", "San Francisco", "Barcelona", "Rome", "Berlin"]
 

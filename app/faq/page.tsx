@@ -13,6 +13,8 @@ export const metadata: Metadata = generateMetadata({
   url: "/faq",
 })
 
+export const revalidate = 3600
+
 // FAQ data with individual page slugs
 const faqCategories = [
   {

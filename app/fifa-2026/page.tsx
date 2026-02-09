@@ -27,6 +27,8 @@ export const metadata: Metadata = {
   },
 };
 
+export const revalidate = 3600
+
 export default function Fifa2026Page() {
   const totalMatches = fifaCities.reduce((sum, city) => sum + city.stadium.matchesHosted, 0);
   const totalCapacity = fifaCities.reduce((sum, city) => sum + city.stadium.capacity, 0);

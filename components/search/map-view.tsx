@@ -5,6 +5,7 @@ import { Icon, DivIcon } from "leaflet"
 import MarkerClusterGroup from "react-leaflet-cluster"
 import type { Property } from "@/lib/types"
 import Link from "next/link"
+import Image from "next/image"
 import { formatCurrency } from "@/lib/utils"
 import { getPropertyMapCoordinates } from "@/lib/utils/zip-coordinates"
 import "leaflet/dist/leaflet.css"
@@ -186,11 +187,14 @@ export function MapView({
                 <Popup maxWidth={280} className="custom-popup">
                   <div className="p-1">
                     {property.images[0] && (
-                      <img
-                        src={property.images[0]}
-                        alt={property.name}
-                        className="w-full h-32 object-cover rounded-lg mb-3"
-                      />
+                      <div className="relative w-full h-32 mb-3">
+                        <Image
+                          src={property.images[0]}
+                          alt={property.name}
+                          fill
+                          className="object-cover rounded-lg"
+                        />
+                      </div>
                     )}
                     <h3 className="font-bold text-base mb-1 text-primary">{property.name}</h3>
                     <p className="text-xs text-gray-600 mb-2 flex items-center gap-1">

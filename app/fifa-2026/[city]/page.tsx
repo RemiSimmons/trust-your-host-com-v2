@@ -39,6 +39,8 @@ export async function generateStaticParams() {
   }));
 }
 
+export const revalidate = 3600
+
 export async function generateMetadata({ params }: CityPageProps): Promise<Metadata> {
   const { city: cityId } = await params;
   const city = getCityById(cityId);

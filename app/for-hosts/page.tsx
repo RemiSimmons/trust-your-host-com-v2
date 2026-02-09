@@ -14,6 +14,8 @@ import { generateForHostsMetadata } from "@/lib/seo/metadata"
 
 export const metadata: Metadata = generateForHostsMetadata()
 
+export const revalidate = 3600
+
 export default function ForHostsPage() {
   return (
     <div className="min-h-screen flex flex-col">

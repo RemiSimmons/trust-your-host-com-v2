@@ -18,6 +18,8 @@ interface PropertyPageProps {
   }>
 }
 
+export const revalidate = 3600
+
 export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
   const { slug } = await params
   const property = await getPropertyBySlug(slug)

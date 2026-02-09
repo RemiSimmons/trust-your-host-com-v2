@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Explore unique stays by experience type: Mountain Retreats, Beachfront Paradise, Urban Adventures, and more. Find your perfect getaway.",
 }
 
+export const revalidate = 3600
+
 export default function ExperiencesPage() {
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-primary/95 via-primary/90 to-accent/80">

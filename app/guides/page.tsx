@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "Destination guides, FIFA 2026 city guides, and travel tips for your next adventure. Plan your perfect trip.",
 }
 
+export const revalidate = 3600
+
 export default function GuidesPage() {
   const articles = getArticlesByCategory("guides")
   const featuredArticles = articles.filter((a) => a.featured)

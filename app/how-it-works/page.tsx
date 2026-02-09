@@ -13,6 +13,8 @@ export const metadata: Metadata = generateMetadata({
   url: "/how-it-works",
 })
 
+export const revalidate = 3600
+
 export default function HowItWorksPage() {
   return (
     <div className="flex min-h-screen flex-col">

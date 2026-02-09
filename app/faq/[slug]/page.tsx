@@ -7,7 +7,7 @@ import Link from "next/link"
 import { generateFAQPageSchema } from "@/lib/seo/schema"
 import { SchemaMarkup } from "@/components/seo/schema-markup"
 import { Breadcrumbs } from "@/components/seo/breadcrumbs"
-import ReactMarkdown from "react-markdown"
+import ReactMarkdown from "@/components/articles/react-markdown-wrapper"
 
 // FAQ content database
 const faqContent: Record<string, {

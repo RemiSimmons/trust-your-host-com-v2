@@ -25,7 +25,23 @@ export const EXPERIENCE_CATEGORIES = [
   'Wellness Retreats',
   'Adventure Sports',
   'Countryside Calm',
-  'Coastal Towns'
+  'Coastal Towns',
+  // Additional experiences found in properties.ts
+  'Hiking & Trails',
+  'Wellness Retreats',
+  'Mountain Lodges',
+  'Remote Work Retreats',
+  'Island Getaways',
+  'Waterfront Escapes',
+  'Culinary Experiences',
+  'Glamping',
+  'Desert Solitude',
+  'Eco-Tourism',
+  'Ski Chalets',
+  'Cultural Immersion',
+  'Historic Stays',
+  'Coastal Getaways',
+  'Country Escapes'
 ] as const
 
 /**

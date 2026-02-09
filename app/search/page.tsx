@@ -5,6 +5,8 @@ import { NavBar } from "@/components/navigation/nav-bar"
 import { Footer } from "@/components/navigation/footer"
 import { Loader2 } from "lucide-react"
 
+export const revalidate = 3600
+
 export default async function SearchPage() {
   const properties = await getProperties()
 

@@ -7,7 +7,7 @@ import { Calendar, Clock, ArrowLeft, Share2, Bookmark } from "lucide-react"
 import type { Article } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import ReactMarkdown from "react-markdown"
+import ReactMarkdown from "@/components/articles/react-markdown-wrapper"
 
 interface ArticleDetailProps {
   article: Article

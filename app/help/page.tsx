@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "Find answers to frequently asked questions about TrustYourHost.",
 }
 
+export const revalidate = 3600
+
 export default function HelpPage() {
   return (
     <div className="flex min-h-screen flex-col">
