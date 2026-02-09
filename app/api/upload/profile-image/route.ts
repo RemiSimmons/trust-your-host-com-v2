@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { revalidatePath } from "next/cache"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -7,6 +8,7 @@ const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
 
 export async function POST(request: NextRequest) {
   try {
+    // Use session client for auth verification only
     const supabase = await createServerClient()
     const {
       data: { user },
@@ -21,6 +23,9 @@ export async function POST(request: NextRequest) {
     }
 
     console.log("[Profile Upload] User:", user.id, user.email)
+
+    // Use admin client for storage and DB operations (bypasses RLS)
+    const adminClient = createAdminClient()
 
     const formData = await request.formData()
     const file = formData.get("file") as File | null
@@ -62,27 +67,8 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await file.arrayBuffer()
     const buffer = new Uint8Array(arrayBuffer)
 
-    // Check if bucket exists
-    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets()
-    if (bucketsError) {
-      console.error("[Profile Upload] Failed to list buckets:", bucketsError)
-    } else {
-      const profileBucket = buckets.find(b => b.name === "profile-images")
-      if (!profileBucket) {
-        console.error("[Profile Upload] CRITICAL: 'profile-images' bucket does not exist!")
-        return NextResponse.json(
-          { 
-            error: "Storage not configured. Please contact support.",
-            details: "The profile-images storage bucket needs to be created in Supabase Dashboard."
-          },
-          { status: 500 }
-        )
-      }
-      console.log("[Profile Upload] Bucket found:", profileBucket.name, "public:", profileBucket.public)
-    }
-
     // Clean up old profile image before uploading new one
-    const { data: currentProfile } = await supabase
+    const { data: currentProfile } = await adminClient
       .from("profiles")
       .select("avatar_url")
       .eq("id", user.id)
@@ -93,7 +79,7 @@ export async function POST(request: NextRequest) {
       if (urlParts[1]) {
         const oldFilePath = urlParts[1]
         console.log("[Profile Upload] Removing old image:", oldFilePath)
-        const { error: removeError } = await supabase.storage
+        const { error: removeError } = await adminClient.storage
           .from("profile-images")
           .remove([oldFilePath])
         if (removeError) {
@@ -106,7 +92,7 @@ export async function POST(request: NextRequest) {
 
     // Upload to Supabase Storage
     console.log("[Profile Upload] Uploading to storage...")
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { data: uploadData, error: uploadError } = await adminClient.storage
       .from("profile-images")
       .upload(fileName, buffer, {
         contentType: file.type,
@@ -127,7 +113,7 @@ export async function POST(request: NextRequest) {
     console.log("[Profile Upload] Upload successful:", uploadData.path)
 
     // Get public URL
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = adminClient.storage
       .from("profile-images")
       .getPublicUrl(fileName)
 
@@ -136,23 +122,21 @@ export async function POST(request: NextRequest) {
 
     // Update profiles table with new avatar URL
     console.log("[Profile Upload] Updating profiles table...")
-    const { error: updateError } = await supabase
+    const { error: updateError } = await adminClient
       .from("profiles")
       .update({ avatar_url: publicUrl })
       .eq("id", user.id)
 
     if (updateError) {
       console.error("[Profile Upload] Profile update error:", updateError)
-      // Don't fail - the upload succeeded, just the DB update failed
-      console.warn("[Profile Upload] Image uploaded but profile table update failed. Continuing...")
     } else {
       console.log("[Profile Upload] Profile table updated successfully")
     }
 
     // Also update Auth metadata
     console.log("[Profile Upload] Updating auth metadata...")
-    const { error: authError } = await supabase.auth.updateUser({
-      data: { avatar_url: publicUrl },
+    const { error: authError } = await adminClient.auth.admin.updateUserById(user.id, {
+      user_metadata: { avatar_url: publicUrl },
     })
 
     if (authError) {
@@ -191,6 +175,7 @@ export async function POST(request: NextRequest) {
 // DELETE: Remove profile image
 export async function DELETE() {
   try {
+    // Use session client for auth verification only
     const supabase = await createServerClient()
     const {
       data: { user },
@@ -203,8 +188,11 @@ export async function DELETE() {
       )
     }
 
+    // Use admin client for storage and DB operations
+    const adminClient = createAdminClient()
+
     // Get current avatar URL to extract the file path
-    const { data: profile } = await supabase
+    const { data: profile } = await adminClient
       .from("profiles")
       .select("avatar_url")
       .eq("id", user.id)
@@ -217,14 +205,14 @@ export async function DELETE() {
         const filePath = urlParts[1]
         
         // Delete from storage
-        await supabase.storage
+        await adminClient.storage
           .from("profile-images")
           .remove([filePath])
       }
     }
 
     // Clear avatar URL in profiles table
-    const { error: updateError } = await supabase
+    const { error: updateError } = await adminClient
       .from("profiles")
       .update({ avatar_url: null })
       .eq("id", user.id)
@@ -234,8 +222,8 @@ export async function DELETE() {
     }
 
     // Clear Auth metadata
-    await supabase.auth.updateUser({
-      data: { avatar_url: null },
+    await adminClient.auth.admin.updateUserById(user.id, {
+      user_metadata: { avatar_url: null },
     })
 
     // Revalidate pages that show the avatar
