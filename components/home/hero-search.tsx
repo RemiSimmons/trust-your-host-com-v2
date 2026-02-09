@@ -70,12 +70,20 @@ function SelectDropdown({ value, options, onChange, groups }: SelectDropdownProp
     ? [...(groups.flatMap(g => g.options) || []), ...options].find(o => o.value === value)?.label || options[0]?.label
     : options.find(o => o.value === value)?.label || options[0]?.label
 
+  const handleToggle = () => {
+    setIsOpen(!isOpen)
+  }
+
+  const handleOptionClick = (optionValue: string) => {
+    onChange(optionValue)
+    setIsOpen(false)
+  }
+
   return (
     <div className="relative w-full">
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        onBlur={() => setTimeout(() => setIsOpen(false), 150)}
+        onClick={handleToggle}
         className={cn(
           "w-full flex items-center justify-between gap-2 px-5 py-4 rounded-xl",
           "bg-white/10 backdrop-blur-sm border border-white/20",
@@ -93,8 +101,14 @@ function SelectDropdown({ value, options, onChange, groups }: SelectDropdownProp
       </button>
       
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
-          <div className="max-h-64 overflow-y-auto p-1.5 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
+        <>
+          {/* Backdrop to close dropdown when clicking outside */}
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+            <div className="max-h-64 overflow-y-auto p-1.5 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
           {groups ? (
             <>
               {/* Standalone options first */}
@@ -102,12 +116,12 @@ function SelectDropdown({ value, options, onChange, groups }: SelectDropdownProp
                 <button
                   key={option.value}
                   type="button"
-                  onClick={() => {
-                    onChange(option.value)
-                    setIsOpen(false)
+                  onMouseDown={(e) => {
+                    e.preventDefault()
+                    handleOptionClick(option.value)
                   }}
                   className={cn(
-                    "w-full px-4 py-2.5 text-left text-sm rounded-lg hover:bg-gray-100 transition-colors",
+                    "w-full px-4 py-2.5 text-left text-sm rounded-lg hover:bg-gray-100 transition-colors cursor-pointer",
                     value === option.value ? "bg-gray-50 text-accent font-medium" : "text-gray-700"
                   )}
                 >
@@ -116,7 +130,7 @@ function SelectDropdown({ value, options, onChange, groups }: SelectDropdownProp
               ))}
               
               {/* Grouped options */}
-              {groups.map((group, idx) => (
+              {groups.map((group) => (
                 <div key={group.label}>
                   <div className="px-4 py-2 mt-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     {group.label}
@@ -125,12 +139,12 @@ function SelectDropdown({ value, options, onChange, groups }: SelectDropdownProp
                     <button
                       key={option.value}
                       type="button"
-                      onClick={() => {
-                        onChange(option.value)
-                        setIsOpen(false)
+                      onMouseDown={(e) => {
+                        e.preventDefault()
+                        handleOptionClick(option.value)
                       }}
                       className={cn(
-                        "w-full px-4 py-2.5 text-left text-sm rounded-lg hover:bg-gray-100 transition-colors",
+                        "w-full px-4 py-2.5 text-left text-sm rounded-lg hover:bg-gray-100 transition-colors cursor-pointer",
                         value === option.value ? "bg-gray-50 text-accent font-medium" : "text-gray-700"
                       )}
                     >
@@ -145,12 +159,12 @@ function SelectDropdown({ value, options, onChange, groups }: SelectDropdownProp
               <button
                 key={option.value}
                 type="button"
-                onClick={() => {
-                  onChange(option.value)
-                  setIsOpen(false)
+                onMouseDown={(e) => {
+                  e.preventDefault()
+                  handleOptionClick(option.value)
                 }}
                 className={cn(
-                  "w-full px-4 py-2.5 text-left text-sm rounded-lg hover:bg-gray-100 transition-colors",
+                  "w-full px-4 py-2.5 text-left text-sm rounded-lg hover:bg-gray-100 transition-colors cursor-pointer",
                   value === option.value ? "bg-gray-50 text-accent font-medium" : "text-gray-700"
                 )}
               >
@@ -160,6 +174,7 @@ function SelectDropdown({ value, options, onChange, groups }: SelectDropdownProp
           )}
           </div>
         </div>
+        </>
       )}
     </div>
   )
