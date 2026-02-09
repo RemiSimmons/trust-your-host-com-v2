@@ -69,9 +69,9 @@ export function FifaCitiesSection({ variant = "default" }: { variant?: "default"
   // Determine background and text colors based on variant
   const isDark = variant === "dark";
   const sectionBg = isDark ? "bg-gradient-to-br from-blue-900 via-blue-800 to-green-900" : "";
-  const textColor = isDark ? "text-white" : "text-gray-900";
-  const textSecondary = isDark ? "text-white/95" : "text-gray-700";
-  const textMuted = isDark ? "text-white/90" : "text-gray-600";
+  const textColor = "text-white"; // Always white for better contrast on home page background
+  const textSecondary = "text-white/95";
+  const textMuted = "text-white/90";
 
   return (
     <section
