@@ -2,12 +2,35 @@ import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { revalidatePath } from "next/cache"
+import { rateLimit, getClientIdentifier } from "@/lib/utils/rate-limit"
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting: 10 uploads per 60 seconds per IP
+    const identifier = getClientIdentifier(request)
+    const rateLimitResult = rateLimit({
+      identifier,
+      limit: 10,
+      windowSeconds: 60,
+    })
+    
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': '10',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult.resetAt.toString(),
+          }
+        }
+      )
+    }
+
     // Use session client for auth verification only
     const supabase = await createServerClient()
     const {

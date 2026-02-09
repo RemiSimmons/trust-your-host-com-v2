@@ -16,13 +16,13 @@ export function Footer() {
               Experience authentic stays with trusted local hosts. Your journey to memorable moments starts here.
             </p>
             <div className="flex items-center gap-4">
-              <Link href="https://www.facebook.com/trustyourhost" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent transition-colors" aria-label="Facebook">
+              <Link href="https://www.facebook.com/trustyourhost" target="_blank" rel="noopener noreferrer" className="min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-accent transition-colors" aria-label="Facebook">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-accent transition-colors" aria-label="Twitter">
+              <Link href="#" className="min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-accent transition-colors" aria-label="Twitter">
                 <Twitter className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-accent transition-colors" aria-label="Instagram">
+              <Link href="#" className="min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-accent transition-colors" aria-label="Instagram">
                 <Instagram className="h-5 w-5" />
               </Link>
               <Link href="https://2minapp.com/" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-accent transition-colors">

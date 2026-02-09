@@ -1,8 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendContactEmail, sendContactConfirmation } from '@/lib/email/resend'
+import { rateLimit, getClientIdentifier } from '@/lib/utils/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting: 5 requests per 60 seconds per IP
+    const identifier = getClientIdentifier(request)
+    const rateLimitResult = rateLimit({
+      identifier,
+      limit: 5,
+      windowSeconds: 60,
+    })
+    
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': '5',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult.resetAt.toString(),
+          }
+        }
+      )
+    }
+
     const body = await request.json()
     const { name, email, subject, message } = body
 

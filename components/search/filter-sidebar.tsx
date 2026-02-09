@@ -61,7 +61,7 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
         <select
           value={filters.event || ""}
           onChange={(e) => updateFilter("event", e.target.value || null)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 text-sm bg-white"
+          className="w-full h-11 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 text-sm bg-white"
         >
           <option value="">No event filter</option>
           {SPECIAL_EVENTS.map(event => (
@@ -115,7 +115,7 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
           <select
             value={filters.distanceFrom}
             onChange={(e) => updateFilter("distanceFrom", e.target.value as "stadium" | "city-center")}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 text-sm bg-white mb-3"
+            className="w-full h-11 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 text-sm bg-white mb-3"
           >
             <option value="stadium">Stadium</option>
             <option value="city-center">City Center</option>

@@ -78,7 +78,7 @@ export default function PropertyMapView({ lat, lng, city }: PropertyMapViewProps
   })
 
   return (
-    <div className="w-full rounded-lg overflow-hidden border border-gray-200 bg-gray-50" style={{ height: '400px', minHeight: '400px' }}>
+    <div className="w-full h-[300px] sm:h-[400px] rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
       <MapContainer
         center={[validLat, validLng]}
         zoom={13}

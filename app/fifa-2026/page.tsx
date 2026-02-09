@@ -68,7 +68,7 @@ export default function Fifa2026Page() {
             </p>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto mb-12">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                 <div className="text-4xl md:text-5xl font-bold mb-2 text-yellow-400">11</div>
                 <div className="text-sm md:text-base text-white font-semibold">Host Cities</div>

@@ -63,7 +63,7 @@ export function MapView({
   const radiusMeters = radiusMiles * 1609.34 // Convert miles to meters
 
   return (
-    <div className="relative h-[calc(100vh-240px)] w-full">
+    <div className="relative h-[400px] sm:h-[calc(100vh-240px)] w-full">
       {/* Property Count Indicator */}
       <div className="absolute top-4 left-4 z-[1000] bg-white/95 backdrop-blur-md shadow-lg rounded-lg px-4 py-2 border border-gray-200">
         <p className="text-sm font-semibold text-primary">
