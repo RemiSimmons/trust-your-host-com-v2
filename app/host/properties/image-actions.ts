@@ -34,16 +34,18 @@ export async function uploadPropertyImage(formData: FormData) {
     return { success: false, error: `File too large: ${file.name}. Maximum size is 5MB.` }
   }
 
-  // Verify user is authenticated
-  const supabase = await createServerClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  
-  if (authError || !user) {
-    return { success: false, error: 'You must be logged in to upload images.' }
-  }
-
-  // If uploading to an existing property, verify ownership
+  // For existing properties, verify authentication and ownership.
+  // For submissions (public submit-property page), allow unauthenticated uploads
+  // to the submissions folder — matching the submitPropertyListing action pattern.
   if (!isSubmission) {
+    const supabase = await createServerClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      return { success: false, error: 'You must be logged in to upload images.' }
+    }
+
+    // Verify the user owns this property
     const { data: property, error: fetchError } = await supabase
       .from('properties')
       .select('host_id')
@@ -109,16 +111,16 @@ export async function uploadPropertyImage(formData: FormData) {
 export async function deletePropertyImage(imageUrl: string, propertyId: string) {
   const isSubmission = propertyId === 'submissions'
 
-  // Verify user is authenticated
-  const supabase = await createServerClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  
-  if (authError || !user) {
-    return { success: false, error: 'You must be logged in to delete images.' }
-  }
-
-  // If deleting from an existing property, verify ownership
+  // For existing properties, verify authentication and ownership.
+  // For submissions, allow deletion without auth (public form cleanup).
   if (!isSubmission) {
+    const supabase = await createServerClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    
+    if (authError || !user) {
+      return { success: false, error: 'You must be logged in to delete images.' }
+    }
+
     const { data: property } = await supabase
       .from('properties')
       .select('host_id')
