@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '6mb', // Allow up to 6MB for property image uploads (max 5MB per image + form data)
+    },
+  },
   typescript: {
     ignoreBuildErrors: true, // TODO: Remove this and fix TS errors (tracked as separate task)
   },

@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Loader2, Trash2, Plus, GripVertical, Star, ImageIcon, AlertCircle } from 'lucide-react'
-import { createBrowserClient } from '@/lib/supabase/client'
+import { uploadPropertyImage, deletePropertyImage } from '@/app/host/properties/image-actions'
 import Image from 'next/image'
 import {
   DndContext,
@@ -154,50 +154,44 @@ export function SubmissionImageUploader({
     setIsUploading(true)
     setUploadProgress(0)
 
-    const supabase = createBrowserClient()
     const newImageUrls: string[] = []
     const totalFiles = files.length
     let completed = 0
 
     for (const file of Array.from(files)) {
-      // Validate file type
+      // Client-side validation for immediate feedback
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
       if (!validTypes.includes(file.type)) {
         setError(`Invalid file type: ${file.name}. Only JPG, PNG, and WebP are allowed.`)
         continue
       }
 
-      // Validate file size (5MB max)
       const maxSize = 5 * 1024 * 1024 // 5MB
       if (file.size > maxSize) {
         setError(`File too large: ${file.name}. Maximum size is 5MB. Try compressing at squoosh.app`)
         continue
       }
 
-      // Generate unique filename for submissions (temporary folder)
-      const fileExt = file.name.split('.').pop()
-      const fileName = `submissions/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+      // Upload via server action (bypasses RLS)
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('propertyId', 'submissions')
 
-      // Upload to Supabase Storage
-      const { data, error: uploadError } = await supabase.storage
-        .from('property-images')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false,
-        })
+      console.log('[SubmissionImageUploader] Uploading via server action')
 
-      if (uploadError) {
-        console.error('Upload error:', uploadError)
-        setError(`Failed to upload ${file.name}: ${uploadError.message}`)
-        continue
+      const result = await uploadPropertyImage(formData)
+
+      if (!result.success) {
+        console.error('[SubmissionImageUploader] Upload error:', result.error)
+        setError(result.error || `Failed to upload ${file.name}`)
+        break // Stop on first error
       }
 
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('property-images')
-        .getPublicUrl(data.path)
+      if (result.url) {
+        console.log('[SubmissionImageUploader] Uploaded successfully:', result.url)
+        newImageUrls.push(result.url)
+      }
 
-      newImageUrls.push(publicUrl)
       completed++
       setUploadProgress(Math.round((completed / totalFiles) * 100))
     }
@@ -217,21 +211,12 @@ export function SubmissionImageUploader({
     setError(null)
 
     try {
-      const supabase = createBrowserClient()
-      
-      // Extract file path from URL
-      const urlParts = urlToDelete.split('/property-images/')
-      if (urlParts.length === 2) {
-        const filePath = urlParts[1]
-        
-        // Delete from Supabase Storage
-        const { error: deleteError } = await supabase.storage
-          .from('property-images')
-          .remove([filePath])
+      // Delete via server action (bypasses RLS)
+      const result = await deletePropertyImage(urlToDelete, 'submissions')
 
-        if (deleteError) {
-          console.error('Delete error:', deleteError)
-        }
+      if (!result.success) {
+        console.error('[SubmissionImageUploader] Delete error:', result.error)
+        // Continue anyway to remove from UI
       }
 
       // Remove from state
@@ -258,9 +243,9 @@ export function SubmissionImageUploader({
 
       {/* Error message */}
       {error && (
-        <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          {error}
+        <div className="flex items-start gap-2 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+          <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <div className="whitespace-pre-line">{error}</div>
         </div>
       )}
 
