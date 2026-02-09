@@ -3,6 +3,123 @@ import type { Article, ArticleCategory } from "@/lib/types"
 // Host Insights - Industry trends, hosting tips, business advice
 export const insightsArticles: Article[] = [
   {
+    id: "ins-8",
+    slug: "free-listing-strategy-airbnb",
+    title: "The Free Listing Strategy Airbnb Doesn't Want You Using",
+    excerpt: "After 15 years in logistics and operations, I've learned one thing: relying on a single platform for your revenue is a recipe for stress. Learn how to diversify with free listing platforms strategically.",
+    content: `
+# The Free Listing Strategy Airbnb Doesn't Want You Using
+
+*By Remi Simmons*
+
+After 15 years in logistics and operations, I've learned one thing: relying on a single platform for your revenue is a recipe for stress. I've watched vacation rental hosts scramble when Airbnb changed its search algorithm overnight, when Vrbo increased host fees without warning, or when a property suddenly dropped from page one to page ten for reasons nobody could explain.
+
+The hosts who sleep well at night? They're the ones who diversified early, built their own direct booking sites, and used free listing platforms strategically to feed their brand instead of competing with it.
+
+The difference between a host making $60K and one making $120K from the same property often comes down to this single decision: **do you control your distribution, or does one platform control you?**
+
+## The Problem: Platform Dependence Is a Business Risk
+
+If you rely on only one big platform, you're always one policy change away from a slow month. Many hosts want more bookings, more control, and fewer fees, but don't have the budget or time for another paid channel.
+
+The good news: there are legitimate ways to get extra visibility for free or on a pay-only-when-booked basis. Even better, these options can support a long-term direct booking strategy instead of replacing it.
+
+The key is choosing sites that send the right guests and don't trap your brand inside someone else's ecosystem.
+
+## 1. The Real Pain: Dependence, Fees, and Constant Disruption
+
+Most vacation rental hosts deal with at least one of these frustrations:
+
+- **High guest and host fees** cutting into your nightly rate
+- **Sudden changes to algorithms, rankings, or policies** you can't control
+- **A calendar that's fully booked one month and empty the next** because you depend on a single OTA
+
+That's exactly why using a mix of free and direct booking friendly directories makes sense. You lower your risk, keep your brand visible in multiple places, and create more opportunities to turn OTA guests into repeat direct bookers.
+
+## 2. Free Listing Options Every Vacation Rental Host Should Know
+
+These platforms let you get in front of potential guests with little or no upfront cost:
+
+### Houfy
+
+**Houfy** is a direct booking marketplace that lets guests book without service fees and hosts list properties with no per-booking commission. However, it acts more as a trusted payment platform between guest and host rather than linking back to your own website. This still keeps you dependent on another platform for a key operational need: payment processing.
+
+### Big OTAs with "Free to List" Models
+
+**Vrbo** and similar platforms let you create a listing for free and only charge when a booking happens. This is essentially performance-based marketing that costs you nothing unless it works.
+
+### General Rental Portals and Classifieds
+
+**Zillow Rental Manager, Facebook Marketplace, and other free rental listing websites** can work well in certain markets, especially for mid-term or seasonal stays.
+
+Each platform gives you another place where guests can discover your property name and brand, assuming you set things up strategically.
+
+## 3. Use Free Directories to Feed Your Direct Bookings
+
+Here's the biggest missed opportunity: hosts list their properties everywhere but never connect those listings back to their own website.
+
+### Simple Ways to Convert OTA Guests to Direct Bookers:
+
+- **Use the same property name and location across all platforms** so guests can easily Google you and find your direct booking site
+- **Add clear photos and a short, memorable brand line** (like "SunnySide Villas: direct beach rentals in Gulf Shores") that guests will recognize when they search for you later
+- **Where the platform allows it, mention that guests can learn more** on your own site in your host profile or property description
+
+Over time, you can convert OTA guests into repeat direct guests who book through your website instead of a third party.
+
+## 4. How TrustYourHost Fits into the Picture
+
+Free directories are excellent for reach, but they still blend you in with thousands of other listings and don't always highlight that you're a serious, direct booking focused host.
+
+**TrustYourHost is built to work alongside your free listings:**
+
+- You keep using free and "free to list" sites to get discovered and fill booking gaps
+- You direct guests to your own booking website while getting featured in a curated directory of verified, self-hosted properties
+- You reduce your dependence on any single platform and build something you actually own: your brand, your website, and your repeat guest relationships
+
+If you're already listed on a few free directories and want to turn that exposure into more direct bookings, listing on [TrustYourHost.com](https://www.trustyourhost.com) is the logical next step.
+
+---
+
+## Ready to Take Control of Your Distribution?
+
+The hosts who thrive in 2026 and beyond won't be the ones with the most OTA listings. They'll be the ones who own their brand, control their guest relationships, and use platforms strategically—not dependently.
+
+### Become a Founding Host
+
+**120 Days Free • No Contracts • Keep Your Own Site**
+
+[Claim Founding Host Access →](/submit-property)
+
+---
+
+## Frequently Asked Questions
+
+**Can I really list on free platforms without paying anything?**  
+Yes. Many platforms like Houfy and classifieds are free to list, and OTAs like Vrbo offer pay-per-booking models with no upfront costs.
+
+**Won't free listings get less visibility than paid ones?**  
+Not necessarily. Quality listings with good photos, clear descriptions, and competitive pricing perform well regardless of whether you paid to list.
+
+**How do I convert OTA guests to direct bookers?**  
+Use consistent branding across all platforms, make your property easy to find via Google, and provide exceptional service that encourages repeat bookings.
+
+**Is TrustYourHost another OTA?**  
+No. TrustYourHost is a discovery platform that sends guests directly to your booking website. You control pricing, communication, and policies.
+    `,
+    category: "insights",
+    tags: ["distribution strategy", "direct bookings", "free listings", "platform diversity"],
+    featuredImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop",
+    author: {
+      name: "Remi Simmons",
+      avatar: "/remi-simmons-avatar.png",
+      role: "Hosting Strategy Expert",
+    },
+    publishedAt: "2026-02-09T09:00:00Z",
+    readingTime: 8,
+    featured: true,
+    insightType: "tips",
+  },
+  {
     id: "ins-5",
     slug: "short-term-rental-regulations-major-cities",
     title: "Short-Term Rental Regulations in Major US Cities: What Hosts Need to Know (and Prepare For)",
