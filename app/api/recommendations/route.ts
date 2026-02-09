@@ -1,22 +1,66 @@
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { NextResponse } from "next/server"
+import { z } from "zod"
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "")
+
+// Define types for recommendations
+interface UserPreferences {
+  [key: string]: string | number | boolean | string[]
+}
+
+interface SearchHistoryItem {
+  query?: string
+  location?: string
+  date?: string
+  [key: string]: unknown
+}
+
+interface PropertyData {
+  id: string
+  name?: string
+  highlights?: string[]
+  [key: string]: unknown
+}
+
+interface RecommendationResult {
+  propertyId: string
+  matchScore: number
+  reason: string
+  highlights: string[]
+}
+
+// Validation schema for recommendations request
+const RecommendationsRequestSchema = z.object({
+  userPreferences: z.record(z.union([z.string(), z.number(), z.boolean(), z.array(z.string())])).optional(),
+  searchHistory: z.array(z.record(z.unknown())).optional(),
+  availableProperties: z.array(z.record(z.unknown())),
+})
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { userPreferences, searchHistory, availableProperties } = body
+    
+    // Validate request body
+    const validationResult = RecommendationsRequestSchema.safeParse(body)
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: "Invalid request data", details: validationResult.error.issues },
+        { status: 400 }
+      )
+    }
+
+    const { userPreferences, searchHistory, availableProperties } = validationResult.data
 
     // Check if API key is configured
     if (!process.env.GEMINI_API_KEY) {
       // Return mock data if no API key is present
       return NextResponse.json({
-        recommendations: availableProperties.slice(0, 3).map((p: any) => ({
-          propertyId: p.id,
+        recommendations: availableProperties.slice(0, 3).map((p) => ({
+          propertyId: (p as PropertyData).id,
           matchScore: 95 - Math.random() * 10,
           reason: "Based on your interest in luxury and nature, this property offers the perfect balance.",
-          highlights: p.highlights || ["Great views", "Luxury amenities"],
+          highlights: (p as PropertyData).highlights || ["Great views", "Luxury amenities"],
         })),
       })
     }
@@ -70,9 +114,8 @@ Respond in JSON format:
 
       const recommendations = JSON.parse(jsonMatch[0])
       return NextResponse.json(recommendations)
-    } catch (modelError: any) {
-      console.error("Gemini 2.0 Flash failed, trying fallback:", modelError.message)
-
+    } catch (modelError) {
+      // Fallback to alternative model if primary fails
       try {
         // Fallback to Gemini 1.5 Flash which is highly reliable
         model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
@@ -87,25 +130,30 @@ Respond in JSON format:
 
         const recommendations = JSON.parse(jsonMatch[0])
         return NextResponse.json(recommendations)
-      } catch (fallbackError: any) {
-        console.error("All AI models failed:", fallbackError.message)
+      } catch (fallbackError) {
+        // Both models failed, return fallback
         throw fallbackError
       }
     }
   } catch (error) {
-    console.error("Recommendation error:", error)
-    const { availableProperties } = await request.json().catch(() => ({ availableProperties: [] }))
+    let availableProperties: PropertyData[] = []
+    try {
+      const body = await request.json()
+      availableProperties = body.availableProperties || []
+    } catch {
+      // Ignore JSON parsing errors
+    }
 
     const mockRecommendations = {
       recommendations: availableProperties
-        ? availableProperties.slice(0, 3).map((p: any) => ({
-            propertyId: p.id,
-            matchScore: 90 - Math.floor(Math.random() * 15),
-            reason:
-              "We selected this property based on its popularity and high ratings, as our AI service is temporarily unavailable.",
-            highlights: p.highlights || ["Guest Favorite", "Top Rated", "Premium Location"],
-          }))
-        : [],
+        .slice(0, 3)
+        .map((p) => ({
+          propertyId: p.id,
+          matchScore: 90 - Math.floor(Math.random() * 15),
+          reason:
+            "We selected this property based on its popularity and high ratings, as our AI service is temporarily unavailable.",
+          highlights: p.highlights || ["Guest Favorite", "Top Rated", "Premium Location"],
+        })),
     }
 
     return NextResponse.json(mockRecommendations)

@@ -24,7 +24,7 @@ interface PropertyEditFormProps {
 
 interface ChangeRequest {
   id: string
-  requested_changes: Record<string, any>
+  requested_changes: Record<string, unknown>
   requested_at: string
   status: string
 }
@@ -44,8 +44,8 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
     ? property.description 
     : (property.description?.full || property.description?.short || '')
   
-  // Get house rules with fallback
-  const houseRulesText = (property as any).house_rules || ''
+  // Get house rules with fallback - house_rules is optional in Property type
+  const houseRulesText = property.house_rules || ''
   const standardHouseRules = property.standard_house_rules || []
 
   // Fetch pending change requests
@@ -84,7 +84,6 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
 
   async function handleInstantUpdate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    console.log('[PropertyEditForm] Form submitted, starting update...')
     setIsSubmitting(true)
     setMessage(null)
 
@@ -110,12 +109,8 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
       is_fifa_2026: formData.get('is_fifa_2026') === 'on',
     }
     
-    console.log('[PropertyEditForm] Update data:', updateData)
-    
     try {
-      console.log('[PropertyEditForm] Calling updatePropertyInstant...')
       const result = await updatePropertyInstant(property.id, updateData)
-      console.log('[PropertyEditForm] Result:', result)
 
       if (result.success) {
         setMessage({ type: 'success', text: 'Changes saved successfully!' })
@@ -124,7 +119,6 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
         setMessage({ type: 'error', text: result.error || 'Failed to save changes' })
       }
     } catch (error) {
-      console.error('[PropertyEditForm] Error:', error)
       setMessage({ type: 'error', text: `An error occurred: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setIsSubmitting(false)

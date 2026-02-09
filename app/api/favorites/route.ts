@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@/lib/supabase/server"
+import { z } from "zod"
+
+// Validation schema for POST/DELETE propertyId (must be UUID)
+const PropertyIdSchema = z.object({
+  propertyId: z.string().uuid("Property ID must be a valid UUID"),
+})
 
 // GET: Return user's favorites
 export async function GET() {
@@ -23,7 +29,6 @@ export async function GET() {
       .order("created_at", { ascending: false })
 
     if (error) {
-      console.error("Error fetching favorites:", error)
       return NextResponse.json(
         { error: "Failed to fetch favorites", favorites: [] },
         { status: 500 }
@@ -35,7 +40,6 @@ export async function GET() {
       count: data?.length || 0,
     })
   } catch (error) {
-    console.error("Unexpected error:", error)
     return NextResponse.json(
       { error: "An unexpected error occurred", favorites: [] },
       { status: 500 }
@@ -59,14 +63,17 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { propertyId } = body
-
-    if (!propertyId) {
+    
+    // Validate request body
+    const validationResult = PropertyIdSchema.safeParse(body)
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Property ID is required" },
+        { error: "Invalid property ID format", details: validationResult.error.issues },
         { status: 400 }
       )
     }
+
+    const { propertyId } = validationResult.data
 
     const { error } = await supabase
       .from("favorites")
@@ -83,7 +90,6 @@ export async function POST(request: NextRequest) {
           message: "Already in favorites",
         })
       }
-      console.error("Error adding favorite:", error)
       return NextResponse.json(
         { error: "Failed to add to favorites" },
         { status: 500 }
@@ -135,7 +141,6 @@ export async function DELETE(request: NextRequest) {
       .eq("property_id", propertyId)
 
     if (error) {
-      console.error("Error removing favorite:", error)
       return NextResponse.json(
         { error: "Failed to remove from favorites" },
         { status: 500 }

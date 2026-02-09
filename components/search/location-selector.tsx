@@ -4,23 +4,33 @@ import { MapPin, Loader2 } from "lucide-react"
 import { Loader } from "@googlemaps/js-api-loader"
 import { getGoogleMapsApiKey } from "@/app/actions/profile"
 
-type LocationSelectorProps = {}
+// Google Maps types
+interface PlacePrediction {
+  description: string
+  place_id: string
+  structured_formatting?: {
+    main_text: string
+    secondary_text: string
+  }
+}
+
+interface SelectedLocation {
+  description: string
+  placeId: string
+}
 
 export function LocationSelector() {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
-  const [predictions, setPredictions] = useState<any[]>([])
+  const [predictions, setPredictions] = useState<PlacePrediction[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [apiKey, setApiKey] = useState<string>("")
-  const [selectedLocation, setSelectedLocation] = useState<{
-    description: string
-    placeId: string
-  } | null>(null)
+  const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const autocompleteServiceRef = useRef<any>(null)
-  const placesServiceRef = useRef<any>(null)
+  const autocompleteServiceRef = useRef<google.maps.places.AutocompleteService | null>(null)
+  const placesServiceRef = useRef<google.maps.places.PlacesService | null>(null)
 
   // Fetch API key on mount
   useEffect(() => {
@@ -46,7 +56,7 @@ export function LocationSelector() {
         const dummyMap = document.createElement("div")
         placesServiceRef.current = new places.PlacesService(dummyMap)
       } catch (e) {
-        console.error("Failed to load Google Maps API", e)
+        // Silently fail - Google Maps API not available
       }
     }
 
@@ -74,7 +84,7 @@ export function LocationSelector() {
       setIsLoading(false)
 
       if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
-        setPredictions(results)
+        setPredictions(results as PlacePrediction[])
       } else {
         setPredictions([])
       }
@@ -92,7 +102,7 @@ export function LocationSelector() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  const handleSelectPrediction = (prediction: any) => {
+  const handleSelectPrediction = (prediction: PlacePrediction) => {
     setSelectedLocation({
       description: prediction.description,
       placeId: prediction.place_id,

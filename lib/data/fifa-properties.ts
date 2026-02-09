@@ -1,5 +1,8 @@
 import type { Property } from "@/lib/types"
 
+import { calculateDistanceRounded } from "@/lib/utils/geo"
+import { matchesCity } from "@/lib/utils/city-matching"
+
 // FIFA 2026 Stadium Coordinates
 const STADIUM_COORDS = {
   "new-york-new-jersey": { lat: 40.8135, lng: -74.0745 }, // MetLife Stadium
@@ -15,20 +18,8 @@ const STADIUM_COORDS = {
   "san-francisco": { lat: 37.4030, lng: -121.9698 } // Levi's Stadium
 }
 
-// Helper to calculate distance between two lat/lng points using Haversine formula
-function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const R = 3959 // Earth's radius in miles
-  const dLat = ((lat2 - lat1) * Math.PI) / 180
-  const dLng = ((lng2 - lng1) * Math.PI) / 180
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2)
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  return Math.round(R * c * 10) / 10
-}
+// Alias the rounded version for backwards compatibility with this module
+const calculateDistance = calculateDistanceRounded
 
 // New York / New Jersey - 4 properties
 const newYorkProperties: Property[] = [
@@ -205,21 +196,6 @@ export const fifaProperties = allProperties
 export function getFifaPropertiesByCity(cityId: string): Property[] {
   return allProperties.filter(p => {
     if (!p.is_fifa_2026) return false
-    
-    // Match city based on location
-    const cityMatches: Record<string, boolean> = {
-      "new-york-new-jersey": p.location.city.toLowerCase().includes("new") || p.location.state === "New Jersey" || p.location.city === "Brooklyn" || p.location.city === "Hoboken",
-      "miami-gardens": p.location.city.toLowerCase().includes("miami") || p.location.city === "Coral Gables" || p.location.city === "Aventura" || p.location.city === "Key Biscayne" || p.location.city === "Coconut Grove",
-      "los-angeles": p.location.city.toLowerCase().includes("angeles") || p.location.city === "Inglewood" || p.location.city === "Santa Monica" || p.location.city === "Culver City" || p.location.city === "Pasadena" || p.location.city === "Manhattan Beach" || p.location.city === "Venice",
-      "atlanta": p.location.city === "Atlanta" || p.location.city === "Decatur",
-      "boston": p.location.city === "Boston" || p.location.city === "Foxborough" || p.location.city === "Cambridge" || p.location.city === "Providence",
-      "philadelphia": p.location.city === "Philadelphia",
-      "kansas-city": p.location.city === "Kansas City",
-      "dallas": p.location.city === "Dallas" || p.location.city === "Arlington" || p.location.city === "Fort Worth" || p.location.city === "Irving" || p.location.city === "Plano",
-      "houston": p.location.city === "Houston",
-      "seattle": p.location.city === "Seattle",
-      "san-francisco": p.location.city.toLowerCase().includes("san") || p.location.city === "Santa Clara" || p.location.city === "Mountain View" || p.location.city === "Palo Alto" || p.location.city === "Sunnyvale"
-    }
-    return cityMatches[cityId] || false
+    return matchesCity(p, cityId)
   })
 }

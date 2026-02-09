@@ -55,7 +55,6 @@ export async function POST(request: NextRequest) {
     })
 
     if (!adminEmail.success) {
-      console.error('[Contact API] Failed to send admin email:', adminEmail.error)
       return NextResponse.json(
         { error: 'Failed to send message. Please try again later.' },
         { status: 500 }
@@ -69,9 +68,6 @@ export async function POST(request: NextRequest) {
     })
 
     // Don't fail the request if confirmation email fails
-    if (!confirmationEmail.success) {
-      console.error('[Contact API] Failed to send confirmation email:', confirmationEmail.error)
-    }
 
     return NextResponse.json(
       { 
@@ -83,7 +79,6 @@ export async function POST(request: NextRequest) {
     )
 
   } catch (error) {
-    console.error('[Contact API] Error processing contact form:', error)
     return NextResponse.json(
       { error: 'An unexpected error occurred. Please try again later.' },
       { status: 500 }

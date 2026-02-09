@@ -1,4 +1,6 @@
 import type { Property } from "@/lib/types"
+import { calculateDistance } from "@/lib/utils/geo"
+import { matchesCity } from "@/lib/utils/city-matching"
 
 export interface FilterState {
   experiences: string[]
@@ -32,18 +34,6 @@ export const INITIAL_FILTERS: FilterState = {
   radiusMiles: 25,
 }
 
-// Helper to calculate distance between two coordinates (Haversine formula)
-export function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const R = 3959 // Earth's radius in miles
-  const dLat = (lat2 - lat1) * Math.PI / 180
-  const dLng = (lng2 - lng1) * Math.PI / 180
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLng / 2) * Math.sin(dLng / 2)
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  return R * c
-}
-
 export function filterProperties(properties: Property[], filters: FilterState): Property[] {
   return properties.filter((property) => {
     // Event filter
@@ -55,45 +45,9 @@ export function filterProperties(properties: Property[], filters: FilterState): 
 
     // Cities filter (for multi-city selection)
     if (filters.cities.length > 0) {
-      const propertyMatchesCity = filters.cities.some(cityId => {
-        // Safety check: ensure location and city exist
-        if (!property.location?.city) return false
-        
-        const city = property.location.city
-        const state = property.location.state || ''
-        const cityLower = city.toLowerCase()
-        
-        // Match city based on location - FIFA cities
-        const fifaCityMatches: Record<string, boolean> = {
-          "new-york-new-jersey": cityLower.includes("new") || state === "New Jersey" || city === "Brooklyn" || city === "Hoboken",
-          "miami-gardens": cityLower.includes("miami") || city === "Coral Gables" || city === "Aventura" || city === "Key Biscayne" || city === "Coconut Grove",
-          "los-angeles": cityLower.includes("angeles") || city === "Inglewood" || city === "Santa Monica",
-          "atlanta": city === "Atlanta",
-          "boston": city === "Boston" || city === "Foxborough",
-          "philadelphia": city === "Philadelphia",
-          "kansas-city": city === "Kansas City",
-          "dallas": city === "Dallas" || city === "Arlington",
-          "houston": city === "Houston",
-          "seattle": city === "Seattle",
-          "san-francisco": cityLower.includes("san") || city === "Santa Clara"
-        }
-        
-        // Match city based on location - Other cities
-        const otherCityMatches: Record<string, boolean> = {
-          "austin": city === "Austin",
-          "chicago": city === "Chicago",
-          "denver": city === "Denver",
-          "las-vegas": city === "Las Vegas" || cityLower.includes("vegas"),
-          "nashville": city === "Nashville",
-          "new-orleans": city === "New Orleans",
-          "orlando": city === "Orlando",
-          "portland": city === "Portland",
-          "san-diego": city === "San Diego",
-          "scottsdale": city === "Scottsdale" || city === "Phoenix",
-        }
-        
-        return fifaCityMatches[cityId] || otherCityMatches[cityId] || false
-      })
+      const propertyMatchesCity = filters.cities.some(cityId => 
+        matchesCity(property, cityId)
+      )
       if (!propertyMatchesCity) return false
     }
 
@@ -164,10 +118,6 @@ export function sortProperties(properties: Property[], sortBy: string): Property
     case "rating":
       return sorted.sort((a, b) => b.rating.average - a.rating.average)
     case "newest":
-      // Assuming createdAt exists, otherwise fallback to id or random
-      // return sorted.sort((a, b) =>
-      //   new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
-      // );
       return sorted
     default:
       return sorted // relevance
