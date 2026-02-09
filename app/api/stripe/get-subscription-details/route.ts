@@ -32,10 +32,10 @@ export async function POST(req: NextRequest) {
     // Fetch subscription from Stripe
     const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
       expand: ['default_payment_method']
-    })
+    }) as unknown as Stripe.Subscription // Cast to avoid Response<> wrapper type
 
     // Get last 4 digits of card if available
-    let lastFourDigits = null
+    let lastFourDigits: string | null = null
     if (subscription.default_payment_method && typeof subscription.default_payment_method === 'object') {
       const paymentMethod = subscription.default_payment_method as any
       if (paymentMethod.card) {
@@ -43,12 +43,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Format timestamps as ISO strings for consistency
     return NextResponse.json({
       status: subscription.status,
-      currentPeriodEnd: subscription.current_period_end,
+      currentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
       cancelAtPeriodEnd: subscription.cancel_at_period_end,
       lastFourDigits,
-      trialEnd: subscription.trial_end
+      trialEnd: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null
     })
   } catch (error: any) {
     console.error('Error fetching subscription details:', error)

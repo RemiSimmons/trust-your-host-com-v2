@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     // This keeps the listing active until the billing cycle ends
     const subscription = await stripe.subscriptions.update(property.stripe_subscription_id, {
       cancel_at_period_end: true
-    })
+    }) as unknown as Stripe.Subscription // Cast to avoid Response<> wrapper type
 
     // Update property status to indicate pending cancellation
     // Keep is_active = true until the subscription actually ends
@@ -51,11 +51,12 @@ export async function POST(req: NextRequest) {
 
     console.log(`✅ Subscription ${subscription.id} set to cancel at period end for property ${property.name}`)
 
+    // Format the response properly - timestamps are Unix seconds
     return NextResponse.json({
       success: true,
       message: 'Subscription will be canceled at the end of the billing period',
-      cancelAt: subscription.cancel_at,
-      currentPeriodEnd: subscription.current_period_end
+      cancelAt: subscription.cancel_at ? new Date(subscription.cancel_at * 1000).toISOString() : null,
+      currentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null
     })
   } catch (error: any) {
     console.error('Error canceling subscription:', error)

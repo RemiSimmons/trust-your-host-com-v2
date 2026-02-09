@@ -7,6 +7,7 @@ import Link from "next/link"
 import { generateFAQPageSchema } from "@/lib/seo/schema"
 import { SchemaMarkup } from "@/components/seo/schema-markup"
 import { Breadcrumbs } from "@/components/seo/breadcrumbs"
+import ReactMarkdown from "react-markdown"
 
 // FAQ content database
 const faqContent: Record<string, {
@@ -415,7 +416,7 @@ export default async function FAQDetailPage({ params }: { params: Promise<{ slug
 
           {/* Answer */}
           <div className="prose prose-lg max-w-none mb-12">
-            <div dangerouslySetInnerHTML={{ __html: faq.answer.replace(/\n/g, '<br/>') }} />
+            <ReactMarkdown>{faq.answer}</ReactMarkdown>
           </div>
 
           {/* Related Questions */}

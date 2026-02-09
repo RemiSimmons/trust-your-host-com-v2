@@ -14,6 +14,17 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized. Please log in to seed data." }, { status: 401 })
   }
 
+  // Verify the user has admin role before allowing database seeding
+  const { data: adminCheck } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single()
+
+  if (adminCheck?.role !== "admin") {
+    return NextResponse.json({ error: "Forbidden. Admin access required to seed data." }, { status: 403 })
+  }
+
   try {
     const { data: profile } = await supabase.from("profiles").select("id").eq("id", user.id).single()
 

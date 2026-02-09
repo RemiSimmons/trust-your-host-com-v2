@@ -8,19 +8,17 @@ export const dynamic = 'force-dynamic'
 export default async function AdminSubmissionsPage() {
   const supabase = await createServerClient()
   
-  // TODO: Re-enable auth check after testing
-  // Temporarily disabled for testing
-  // const { data: { user } } = await supabase.auth.getUser()
-  // if (!user) redirect('/host/login')
+  // Defense-in-depth: verify admin access (layout also checks, but page should too)
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/host/login')
   
-  // // Check admin role
-  // const { data: profile } = await supabase
-  //   .from('profiles')
-  //   .select('role')
-  //   .eq('id', user.id)
-  //   .single()
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
   
-  // if (profile?.role !== 'admin') redirect('/')
+  if (profile?.role !== 'admin') redirect('/')
   
   // Fetch pending submissions using admin client
   const { createAdminClient } = await import('@/lib/supabase/admin')

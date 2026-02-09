@@ -185,12 +185,18 @@ export async function POST(request: Request) {
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object
         
+        // Access subscription field with proper typing
+        const invoiceWithSub = invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription }
+        const subscriptionId = typeof invoiceWithSub.subscription === 'string' 
+          ? invoiceWithSub.subscription 
+          : invoiceWithSub.subscription?.id
+        
         // Update subscription to active if payment succeeded
-        if (invoice.subscription) {
+        if (subscriptionId) {
           await supabase
             .from('properties')
             .update({ subscription_status: 'active' })
-            .eq('stripe_subscription_id', invoice.subscription)
+            .eq('stripe_subscription_id', subscriptionId)
         }
         break
       }
@@ -198,12 +204,17 @@ export async function POST(request: Request) {
       case 'invoice.payment_failed': {
         const invoice = event.data.object
         
+        const invoiceWithSub = invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription }
+        const subscriptionId = typeof invoiceWithSub.subscription === 'string' 
+          ? invoiceWithSub.subscription 
+          : invoiceWithSub.subscription?.id
+        
         // Mark as paused on payment failure
-        if (invoice.subscription) {
+        if (subscriptionId) {
           const { data: properties } = await supabase
             .from('properties')
             .select('id, host_id, name')
-            .eq('stripe_subscription_id', invoice.subscription)
+            .eq('stripe_subscription_id', subscriptionId)
           
           if (properties && properties.length > 0) {
             const property = properties[0]
@@ -211,7 +222,7 @@ export async function POST(request: Request) {
             await supabase
               .from('properties')
               .update({ subscription_status: 'paused' })
-              .eq('stripe_subscription_id', invoice.subscription)
+              .eq('stripe_subscription_id', subscriptionId)
             
             const { data: profile } = await supabase
               .from('profiles')

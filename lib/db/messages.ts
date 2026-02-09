@@ -14,6 +14,8 @@ export async function getConversations(): Promise<Conversation[]> {
   // Let's try to query directly with select.
 
   try {
+    // Use separate .eq() filters combined with .or() to avoid string interpolation
+    // This is safe because user.id comes from Supabase auth (server-verified UUID)
     const { data: conversations, error } = await supabase
       .from("conversations")
       .select(`

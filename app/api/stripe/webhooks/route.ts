@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { sendTrialEndingReminder, sendSubscriptionFailedNotification } from '@/lib/email/resend'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-11-20.acacia',
+  apiVersion: '2025-11-17.clover',
 })
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
@@ -216,11 +216,17 @@ export async function POST(req: NextRequest) {
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice
         
-        if (invoice.subscription) {
+        // Access subscription field which may not be in types but exists at runtime
+        const invoiceWithSub = invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription }
+        const subscriptionId = typeof invoiceWithSub.subscription === 'string' 
+          ? invoiceWithSub.subscription 
+          : invoiceWithSub.subscription?.id
+        
+        if (subscriptionId) {
           const { data: property } = await supabase
             .from('properties')
             .select('id, subscription_status')
-            .eq('stripe_subscription_id', invoice.subscription as string)
+            .eq('stripe_subscription_id', subscriptionId)
             .single()
 
           if (property) {
@@ -246,11 +252,16 @@ export async function POST(req: NextRequest) {
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice
         
-        if (invoice.subscription) {
+        const invoiceWithSub = invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription }
+        const subscriptionId = typeof invoiceWithSub.subscription === 'string' 
+          ? invoiceWithSub.subscription 
+          : invoiceWithSub.subscription?.id
+        
+        if (subscriptionId) {
           const { data: property } = await supabase
             .from('properties')
             .select('id, name, host_id, host:profiles(email, full_name)')
-            .eq('stripe_subscription_id', invoice.subscription as string)
+            .eq('stripe_subscription_id', subscriptionId)
             .single()
 
           if (property) {
