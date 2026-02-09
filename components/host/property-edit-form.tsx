@@ -107,6 +107,7 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
       contact_email: formData.get('contact_email') as string,
       contact_phone: formData.get('contact_phone') as string,
       typical_response_hours: Number(formData.get('typical_response_hours')) || 24,
+      is_fifa_2026: formData.get('is_fifa_2026') === 'on',
     }
     
     console.log('[PropertyEditForm] Update data:', updateData)
@@ -386,6 +387,47 @@ export function PropertyEditForm({ property }: PropertyEditFormProps) {
                     defaultValue={property.contact_phone || ''}
                     placeholder="404-301-0535"
                   />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Event Associations */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Event Associations</CardTitle>
+                <CardDescription>Feature your property for upcoming events to reach more travelers</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <input
+                      type="checkbox"
+                      id="is_fifa_2026"
+                      name="is_fifa_2026"
+                      defaultChecked={property.is_fifa_2026 || false}
+                      className="h-4 w-4 text-accent focus:ring-accent border-gray-300 rounded cursor-pointer mt-1"
+                    />
+                    <div className="flex-1">
+                      <Label htmlFor="is_fifa_2026" className="font-medium cursor-pointer text-base">
+                        FIFA World Cup 2026
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Feature your property for FIFA 2026 matches. Travelers searching for FIFA accommodations will see your listing.
+                      </p>
+                      {property.distance_to_stadium && (
+                        <p className="text-xs text-green-600 dark:text-green-400 mt-2">
+                          ✓ Your property is {property.distance_to_stadium} mi from the nearest FIFA stadium
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <Alert className="bg-blue-50 dark:bg-blue-950/20 border-blue-200">
+                    <AlertCircle className="h-4 w-4 text-blue-600" />
+                    <AlertDescription className="text-sm text-blue-900 dark:text-blue-100">
+                      <strong>Tip:</strong> Properties featured for major events get significantly more views and bookings. Make sure your property details and photos are up to date!
+                    </AlertDescription>
+                  </Alert>
                 </div>
               </CardContent>
             </Card>

@@ -23,6 +23,7 @@ export async function updatePropertyInstant(
     contact_email?: string
     contact_phone?: string
     typical_response_hours?: number
+    is_fifa_2026?: boolean
   }
 ) {
   console.log('[updatePropertyInstant] Starting update for property:', propertyId)
@@ -87,6 +88,7 @@ export async function updatePropertyInstant(
     contact_email: updates.contact_email,
     contact_phone: updates.contact_phone,
     typical_response_hours: updates.typical_response_hours,
+    is_fifa_2026: updates.is_fifa_2026,
     updated_at: new Date().toISOString(),
   }
   console.log('[updatePropertyInstant] Update payload:', JSON.stringify(updatePayload, null, 2))
