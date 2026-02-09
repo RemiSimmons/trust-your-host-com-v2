@@ -111,8 +111,8 @@ export async function approvePropertySubmission(submissionId: string) {
         currency: 'USD',
         minStay: 1
       },
-      capacity: {
-        guests: submission.max_guests,
+      capacity: submission.capacity || {
+        guests: submission.max_guests || 1,
         bedrooms: 1,
         beds: 1,
         bathrooms: 1,
