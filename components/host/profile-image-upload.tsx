@@ -64,6 +64,8 @@ export function ProfileImageUpload({
       const formData = new FormData()
       formData.append("file", file)
 
+      console.log("[Client] Uploading file:", file.name, file.type, `${(file.size / 1024).toFixed(2)}KB`)
+
       const response = await fetch("/api/upload/profile-image", {
         method: "POST",
         body: formData,
@@ -72,9 +74,19 @@ export function ProfileImageUpload({
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || "Upload failed")
+        console.error("[Client] Upload failed:", response.status, data)
+        
+        // Show more specific error messages
+        if (response.status === 500 && data.details?.includes("bucket")) {
+          throw new Error(
+            "Storage is not set up yet. Please ask an administrator to create the 'profile-images' bucket in Supabase."
+          )
+        }
+        
+        throw new Error(data.error || data.details || "Upload failed")
       }
 
+      console.log("[Client] Upload successful:", data.url)
       setImageUrl(data.url)
       onUploadSuccess?.(data.url)
 
@@ -83,7 +95,7 @@ export function ProfileImageUpload({
         description: "Your profile image has been updated successfully.",
       })
     } catch (error) {
-      console.error("Upload error:", error)
+      console.error("[Client] Upload error:", error)
       toast({
         title: "Upload failed",
         description: error instanceof Error ? error.message : "Failed to upload image. Please try again.",

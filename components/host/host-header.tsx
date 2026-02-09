@@ -44,6 +44,29 @@ export function HostHeader({ onMenuClick }: HostHeaderProps = {}) {
     }
     
     loadUser()
+    
+    // Set up a listener for profile updates
+    const channel = supabase
+      .channel('profile-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+        },
+        (payload) => {
+          if (payload.new && (payload.new as any).id === user?.id) {
+            console.log('[HostHeader] Profile updated, refreshing...')
+            setProfile(payload.new as any)
+          }
+        }
+      )
+      .subscribe()
+    
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   const handleLogout = async () => {
