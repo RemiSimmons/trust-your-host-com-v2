@@ -12,7 +12,7 @@ export const insightsArticles: Article[] = [
 
 *By Remi Simmons*
 
-After 15 years in logistics and operations, I've learned one thing: relying on a single platform for your revenue is a recipe for stress. I've watched vacation rental hosts scramble when Airbnb changed its search algorithm overnight, when Vrbo increased host fees without warning, or when a property suddenly dropped from page one to page ten for reasons nobody could explain.
+Relying on a single platform for your revenue is a recipe for stress. I've watched vacation rental hosts scramble when Airbnb changed its search algorithm overnight, when Vrbo increased host fees without warning, or when a property suddenly dropped from page one to page ten for reasons nobody could explain.
 
 The hosts who sleep well at night? They're the ones who diversified early, built their own direct booking sites, and used free listing platforms strategically to feed their brand instead of competing with it.
 
