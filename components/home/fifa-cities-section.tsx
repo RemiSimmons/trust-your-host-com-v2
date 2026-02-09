@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-export function FifaCitiesSection() {
+export function FifaCitiesSection({ variant = "default" }: { variant?: "default" | "dark" }) {
   const router = useRouter();
   const [isMultiCityDialogOpen, setIsMultiCityDialogOpen] = useState(false);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
@@ -66,10 +66,17 @@ export function FifaCitiesSection() {
     setSelectedCities([]);
   };
 
+  // Determine background and text colors based on variant
+  const isDark = variant === "dark";
+  const sectionBg = isDark ? "bg-gradient-to-br from-blue-900 via-blue-800 to-green-900" : "";
+  const textColor = isDark ? "text-white" : "text-gray-900";
+  const textSecondary = isDark ? "text-white/95" : "text-gray-700";
+  const textMuted = isDark ? "text-white/90" : "text-gray-600";
+
   return (
     <section
       id="fifa-cities-section"
-      className="relative py-16 sm:py-20 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-green-900"
+      className={`relative py-16 sm:py-20 md:py-24 ${sectionBg}`}
     >
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
@@ -86,16 +93,16 @@ export function FifaCitiesSection() {
             <span className="tracking-wide">FIFA WORLD CUP 2026</span>
           </div>
 
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-white drop-shadow-lg">
+          <h2 className={`font-serif text-3xl sm:text-4xl md:text-5xl font-bold mb-4 ${textColor} drop-shadow-lg`}>
             Stay in the Action
           </h2>
 
-          <p className="text-lg sm:text-xl text-white/95 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
+          <p className={`text-lg sm:text-xl ${textSecondary} max-w-3xl mx-auto leading-relaxed drop-shadow-md`}>
             Book your vacation rental in one of 11 US host cities. From group stage to the final, 
             find the perfect home base for the world's biggest sporting event.
           </p>
 
-          <div className="mt-6 flex flex-wrap justify-center gap-4 text-sm text-white/90">
+          <div className={`mt-6 flex flex-wrap justify-center gap-4 text-sm ${textMuted}`}>
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <span>June - July 2026</span>

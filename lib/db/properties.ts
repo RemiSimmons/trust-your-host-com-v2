@@ -337,5 +337,8 @@ function mapDatabasePropertyToProperty(dbProp: any): Property {
     approval_status: dbProp.approval_status,
     pending_changes: dbProp.pending_changes,
     postal_code: dbProp.postal_code,
+    is_fifa_2026: dbProp.is_fifa_2026,
+    fifa_featured: dbProp.fifa_featured,
+    distance_to_stadium: dbProp.distance_to_stadium,
   }
 }

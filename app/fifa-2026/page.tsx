@@ -200,7 +200,7 @@ export default function Fifa2026Page() {
         </section>
 
         {/* All Host Cities Section */}
-        <FifaCitiesSection />
+        <FifaCitiesSection variant="dark" />
 
         {/* Why Book with TrustYourHost */}
         <section className="py-16 bg-white">
