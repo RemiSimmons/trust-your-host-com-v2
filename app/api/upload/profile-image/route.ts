@@ -81,6 +81,29 @@ export async function POST(request: NextRequest) {
       console.log("[Profile Upload] Bucket found:", profileBucket.name, "public:", profileBucket.public)
     }
 
+    // Clean up old profile image before uploading new one
+    const { data: currentProfile } = await supabase
+      .from("profiles")
+      .select("avatar_url")
+      .eq("id", user.id)
+      .single()
+
+    if (currentProfile?.avatar_url && currentProfile.avatar_url.includes("profile-images")) {
+      const urlParts = currentProfile.avatar_url.split("/profile-images/")
+      if (urlParts[1]) {
+        const oldFilePath = urlParts[1]
+        console.log("[Profile Upload] Removing old image:", oldFilePath)
+        const { error: removeError } = await supabase.storage
+          .from("profile-images")
+          .remove([oldFilePath])
+        if (removeError) {
+          console.warn("[Profile Upload] Failed to remove old image (non-blocking):", removeError.message)
+        } else {
+          console.log("[Profile Upload] Old image removed successfully")
+        }
+      }
+    }
+
     // Upload to Supabase Storage
     console.log("[Profile Upload] Uploading to storage...")
     const { data: uploadData, error: uploadError } = await supabase.storage
@@ -141,9 +164,12 @@ export async function POST(request: NextRequest) {
     console.log("[Profile Upload] Complete! Returning success response")
     
     // Revalidate pages that show the avatar
-    revalidatePath("/host")
+    revalidatePath("/host", "layout")
     revalidatePath("/host/settings")
     revalidatePath("/settings")
+    revalidatePath("/properties", "layout")
+    revalidatePath("/dashboard", "layout")
+    revalidatePath("/", "layout")
     
     return NextResponse.json({
       success: true,
@@ -211,6 +237,14 @@ export async function DELETE() {
     await supabase.auth.updateUser({
       data: { avatar_url: null },
     })
+
+    // Revalidate pages that show the avatar
+    revalidatePath("/host", "layout")
+    revalidatePath("/host/settings")
+    revalidatePath("/settings")
+    revalidatePath("/properties", "layout")
+    revalidatePath("/dashboard", "layout")
+    revalidatePath("/", "layout")
 
     return NextResponse.json({
       success: true,
