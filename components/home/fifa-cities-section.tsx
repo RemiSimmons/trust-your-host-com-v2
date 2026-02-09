@@ -69,7 +69,7 @@ export function FifaCitiesSection() {
   return (
     <section
       id="fifa-cities-section"
-      className="relative py-16 sm:py-20 md:py-24"
+      className="relative py-16 sm:py-20 md:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-green-900"
     >
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
