@@ -178,7 +178,7 @@ export function ExperienceCategories() {
                       handleCardClick(category, index)
                     }
                   }}
-                  className="group relative min-w-[280px] flex-shrink-0 snap-center aspect-[4/5] overflow-hidden rounded-xl cursor-pointer 
+                  className="group relative min-w-[260px] sm:min-w-[280px] flex-shrink-0 snap-center aspect-[4/5] overflow-hidden rounded-xl cursor-pointer 
                              md:min-w-0 md:flex-shrink md:aspect-[3/4]
                              border border-white/20 
                              shadow-[0_8px_30px_rgba(255,255,255,0.1),0_4px_12px_rgba(0,0,0,0.3)]
@@ -205,18 +205,18 @@ export function ExperienceCategories() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
                   {/* Content - bottom overlay only */}
-                  <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6">
                     {/* Category name - large, dramatic */}
-                    <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-white font-bold mb-2 drop-shadow-2xl line-clamp-2">{category.title}</h3>
+                    <h3 className="font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl text-white font-bold mb-2 drop-shadow-2xl line-clamp-2">{category.title}</h3>
 
                     {/* Property count - subtle */}
-                    <p className="text-white/80 text-sm drop-shadow-md flex items-center gap-1">
-                      <Home className="h-4 w-4" />
+                    <p className="text-white/80 text-xs sm:text-sm drop-shadow-md flex items-center gap-1">
+                      <Home className="h-3 w-3 sm:h-4 sm:w-4" />
                       {category.count}
                     </p>
 
                     {/* Hover: Additional context fades in */}
-                    <p className="text-white/90 text-sm mt-3 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="text-white/90 text-xs sm:text-sm mt-2 sm:mt-3 leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       {category.description}
                     </p>
                   </div>

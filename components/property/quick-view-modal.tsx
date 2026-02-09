@@ -81,21 +81,21 @@ export function QuickViewModal({ property, isOpen, onClose }: QuickViewModalProp
         style={{ position: "relative" }}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between z-10">
-          <h2 className="font-serif text-2xl font-bold text-gray-900 pr-8">Quick View</h2>
+        <div className="sticky top-0 bg-white border-b px-4 sm:px-6 py-4 flex items-center justify-between z-10">
+          <h2 className="font-serif text-xl sm:text-2xl font-bold text-gray-900 pr-8">Quick View</h2>
           <button
             onClick={(e) => {
               e.stopPropagation()
               onClose()
             }}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
             aria-label="Close"
           >
             <X className="h-6 w-6 text-gray-600" />
           </button>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 p-6">
+        <div className="flex flex-col md:grid md:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6">
           {/* Left Column - Images */}
           <div className="space-y-4">
             {/* Main Image */}

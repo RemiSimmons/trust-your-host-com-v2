@@ -107,22 +107,22 @@ export function PropertyCard({ property }: { property: Property }) {
         </div>
       </div>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end p-6 z-30 backdrop-blur-sm">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end p-4 sm:p-6 z-30 backdrop-blur-sm">
         <div className="w-full text-white">
           {/* Rating */}
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-2 sm:mb-3">
             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-sm font-medium">
+            <span className="text-xs sm:text-sm font-medium">
               {property.rating.average.toFixed(1)} ({property.rating.count} reviews)
             </span>
           </div>
 
           {/* All experience tags */}
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
             {property.experiences.map((exp) => (
               <span
                 key={exp}
-                className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-xs shadow-md"
+                className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-xs shadow-md"
               >
                 {exp}
               </span>
@@ -130,30 +130,30 @@ export function PropertyCard({ property }: { property: Property }) {
           </div>
 
           {/* Quick highlights */}
-          <ul className="space-y-1 mb-4 text-sm">
+          <ul className="space-y-1 mb-3 sm:mb-4 text-xs sm:text-sm">
             {property.quickHighlights.slice(0, 3).map((highlight, i) => (
               <li key={i} className="flex items-start gap-2">
-                <Check className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                <Check className="h-3 w-3 sm:h-4 sm:w-4 text-accent shrink-0 mt-0.5" />
                 <span className="leading-tight">{highlight}</span>
               </li>
             ))}
           </ul>
 
           {/* Action buttons */}
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <button
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
                 setShowQuickView(true)
               }}
-              className="flex-1 bg-accent text-white py-3 px-4 rounded-lg hover:bg-accent/80 transition-colors text-sm font-medium shadow-lg"
+              className="flex-1 bg-accent text-white py-3 px-4 rounded-lg hover:bg-accent/80 transition-colors text-sm font-medium shadow-lg min-h-[44px] flex items-center justify-center"
             >
               Quick View
             </button>
             <Link
               href={`/properties/${property.slug}`}
-              className="flex-1 text-center bg-gray-50 border-2 border-accent text-accent py-3 px-4 rounded-lg hover:bg-accent/10 hover:border-accent transition-colors text-sm font-medium shadow-sm"
+              className="flex-1 text-center bg-gray-50 border-2 border-accent text-accent py-3 px-4 rounded-lg hover:bg-accent/10 hover:border-accent transition-colors text-sm font-medium shadow-sm min-h-[44px] flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
               View Details

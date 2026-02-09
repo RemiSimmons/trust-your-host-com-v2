@@ -104,86 +104,86 @@ export default function Fifa2026Page() {
 
             <div className="max-w-4xl mx-auto">
               <div className="space-y-8">
-                <div className="flex gap-6 items-start">
-                  <div className="flex-shrink-0 w-32 text-right">
-                    <div className="font-bold text-lg text-blue-600">June 11-27</div>
-                    <div className="text-sm text-gray-500">2026</div>
+                <div className="flex gap-3 sm:gap-6 items-start">
+                  <div className="flex-shrink-0 w-20 sm:w-32 text-right">
+                    <div className="font-bold text-sm sm:text-lg text-blue-600">June 11-27</div>
+                    <div className="text-xs sm:text-sm text-gray-500">2026</div>
                   </div>
                   <div className="flex-shrink-0 w-4 h-4 rounded-full bg-blue-600 mt-1" />
-                  <div className="flex-1 pb-8 border-l-2 border-gray-200 pl-6 ml-2">
-                    <h3 className="font-bold text-xl mb-2">Group Stage</h3>
-                    <p className="text-gray-600">
+                  <div className="flex-1 pb-8 border-l-2 border-gray-200 pl-4 sm:pl-6 ml-2">
+                    <h3 className="font-bold text-lg sm:text-xl mb-2">Group Stage</h3>
+                    <p className="text-sm sm:text-base text-gray-600">
                       48 teams compete across all 11 host cities in the opening round. 
                       Every city hosts multiple matches during this exciting phase.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex gap-6 items-start">
-                  <div className="flex-shrink-0 w-32 text-right">
-                    <div className="font-bold text-lg text-blue-600">June 29 - July 3</div>
+                <div className="flex gap-3 sm:gap-6 items-start">
+                  <div className="flex-shrink-0 w-20 sm:w-32 text-right">
+                    <div className="font-bold text-sm sm:text-lg text-blue-600">June 29 - July 3</div>
                   </div>
                   <div className="flex-shrink-0 w-4 h-4 rounded-full bg-green-600 mt-1" />
-                  <div className="flex-1 pb-8 border-l-2 border-gray-200 pl-6 ml-2">
-                    <h3 className="font-bold text-xl mb-2">Round of 32</h3>
-                    <p className="text-gray-600">
+                  <div className="flex-1 pb-8 border-l-2 border-gray-200 pl-4 sm:pl-6 ml-2">
+                    <h3 className="font-bold text-lg sm:text-xl mb-2">Round of 32</h3>
+                    <p className="text-sm sm:text-base text-gray-600">
                       The knockout stage begins as the top teams from the group stage compete 
                       for a spot in the Round of 16.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex gap-6 items-start">
-                  <div className="flex-shrink-0 w-32 text-right">
-                    <div className="font-bold text-lg text-blue-600">July 5-8</div>
+                <div className="flex gap-3 sm:gap-6 items-start">
+                  <div className="flex-shrink-0 w-20 sm:w-32 text-right">
+                    <div className="font-bold text-sm sm:text-lg text-blue-600">July 5-8</div>
                   </div>
                   <div className="flex-shrink-0 w-4 h-4 rounded-full bg-blue-600 mt-1" />
-                  <div className="flex-1 pb-8 border-l-2 border-gray-200 pl-6 ml-2">
-                    <h3 className="font-bold text-xl mb-2">Round of 16</h3>
-                    <p className="text-gray-600">
+                  <div className="flex-1 pb-8 border-l-2 border-gray-200 pl-4 sm:pl-6 ml-2">
+                    <h3 className="font-bold text-lg sm:text-xl mb-2">Round of 16</h3>
+                    <p className="text-sm sm:text-base text-gray-600">
                       16 teams remain in the hunt for glory. Every match becomes crucial 
                       as the competition intensifies.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex gap-6 items-start">
-                  <div className="flex-shrink-0 w-32 text-right">
-                    <div className="font-bold text-lg text-blue-600">July 9-11</div>
+                <div className="flex gap-3 sm:gap-6 items-start">
+                  <div className="flex-shrink-0 w-20 sm:w-32 text-right">
+                    <div className="font-bold text-sm sm:text-lg text-blue-600">July 9-11</div>
                   </div>
                   <div className="flex-shrink-0 w-4 h-4 rounded-full bg-orange-600 mt-1" />
-                  <div className="flex-1 pb-8 border-l-2 border-gray-200 pl-6 ml-2">
-                    <h3 className="font-bold text-xl mb-2">Quarterfinals</h3>
-                    <p className="text-gray-600">
+                  <div className="flex-1 pb-8 border-l-2 border-gray-200 pl-4 sm:pl-6 ml-2">
+                    <h3 className="font-bold text-lg sm:text-xl mb-2">Quarterfinals</h3>
+                    <p className="text-sm sm:text-base text-gray-600">
                       Eight teams battle for semifinal spots in matches held across select host cities.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex gap-6 items-start">
-                  <div className="flex-shrink-0 w-32 text-right">
-                    <div className="font-bold text-lg text-blue-600">July 14-15</div>
+                <div className="flex gap-3 sm:gap-6 items-start">
+                  <div className="flex-shrink-0 w-20 sm:w-32 text-right">
+                    <div className="font-bold text-sm sm:text-lg text-blue-600">July 14-15</div>
                   </div>
                   <div className="flex-shrink-0 w-4 h-4 rounded-full bg-purple-600 mt-1" />
-                  <div className="flex-1 pb-8 border-l-2 border-gray-200 pl-6 ml-2">
-                    <h3 className="font-bold text-xl mb-2">Semifinals</h3>
-                    <p className="text-gray-600">
+                  <div className="flex-1 pb-8 border-l-2 border-gray-200 pl-4 sm:pl-6 ml-2">
+                    <h3 className="font-bold text-lg sm:text-xl mb-2">Semifinals</h3>
+                    <p className="text-sm sm:text-base text-gray-600">
                       Four teams remain. Two matches determine who plays for the championship.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex gap-6 items-start">
-                  <div className="flex-shrink-0 w-32 text-right">
-                    <div className="font-bold text-lg text-yellow-600">July 19</div>
+                <div className="flex gap-3 sm:gap-6 items-start">
+                  <div className="flex-shrink-0 w-20 sm:w-32 text-right">
+                    <div className="font-bold text-sm sm:text-lg text-yellow-600">July 19</div>
                   </div>
                   <div className="flex-shrink-0 w-4 h-4 rounded-full bg-yellow-600 mt-1 ring-4 ring-yellow-200" />
-                  <div className="flex-1 pl-6 ml-2">
-                    <h3 className="font-bold text-xl mb-2 flex items-center gap-2">
+                  <div className="flex-1 pl-4 sm:pl-6 ml-2">
+                    <h3 className="font-bold text-lg sm:text-xl mb-2 flex items-center gap-2">
                       <span>Final</span>
                       <Trophy className="h-5 w-5 text-yellow-600" />
                     </h3>
-                    <p className="text-gray-600 mb-2">
+                    <p className="text-sm sm:text-base text-gray-600 mb-2">
                       The world watches as two nations compete for the greatest prize in sports 
                       at MetLife Stadium in New York/New Jersey.
                     </p>
