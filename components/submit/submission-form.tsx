@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { submitPropertyListing } from '@/app/submit-property/actions'
-import { Loader2, CheckCircle } from 'lucide-react'
+import { Loader2, CheckCircle, ChevronDown } from 'lucide-react'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { EXPERIENCE_CATEGORIES, AMENITIES, PROPERTY_TYPES } from '@/lib/data/property-constants'
 import { SubmissionImageUploader } from './image-uploader'
 
@@ -221,30 +222,41 @@ export function SubmissionForm() {
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label>Experience Categories *</Label>
-            <p className="text-sm text-muted-foreground mb-2">Select all that apply</p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {EXPERIENCE_CATEGORIES.map((exp) => (
-                <div key={exp} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`exp-${exp}`}
-                    checked={selectedExperiences.includes(exp)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setSelectedExperiences([...selectedExperiences, exp])
-                      } else {
-                        setSelectedExperiences(selectedExperiences.filter(e => e !== exp))
-                      }
-                    }}
-                  />
-                  <Label htmlFor={`exp-${exp}`} className="text-sm font-normal cursor-pointer">
-                    {exp}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </div>
+          <Collapsible>
+            <CollapsibleTrigger className="flex items-center justify-between w-full py-2 group">
+              <div className="text-left">
+                <Label className="cursor-pointer">Experience Categories *</Label>
+                <p className="text-sm text-muted-foreground">
+                  {selectedExperiences.length > 0
+                    ? `${selectedExperiences.length} selected`
+                    : 'Select all that apply'}
+                </p>
+              </div>
+              <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {EXPERIENCE_CATEGORIES.map((exp) => (
+                  <div key={exp} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`exp-${exp}`}
+                      checked={selectedExperiences.includes(exp)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedExperiences([...selectedExperiences, exp])
+                        } else {
+                          setSelectedExperiences(selectedExperiences.filter(e => e !== exp))
+                        }
+                      }}
+                    />
+                    <Label htmlFor={`exp-${exp}`} className="text-sm font-normal cursor-pointer">
+                      {exp}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
           <div className="space-y-2">
             <Label htmlFor="description">Property Description * (Max 150 words)</Label>
@@ -318,31 +330,42 @@ export function SubmissionForm() {
 
       {/* Amenities */}
       <Card>
-        <CardHeader>
-          <CardTitle>Amenities</CardTitle>
-          <CardDescription>Select all amenities your property offers</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {AMENITIES.map((amenity) => (
-              <div key={amenity} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`amenity-${amenity}`}
-                  checked={selectedAmenities.includes(amenity)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setSelectedAmenities([...selectedAmenities, amenity])
-                    } else {
-                      setSelectedAmenities(selectedAmenities.filter(a => a !== amenity))
-                    }
-                  }}
-                />
-                <Label htmlFor={`amenity-${amenity}`} className="text-sm font-normal cursor-pointer">
-                  {amenity}
-                </Label>
+        <CardContent className="pt-6">
+          <Collapsible>
+            <CollapsibleTrigger className="flex items-center justify-between w-full py-1 group">
+              <div className="text-left">
+                <p className="text-lg font-semibold leading-none tracking-tight">Amenities</p>
+                <p className="text-sm text-muted-foreground mt-1.5">
+                  {selectedAmenities.length > 0
+                    ? `${selectedAmenities.length} selected`
+                    : 'Select all amenities your property offers'}
+                </p>
               </div>
-            ))}
-          </div>
+              <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {AMENITIES.map((amenity) => (
+                  <div key={amenity} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`amenity-${amenity}`}
+                      checked={selectedAmenities.includes(amenity)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedAmenities([...selectedAmenities, amenity])
+                        } else {
+                          setSelectedAmenities(selectedAmenities.filter(a => a !== amenity))
+                        }
+                      }}
+                    />
+                    <Label htmlFor={`amenity-${amenity}`} className="text-sm font-normal cursor-pointer">
+                      {amenity}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </CardContent>
       </Card>
 
