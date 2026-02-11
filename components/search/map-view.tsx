@@ -264,6 +264,8 @@ export function MapView({
                     </button>
                     <Link
                       href={`/properties/${property.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="block w-full text-center text-accent hover:text-accent/80 text-xs font-medium underline"
                     >
                       View Full Details

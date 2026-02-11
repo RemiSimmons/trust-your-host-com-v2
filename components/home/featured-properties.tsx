@@ -160,6 +160,8 @@ export function PropertyCard({ property }: { property: Property }) {
             </button>
             <Link
               href={`/properties/${property.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex-1 text-center bg-gray-50 border-2 border-accent text-accent py-3 px-4 rounded-lg hover:bg-accent/10 hover:border-accent transition-colors text-sm font-medium shadow-sm min-h-[44px] flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >

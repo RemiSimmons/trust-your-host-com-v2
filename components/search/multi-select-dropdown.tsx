@@ -70,7 +70,7 @@ export function MultiSelectDropdown({
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         className={cn(
-          "w-full flex items-center justify-between gap-2 h-11 px-3 py-2 border rounded-lg text-sm bg-white transition-colors text-left",
+          "w-full flex items-center justify-between gap-2 h-9 px-3 py-1.5 border rounded-lg text-sm bg-white transition-colors text-left",
           isOpen
             ? "border-accent ring-2 ring-accent/30"
             : "border-gray-300 hover:border-gray-400",
@@ -85,10 +85,10 @@ export function MultiSelectDropdown({
               tabIndex={0}
               onClick={clearAll}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onChange([]) } }}
-              className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+              className="flex items-center justify-center w-4 h-4 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
               aria-label="Clear selection"
             >
-              <X className="h-3 w-3 text-gray-600" />
+              <X className="h-2.5 w-2.5 text-gray-600" />
             </span>
           )}
           <ChevronDown
@@ -134,24 +134,24 @@ export function MultiSelectDropdown({
         </div>
       )}
 
-      {/* Selected pills */}
+      {/* Selected tags */}
       {selected.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-2">
+        <div className="flex flex-wrap gap-1 mt-1.5">
           {selected.map((value) => {
             const option = options.find((o) => o.value === value)
             return (
               <span
                 key={value}
-                className="inline-flex items-center gap-px px-1.5 py-px rounded-full bg-accent/10 text-accent text-[11px] font-medium border border-accent/20 leading-tight"
+                className="inline-flex items-center gap-0.5 pl-1.5 pr-0.5 py-0 rounded-md bg-accent/8 text-accent text-[10px] font-medium leading-[18px]"
               >
                 {option?.label ?? value}
                 <button
                   type="button"
                   onClick={(e) => removeItem(value, e)}
-                  className="hover:bg-accent/20 rounded-full p-px transition-colors"
+                  className="hover:bg-accent/20 rounded p-0 transition-colors ml-px"
                   aria-label={`Remove ${option?.label ?? value}`}
                 >
-                  <X className="h-2.5 w-2.5" />
+                  <X className="h-2 w-2" />
                 </button>
               </span>
             )
