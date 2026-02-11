@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { GripVertical } from "lucide-react"
 import type { Property } from "@/lib/types"
@@ -13,6 +13,8 @@ interface SplitViewProps {
   stadiumCoords?: { lat: number; lng: number }
   radiusMiles?: number
   distanceFrom?: "stadium" | "city-center"
+  hoveredPropertyId?: string | null
+  onPropertyHover?: (propertyId: string | null) => void
 }
 
 export function SplitView({
@@ -20,9 +22,12 @@ export function SplitView({
   stadiumCoords,
   radiusMiles = 25,
   distanceFrom = "stadium",
+  hoveredPropertyId,
+  onPropertyHover,
 }: SplitViewProps) {
-  const [splitPosition, setSplitPosition] = useState(50) // Percentage
+  const [splitPosition, setSplitPosition] = useState(50)
   const [isDragging, setIsDragging] = useState(false)
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   const handleMouseDown = () => {
     setIsDragging(true)
@@ -40,9 +45,17 @@ export function SplitView({
     const x = e.clientX - rect.left
     const percentage = (x / rect.width) * 100
 
-    // Constrain between 30% and 70%
     setSplitPosition(Math.max(30, Math.min(70, percentage)))
   }
+
+  // When a map marker is hovered, scroll the corresponding card into view
+  useEffect(() => {
+    if (!hoveredPropertyId) return
+    const el = cardRefs.current[hoveredPropertyId]
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "nearest" })
+    }
+  }, [hoveredPropertyId])
 
   return (
     <div
@@ -62,10 +75,17 @@ export function SplitView({
               {properties.map((property) => (
                 <motion.div
                   key={property.id}
+                  ref={(el) => { cardRefs.current[property.id] = el }}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.2 }}
+                  onMouseEnter={() => onPropertyHover?.(property.id)}
+                  onMouseLeave={() => onPropertyHover?.(null)}
+                  className={cn(
+                    "rounded-xl transition-all duration-200",
+                    hoveredPropertyId === property.id && "ring-2 ring-accent ring-offset-2"
+                  )}
                 >
                   <PropertyCard property={property} />
                 </motion.div>
@@ -108,6 +128,8 @@ export function SplitView({
               stadiumCoords={stadiumCoords}
               radiusMiles={radiusMiles}
               distanceFrom={distanceFrom}
+              hoveredPropertyId={hoveredPropertyId}
+              onPropertyHover={onPropertyHover}
             />
           </div>
         </div>

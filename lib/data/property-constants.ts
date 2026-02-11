@@ -8,8 +8,8 @@
  */
 
 /**
- * Experience Categories
- * Used in: submission form, search filters
+ * Experience Categories (raw/underlying tags on properties)
+ * Used in: submission form, property data
  */
 export const EXPERIENCE_CATEGORIES = [
   'Mountain Retreats',
@@ -41,6 +41,64 @@ export const EXPERIENCE_CATEGORIES = [
   'Historic Stays',
   'Coastal Getaways',
   'Country Escapes'
+] as const
+
+/**
+ * Experience Card Categories - matches homepage experience cards exactly.
+ * Each card maps to one or more underlying EXPERIENCE_CATEGORIES.
+ * Used in: search filter sidebar dropdown
+ */
+export const EXPERIENCE_CARD_TITLES = [
+  'Mountain Retreats',
+  'Beachfront Paradise',
+  'Urban Adventures',
+  'Forest Getaways',
+  'Tropical Escapes',
+  'Country Homes',
+  'Private Sanctuaries',
+  'Adventure & Outdoor Recreation',
+  'Vineyard and Agritourism',
+  'Family-Friendly Homes',
+  'Festival and Event Destinations',
+  'Unique and Themed Stays',
+] as const
+
+/**
+ * Maps each homepage experience card title to the underlying property experience tags.
+ * When a user selects "Beachfront Paradise", we match properties tagged with any of the mapped values.
+ */
+export const EXPERIENCE_CARD_MAPPING: Record<string, string[]> = {
+  'Mountain Retreats': ['Mountain Retreats', 'Mountain Lodges', 'Ski & Snow', 'Ski Chalets'],
+  'Beachfront Paradise': ['Beachfront Escapes', 'Coastal Towns', 'Coastal Getaways', 'Waterfront Escapes'],
+  'Urban Adventures': ['Urban Exploration', 'Cultural Immersion'],
+  'Forest Getaways': ['Forest Hideaways', 'Hiking & Trails', 'Eco-Tourism'],
+  'Tropical Escapes': ['Island Paradise', 'Island Getaways'],
+  'Country Homes': ['Countryside Calm', 'Country Escapes'],
+  'Private Sanctuaries': ['Wellness Retreats', 'Remote Work Retreats', 'Lakefront Leisure'],
+  'Adventure & Outdoor Recreation': ['Adventure Sports', 'Glamping', 'Hiking & Trails'],
+  'Vineyard and Agritourism': ['Wine Country', 'Culinary Experiences'],
+  'Family-Friendly Homes': ['Lakefront Leisure', 'Countryside Calm', 'Beachfront Escapes'],
+  'Festival and Event Destinations': ['Urban Exploration', 'Cultural Immersion'],
+  'Unique and Themed Stays': ['Glamping', 'Historic Charm', 'Historic Stays', 'Desert Oasis', 'Desert Solitude'],
+}
+
+/**
+ * Location options derived from property states.
+ * Used in: search filter sidebar location dropdown
+ */
+export const LOCATION_OPTIONS = [
+  'Arizona',
+  'California',
+  'Colorado',
+  'Georgia',
+  'Maine',
+  'Montana',
+  'New York',
+  'North Carolina',
+  'Oregon',
+  'South Carolina',
+  'Texas',
+  'Vermont',
 ] as const
 
 /**

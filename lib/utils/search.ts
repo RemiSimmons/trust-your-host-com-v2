@@ -1,7 +1,7 @@
 import type { Property } from "@/lib/types"
 import { calculateDistance } from "@/lib/utils/geo"
 import { matchesCity } from "@/lib/utils/city-matching"
-import { PROPERTY_TYPES } from "@/lib/data/property-constants"
+import { PROPERTY_TYPES, EXPERIENCE_CARD_MAPPING } from "@/lib/data/property-constants"
 
 /**
  * Maps filter property type labels (from experience presets) to property type keys.
@@ -79,6 +79,7 @@ const FILTER_PROPERTY_TYPE_TO_KEY: Record<string, string> = {
 
 export interface FilterState {
   experiences: string[]
+  locations: string[]
   priceRange: [number, number]
   propertyTypes: string[]
   bedrooms: number
@@ -86,7 +87,7 @@ export interface FilterState {
   instantBook: boolean
   verifiedOnly: boolean
   petFriendly: boolean
-  // New FIFA/event filters
+  // FIFA/event filters
   event: string | null
   cities: string[]
   distanceFrom: "stadium" | "city-center"
@@ -95,6 +96,7 @@ export interface FilterState {
 
 export const INITIAL_FILTERS: FilterState = {
   experiences: [],
+  locations: [],
   priceRange: [0, 2000],
   propertyTypes: [],
   bedrooms: 0,
@@ -102,7 +104,6 @@ export const INITIAL_FILTERS: FilterState = {
   instantBook: false,
   verifiedOnly: false,
   petFriendly: false,
-  // New defaults
   event: null,
   cities: [],
   distanceFrom: "stadium",
@@ -126,9 +127,20 @@ export function filterProperties(properties: Property[], filters: FilterState): 
       if (!propertyMatchesCity) return false
     }
 
-    // Experience filter (OR logic - match ANY selected)
+    // Location (state) filter
+    if (filters.locations.length > 0) {
+      if (!filters.locations.includes(property.location.state)) {
+        return false
+      }
+    }
+
+    // Experience filter (OR logic - match ANY selected card title)
+    // Uses EXPERIENCE_CARD_MAPPING to expand card titles to underlying tags
     if (filters.experiences.length > 0) {
-      const hasExperience = property.experiences.some((exp) => filters.experiences.includes(exp))
+      const expandedTags = filters.experiences.flatMap(
+        (cardTitle) => EXPERIENCE_CARD_MAPPING[cardTitle] || [cardTitle]
+      )
+      const hasExperience = property.experiences.some((exp) => expandedTags.includes(exp))
       if (!hasExperience) return false
     }
 

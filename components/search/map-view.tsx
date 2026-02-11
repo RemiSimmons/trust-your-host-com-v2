@@ -1,7 +1,8 @@
 "use client"
 
-import { MapContainer, TileLayer, Marker, Popup, Circle, Tooltip } from "react-leaflet"
-import { Icon, DivIcon } from "leaflet"
+import { useEffect, useRef } from "react"
+import { MapContainer, TileLayer, Marker, Popup, Circle, Tooltip, useMap } from "react-leaflet"
+import { Icon, DivIcon, LatLngBounds } from "leaflet"
 import MarkerClusterGroup from "react-leaflet-cluster"
 import type { Property } from "@/lib/types"
 import Link from "next/link"
@@ -16,6 +17,31 @@ interface MapViewProps {
   centerCoords?: { lat: number; lng: number }
   radiusMiles?: number
   distanceFrom?: "stadium" | "city-center"
+  hoveredPropertyId?: string | null
+  onPropertyHover?: (propertyId: string | null) => void
+}
+
+/** Inner component that fits map bounds when properties change */
+function FitBounds({ properties }: { properties: Property[] }) {
+  const map = useMap()
+  const prevLengthRef = useRef(properties.length)
+
+  useEffect(() => {
+    if (properties.length === 0) return
+    // Only auto-fit when the set of properties changes
+    if (properties.length === prevLengthRef.current) return
+    prevLengthRef.current = properties.length
+
+    const bounds = new LatLngBounds(
+      properties.map((p) => {
+        const coords = getPropertyMapCoordinates(p)
+        return [coords.lat, coords.lng] as [number, number]
+      })
+    )
+    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 13 })
+  }, [properties, map])
+
+  return null
 }
 
 export function MapView({ 
@@ -23,7 +49,9 @@ export function MapView({
   stadiumCoords, 
   centerCoords,
   radiusMiles = 25,
-  distanceFrom = "stadium"
+  distanceFrom = "stadium",
+  hoveredPropertyId,
+  onPropertyHover,
 }: MapViewProps) {
   // Default center - use stadium, center, or first property
   const mapCenter = distanceFrom === "stadium" && stadiumCoords 
@@ -34,20 +62,20 @@ export function MapView({
     ? [properties[0].location.coordinates.lat, properties[0].location.coordinates.lng] as [number, number]
     : [39.8283, -98.5795] as [number, number] // Center of USA
 
-  // Custom property marker icon with price tag
-  const createPropertyIcon = (price: number) => new DivIcon({
+  // Normal marker
+  const createPropertyIcon = (price: number, isHighlighted: boolean) => new DivIcon({
     html: `
       <div class="relative">
-        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white border-2 border-accent shadow-lg rounded-lg px-3 py-1 whitespace-nowrap font-semibold text-sm text-primary hover:scale-110 transition-transform">
+        <div class="absolute -top-8 left-1/2 -translate-x-1/2 ${isHighlighted ? 'bg-accent text-white border-accent scale-110' : 'bg-white text-primary border-accent'} border-2 shadow-lg rounded-lg px-3 py-1 whitespace-nowrap font-semibold text-sm transition-all duration-200" style="${isHighlighted ? 'z-index:9999;' : ''}">
           ${formatCurrency(price)}
         </div>
         <svg width="28" height="38" viewBox="0 0 28 38" xmlns="http://www.w3.org/2000/svg">
-          <path d="M14 0C6.27 0 0 6.27 0 14C0 24.5 14 38 14 38C14 38 28 24.5 28 14C28 6.27 21.73 0 14 0Z" fill="#E67E22" stroke="#fff" stroke-width="2"/>
+          <path d="M14 0C6.27 0 0 6.27 0 14C0 24.5 14 38 14 38C14 38 28 24.5 28 14C28 6.27 21.73 0 14 0Z" fill="${isHighlighted ? '#c0392b' : '#E67E22'}" stroke="#fff" stroke-width="2"/>
           <circle cx="14" cy="14" r="6" fill="#fff"/>
         </svg>
       </div>
     `,
-    className: "custom-marker-icon",
+    className: `custom-marker-icon ${isHighlighted ? 'highlighted-marker' : ''}`,
     iconSize: [28, 38],
     iconAnchor: [14, 38],
     popupAnchor: [0, -38],
@@ -60,7 +88,7 @@ export function MapView({
     popupAnchor: [0, -36],
   })
 
-  const radiusMeters = radiusMiles * 1609.34 // Convert miles to meters
+  const radiusMeters = radiusMiles * 1609.34
 
   return (
     <div className="relative h-[400px] sm:h-[calc(100vh-240px)] w-full">
@@ -71,7 +99,6 @@ export function MapView({
         </p>
       </div>
 
-      {/* Map Container with improved styling */}
       <div className="h-full w-full rounded-xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.12)] border-2 border-gray-200/60 relative z-0">
         <MapContainer
           center={mapCenter}
@@ -80,7 +107,8 @@ export function MapView({
           className="h-full w-full z-0"
           zoomControl={true}
         >
-          {/* Softer map tiles - using CartoDB Positron for lighter, cleaner look */}
+          <FitBounds properties={properties} />
+
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
@@ -94,7 +122,7 @@ export function MapView({
               <Marker position={[stadiumCoords.lat, stadiumCoords.lng]} icon={stadiumIcon}>
                 <Popup>
                   <div className="text-center p-2">
-                    <p className="font-bold text-red-600 mb-1">🏟️ Stadium</p>
+                    <p className="font-bold text-red-600 mb-1">Stadium</p>
                     <p className="text-xs text-gray-600">Search radius: {radiusMiles} miles</p>
                   </div>
                 </Popup>
@@ -118,7 +146,7 @@ export function MapView({
               <Marker position={[centerCoords.lat, centerCoords.lng]} icon={stadiumIcon}>
                 <Popup>
                   <div className="text-center p-2">
-                    <p className="font-bold text-red-600 mb-1">📍 City Center</p>
+                    <p className="font-bold text-red-600 mb-1">City Center</p>
                     <p className="text-xs text-gray-600">Search radius: {radiusMiles} miles</p>
                   </div>
                 </Popup>
@@ -143,7 +171,7 @@ export function MapView({
             showCoverageOnHover={false}
             spiderfyOnMaxZoom={true}
             maxClusterRadius={60}
-            iconCreateFunction={(cluster) => {
+            iconCreateFunction={(cluster: any) => {
               const count = cluster.getChildCount()
               const size = count < 10 ? 'small' : count < 50 ? 'medium' : 'large'
               const dimensions = size === 'small' ? 40 : size === 'medium' ? 50 : 60
@@ -160,16 +188,20 @@ export function MapView({
             }}
           >
             {properties.map((property) => {
-              // Use zip code center coordinates for privacy
               const displayCoords = getPropertyMapCoordinates(property)
+              const isHighlighted = hoveredPropertyId === property.id
               
               return (
               <Marker
                 key={property.id}
                 position={[displayCoords.lat, displayCoords.lng]}
-                icon={createPropertyIcon(property.pricing.baseNightlyRate)}
+                icon={createPropertyIcon(property.pricing.baseNightlyRate, isHighlighted)}
+                zIndexOffset={isHighlighted ? 1000 : 0}
+                eventHandlers={{
+                  mouseover: () => onPropertyHover?.(property.id),
+                  mouseout: () => onPropertyHover?.(null),
+                }}
               >
-                {/* Hover Tooltip */}
                 <Tooltip
                   direction="top"
                   offset={[0, -45]}
@@ -183,7 +215,6 @@ export function MapView({
                   </div>
                 </Tooltip>
 
-                {/* Click Popup */}
                 <Popup maxWidth={280} className="custom-popup">
                   <div className="p-1">
                     {property.images[0] && (
@@ -222,7 +253,7 @@ export function MapView({
                     href={`/properties/${property.slug}`}
                     className="block w-full text-center bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-lg text-sm font-semibold transition-colors"
                   >
-                    Quick View →
+                    View Details →
                   </Link>
                   </div>
                 </Popup>
@@ -233,11 +264,15 @@ export function MapView({
         </MapContainer>
       </div>
 
-      {/* Custom Styles for Map Elements */}
+      {/* Custom Styles */}
       <style jsx global>{`
         .custom-marker-icon {
           background: transparent !important;
           border: none !important;
+        }
+        
+        .highlighted-marker {
+          z-index: 9999 !important;
         }
         
         .custom-cluster-icon {

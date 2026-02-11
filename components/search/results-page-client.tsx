@@ -220,6 +220,7 @@ export function ResultsPageClient({ initialProperties }: ResultsPageClientProps)
     
     return {
       experiences,
+      locations: [],
       priceRange: filtersFromUrl.priceRange,
       propertyTypes: filtersFromUrl.propertyTypes,
       bedrooms,

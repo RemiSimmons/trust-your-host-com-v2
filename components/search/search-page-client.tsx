@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, useCallback, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import dynamic from "next/dynamic"
 import { motion, AnimatePresence } from "framer-motion"
@@ -25,8 +25,36 @@ const SplitView = dynamic(() => import("@/components/search/split-view").then(mo
   loading: () => <div className="h-[calc(100vh-240px)] w-full rounded-xl bg-gray-100 animate-pulse" />
 })
 
+const STORAGE_KEY = "tyh_search_state"
+
 interface SearchPageClientProps {
   initialProperties: Property[]
+}
+
+/** Save search state to sessionStorage */
+function saveSearchState(state: {
+  filters: FilterState
+  sortBy: string
+  view: "list" | "map" | "split"
+}) {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+  } catch { /* ignore quota errors */ }
+}
+
+/** Load search state from sessionStorage */
+function loadSearchState(): {
+  filters: FilterState
+  sortBy: string
+  view: "list" | "map" | "split"
+} | null {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw)
+  } catch {
+    return null
+  }
 }
 
 export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
@@ -35,25 +63,43 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
   const [sortBy, setSortBy] = useState("relevance")
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false)
   const [view, setView] = useState<"list" | "map" | "split">("list")
+  const [hoveredPropertyId, setHoveredPropertyId] = useState<string | null>(null)
+  const hasRestoredRef = useRef(false)
 
-  // Apply URL parameters on mount
+  // Restore state from sessionStorage or apply URL parameters on mount
   useEffect(() => {
+    if (hasRestoredRef.current) return
+    hasRestoredRef.current = true
+
+    const hasUrlParams = searchParams.get("event") || searchParams.get("city") ||
+      searchParams.get("location") || searchParams.get("experience") ||
+      searchParams.get("fifa2026")
+
+    // If no URL params, try restoring from sessionStorage
+    if (!hasUrlParams) {
+      const saved = loadSearchState()
+      if (saved) {
+        setFilters(saved.filters)
+        setSortBy(saved.sortBy)
+        setView(saved.view)
+        return
+      }
+    }
+
+    // Apply URL parameters
     const event = searchParams.get("event") || (searchParams.get("fifa2026") === "true" ? "fifa-2026" : null)
     const cityParam = searchParams.get("city")
     const locationParam = searchParams.get("location")
     const experienceParam = searchParams.get("experience")
     const radius = searchParams.get("radius")
     
-    // Handle cities from either 'city' or 'location' param
     let cities: string[] = []
     if (cityParam) {
       cities = cityParam.split(",")
     } else if (locationParam && locationParam !== "all") {
-      // Map location slug to city ID
       cities = [locationParam]
     }
     
-    // Map experience slug to experience label
     const experienceMap: Record<string, string> = {
       "island-getaways": "Island Getaways",
       "waterfront-escapes": "Waterfront Escapes",
@@ -61,9 +107,9 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
       "mountain-lodges": "Mountain Lodges",
       "hiking-trails": "Hiking & Trails",
       "wellness-retreats": "Wellness Retreats",
-      "pet-friendly": "Pet Friendly", // Special case - maps to petFriendly filter
-      "family-friendly": "Family-Friendly", // Special case
-      "luxury": "Luxury Properties", // Special case
+      "pet-friendly": "Pet Friendly",
+      "family-friendly": "Family-Friendly",
+      "luxury": "Luxury Properties",
     }
     
     const experiences: string[] = []
@@ -77,7 +123,6 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
       }
     }
     
-    // Only update if we have any params
     if (event || cities.length > 0 || experiences.length > 0 || petFriendly) {
       setFilters(prev => ({
         ...prev,
@@ -89,6 +134,12 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
       }))
     }
   }, [searchParams])
+
+  // Save state to sessionStorage whenever filters/sort/view change
+  useEffect(() => {
+    if (!hasRestoredRef.current) return
+    saveSearchState({ filters, sortBy, view })
+  }, [filters, sortBy, view])
 
   const filteredProperties = useMemo(() => {
     const filtered = filterProperties(initialProperties, filters)
@@ -123,6 +174,7 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
 
   const activeFilterCount =
     filters.experiences.length +
+    filters.locations.length +
     filters.propertyTypes.length +
     filters.amenities.length +
     filters.cities.length +
@@ -131,19 +183,20 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
     (filters.petFriendly ? 1 : 0) +
     (filters.event ? 1 : 0)
 
+  const handlePropertyHover = useCallback((propertyId: string | null) => {
+    setHoveredPropertyId(propertyId)
+  }, [])
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top Bar - Sticky within scroll container (top-0 since scroll container starts below nav) */}
+      {/* Top Bar */}
       <div className="sticky top-0 z-40 bg-white border-b border-gray-200 py-4 shadow-sm">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            {/* Left: Results count + active filters */}
             <div className="flex items-center gap-4">
               <p className="text-gray-700 font-medium">
                 Showing {filteredProperties.length} of {initialProperties.length} properties
               </p>
-
-              {/* Mobile Filter Button */}
               <Button
                 variant="outline"
                 size="sm"
@@ -155,7 +208,6 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
               </Button>
             </div>
 
-            {/* Right: Sort dropdown and Map/List toggle */}
             <div className="flex items-center gap-3">
               <MapListToggle view={view} onViewChange={setView} />
               <span className="text-sm text-gray-500 hidden md:inline">Sort by:</span>
@@ -174,7 +226,7 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
         </div>
       </div>
 
-      {/* Content area - contained with proper overflow */}
+      {/* Content area */}
       <div className="relative pt-8 pb-12">
         <div className="container mx-auto px-6">
           <div className="flex gap-8">
@@ -183,12 +235,14 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
               <FilterSidebar filters={filters} setFilters={setFilters} />
             </aside>
 
-            {/* Main Content - ensure images don't escape container */}
+            {/* Main Content */}
             <main className="flex-1 relative z-0 overflow-hidden">
               {/* Map View */}
               {view === "map" ? (
                 <MapView
                   properties={filteredProperties}
+                  hoveredPropertyId={hoveredPropertyId}
+                  onPropertyHover={handlePropertyHover}
                   stadiumCoords={filters.cities.length === 1 ? fifaCities.find(c => c.id === filters.cities[0])?.stadium.coordinates ? {
                     lat: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![0],
                     lng: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![1]
@@ -197,9 +251,10 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
                   distanceFrom={filters.distanceFrom}
                 />
               ) : view === "split" ? (
-                /* Split View */
                 <SplitView
                   properties={filteredProperties}
+                  hoveredPropertyId={hoveredPropertyId}
+                  onPropertyHover={handlePropertyHover}
                   stadiumCoords={filters.cities.length === 1 ? fifaCities.find(c => c.id === filters.cities[0])?.stadium.coordinates ? {
                     lat: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![0],
                     lng: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![1]
@@ -210,7 +265,6 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
               ) : (
                 /* List View */
                 <>
-                  {/* Multi-City Grouped Results */}
                   {propertiesByCity ? (
                     <div>
                       {filters.cities.map(cityId => (
@@ -222,7 +276,6 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
                       ))}
                     </div>
                   ) : (
-                    /* Single List View */
                     <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                       <AnimatePresence mode="popLayout">
                         {filteredProperties.map((property) => (

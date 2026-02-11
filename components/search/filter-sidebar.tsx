@@ -1,9 +1,17 @@
 "use client"
-import { Check, Trophy, MapPin, Target } from "lucide-react"
+import { Check, Trophy, Target } from "lucide-react"
 import type { FilterState } from "@/lib/utils/search"
 import { cn } from "@/lib/utils"
 import { fifaCities } from "@/lib/data/fifa-cities"
-import { EXPERIENCE_CATEGORIES, AMENITIES, PROPERTY_TYPES, PROPERTY_TYPE_VALUES } from "@/lib/data/property-constants"
+import {
+  EXPERIENCE_CARD_TITLES,
+  AMENITIES,
+  PROPERTY_TYPES,
+  PROPERTY_TYPE_VALUES,
+  LOCATION_OPTIONS,
+} from "@/lib/data/property-constants"
+import { MultiSelectDropdown } from "@/components/search/multi-select-dropdown"
+import { INITIAL_FILTERS } from "@/lib/utils/search"
 
 interface FilterSidebarProps {
   filters: FilterState
@@ -16,12 +24,32 @@ const SPECIAL_EVENTS = [
   { id: "fifa-2026", name: "FIFA World Cup 2026", icon: Trophy }
 ]
 
+const experienceOptions = EXPERIENCE_CARD_TITLES.map((title) => ({
+  value: title,
+  label: title,
+}))
+
+const propertyTypeOptions = PROPERTY_TYPE_VALUES.map((type) => ({
+  value: type,
+  label: PROPERTY_TYPES[type],
+}))
+
+const amenityOptions = AMENITIES.map((amenity) => ({
+  value: amenity,
+  label: amenity,
+}))
+
+const locationOptions = LOCATION_OPTIONS.map((state) => ({
+  value: state,
+  label: state,
+}))
+
 export function FilterSidebar({ filters, setFilters, className }: FilterSidebarProps) {
   const updateFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
     setFilters({ ...filters, [key]: value })
   }
 
-  const toggleArrayFilter = (key: "experiences" | "propertyTypes" | "amenities" | "cities", item: string) => {
+  const toggleArrayFilter = (key: "experiences" | "propertyTypes" | "amenities" | "cities" | "locations", item: string) => {
     const current = filters[key]
     const updated = current.includes(item) ? current.filter((i) => i !== item) : [...current, item]
     updateFilter(key, updated)
@@ -33,22 +61,7 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
       <div className="flex items-center justify-between mb-6">
         <h3 className="font-serif text-2xl font-bold text-primary">Filters</h3>
         <button
-          onClick={() =>
-            setFilters({
-              experiences: [],
-              priceRange: [0, 2000],
-              propertyTypes: [],
-              bedrooms: 0,
-              amenities: [],
-              instantBook: false,
-              verifiedOnly: false,
-              petFriendly: false,
-              event: null,
-              cities: [],
-              distanceFrom: "stadium",
-              radiusMiles: 25,
-            })
-          }
+          onClick={() => setFilters(INITIAL_FILTERS)}
           className="text-sm text-gray-600 hover:text-gray-900 underline"
         >
           Reset all
@@ -56,8 +69,8 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
       </div>
 
       {/* Special Events */}
-      <div className="mb-8 pb-8 border-b border-gray-100">
-        <h4 className="font-semibold text-gray-900 mb-3">Special Events</h4>
+      <div className="mb-6 pb-6 border-b border-gray-100">
+        <h4 className="font-semibold text-gray-900 mb-2">Special Events</h4>
         <select
           value={filters.event || ""}
           onChange={(e) => updateFilter("event", e.target.value || null)}
@@ -106,7 +119,7 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
 
       {/* Distance/Radius Filter - only show when cities selected */}
       {filters.cities.length > 0 && (
-        <div className="mb-8 pb-8 border-b border-gray-100">
+        <div className="mb-6 pb-6 border-b border-gray-100">
           <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
             <Target className="h-4 w-4" />
             Distance From
@@ -139,98 +152,67 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
         </div>
       )}
 
-      {/* Experience Categories */}
-      <div className="mb-8">
-        <h4 className="font-semibold text-gray-900 mb-3">Experiences</h4>
-        <div className="space-y-1">
-          {EXPERIENCE_CATEGORIES.map((category, index) => (
-            <label key={`${category}-${index}`} className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
-              <div
-                className={cn(
-                  "w-5 h-5 rounded border flex items-center justify-center transition-colors shrink-0",
-                  filters.experiences.includes(category)
-                    ? "bg-accent border-accent text-white"
-                    : "border-gray-300 group-hover:border-accent",
-                )}
-              >
-                {filters.experiences.includes(category) && <Check className="h-3.5 w-3.5" />}
-              </div>
-              <input
-                type="checkbox"
-                className="hidden"
-                checked={filters.experiences.includes(category)}
-                onChange={() => toggleArrayFilter("experiences", category)}
-              />
-              <span className="text-sm text-gray-700 group-hover:text-gray-900">{category}</span>
-            </label>
-          ))}
-        </div>
-      </div>
+      {/* Location (State) Dropdown */}
+      <MultiSelectDropdown
+        label="Location"
+        options={locationOptions}
+        selected={filters.locations}
+        onChange={(val) => updateFilter("locations", val)}
+        placeholder="All Locations"
+      />
+
+      {/* Experience Categories Dropdown */}
+      <MultiSelectDropdown
+        label="Experiences"
+        options={experienceOptions}
+        selected={filters.experiences}
+        onChange={(val) => updateFilter("experiences", val)}
+        placeholder="All Experiences"
+      />
 
       {/* Price Range */}
-      <div className="mb-8">
-        <h4 className="font-semibold text-gray-900 mb-3">Price Range</h4>
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs text-gray-600 mb-1 block">Min Price</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                <input
-                  type="number"
-                  value={filters.priceRange[0]}
-                  onChange={(e) => updateFilter("priceRange", [Number(e.target.value), filters.priceRange[1]])}
-                  className="w-full pl-6 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 text-sm"
-                />
-              </div>
+      <div className="mb-6">
+        <h4 className="font-semibold text-gray-900 mb-2">Price Range</h4>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-xs text-gray-600 mb-1 block">Min Price</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+              <input
+                type="number"
+                value={filters.priceRange[0]}
+                onChange={(e) => updateFilter("priceRange", [Number(e.target.value), filters.priceRange[1]])}
+                className="w-full pl-6 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 text-sm"
+              />
             </div>
-            <div>
-              <label className="text-xs text-gray-600 mb-1 block">Max Price</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                <input
-                  type="number"
-                  value={filters.priceRange[1]}
-                  onChange={(e) => updateFilter("priceRange", [filters.priceRange[0], Number(e.target.value)])}
-                  className="w-full pl-6 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 text-sm"
-                />
-              </div>
+          </div>
+          <div>
+            <label className="text-xs text-gray-600 mb-1 block">Max Price</label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+              <input
+                type="number"
+                value={filters.priceRange[1]}
+                onChange={(e) => updateFilter("priceRange", [filters.priceRange[0], Number(e.target.value)])}
+                className="w-full pl-6 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 text-sm"
+              />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Property Type */}
-      <div className="mb-8">
-        <h4 className="font-semibold text-gray-900 mb-3">Property Type</h4>
-        <div className="space-y-1">
-          {PROPERTY_TYPE_VALUES.map((type) => (
-            <label key={type} className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
-              <div
-                className={cn(
-                  "w-5 h-5 rounded border flex items-center justify-center transition-colors shrink-0",
-                  filters.propertyTypes.includes(type)
-                    ? "bg-accent border-accent text-white"
-                    : "border-gray-300 group-hover:border-accent",
-                )}
-              >
-                {filters.propertyTypes.includes(type) && <Check className="h-3.5 w-3.5" />}
-              </div>
-              <input
-                type="checkbox"
-                className="hidden"
-                checked={filters.propertyTypes.includes(type)}
-                onChange={() => toggleArrayFilter("propertyTypes", type)}
-              />
-              <span className="text-sm text-gray-700 group-hover:text-gray-900">{PROPERTY_TYPES[type]}</span>
-            </label>
-          ))}
-        </div>
-      </div>
+      {/* Property Type Dropdown */}
+      <MultiSelectDropdown
+        label="Property Type"
+        options={propertyTypeOptions}
+        selected={filters.propertyTypes}
+        onChange={(val) => updateFilter("propertyTypes", val)}
+        placeholder="All Types"
+      />
 
       {/* Bedrooms */}
-      <div className="mb-8">
-        <h4 className="font-semibold text-gray-900 mb-3">Bedrooms</h4>
+      <div className="mb-6">
+        <h4 className="font-semibold text-gray-900 mb-2">Bedrooms</h4>
         <div className="flex flex-wrap gap-2">
           {[0, 1, 2, 3, 4, 5].map((num) => (
             <button
@@ -249,33 +231,14 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
         </div>
       </div>
 
-      {/* Amenities */}
-      <div className="mb-8">
-        <h4 className="font-semibold text-gray-900 mb-3">Amenities</h4>
-        <div className="space-y-1">
-          {AMENITIES.map((amenity) => (
-            <label key={amenity} className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
-              <div
-                className={cn(
-                  "w-5 h-5 rounded border flex items-center justify-center transition-colors shrink-0",
-                  filters.amenities.includes(amenity)
-                    ? "bg-accent border-accent text-white"
-                    : "border-gray-300 group-hover:border-accent",
-                )}
-              >
-                {filters.amenities.includes(amenity) && <Check className="h-3.5 w-3.5" />}
-              </div>
-              <input
-                type="checkbox"
-                className="hidden"
-                checked={filters.amenities.includes(amenity)}
-                onChange={() => toggleArrayFilter("amenities", amenity)}
-              />
-              <span className="text-sm text-gray-700 group-hover:text-gray-900">{amenity}</span>
-            </label>
-          ))}
-        </div>
-      </div>
+      {/* Amenities Dropdown */}
+      <MultiSelectDropdown
+        label="Amenities"
+        options={amenityOptions}
+        selected={filters.amenities}
+        onChange={(val) => updateFilter("amenities", val)}
+        placeholder="All Amenities"
+      />
 
       {/* Other Filters */}
       <div className="space-y-1 pt-4 border-t border-gray-100">
