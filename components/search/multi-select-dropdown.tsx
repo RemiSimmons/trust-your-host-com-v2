@@ -70,7 +70,7 @@ export function MultiSelectDropdown({
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         className={cn(
-          "w-full flex items-center justify-between gap-2 h-9 px-3 py-1.5 border rounded-lg text-sm bg-white transition-colors text-left",
+          "w-full flex items-center justify-between gap-2 h-8 px-3 py-1.5 border rounded-lg text-xs bg-white transition-colors text-left",
           isOpen
             ? "border-accent ring-2 ring-accent/30"
             : "border-gray-300 hover:border-gray-400",
@@ -80,20 +80,18 @@ export function MultiSelectDropdown({
         <span className="truncate">{displayText}</span>
         <div className="flex items-center gap-1 shrink-0">
           {selected.length > 0 && (
-            <span
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
               onClick={clearAll}
-              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onChange([]) } }}
-              className="flex items-center justify-center w-4 h-4 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+              className="flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
               aria-label="Clear selection"
             >
-              <X className="h-2.5 w-2.5 text-gray-600" />
-            </span>
+              <X className="h-2 w-2 text-gray-600" />
+            </button>
           )}
           <ChevronDown
             className={cn(
-              "h-4 w-4 text-gray-400 transition-transform duration-200",
+              "h-3.5 w-3.5 text-gray-400 transition-transform duration-200",
               isOpen && "rotate-180"
             )}
           />
@@ -134,24 +132,24 @@ export function MultiSelectDropdown({
         </div>
       )}
 
-      {/* Selected tags */}
+      {/* Selected pills - compact, true pill shape */}
       {selected.length > 0 && (
-        <div className="flex flex-wrap gap-1 mt-1.5">
+        <div className="flex flex-wrap gap-1.5 mt-2">
           {selected.map((value) => {
             const option = options.find((o) => o.value === value)
             return (
               <span
                 key={value}
-                className="inline-flex items-center gap-0.5 pl-1.5 pr-0.5 py-0 rounded-md bg-accent/8 text-accent text-[10px] font-medium leading-[18px]"
+                className="inline-flex items-center gap-1 pl-2.5 pr-1 py-1 rounded-full bg-accent/10 text-accent text-xs font-medium border border-accent/20 leading-none h-[26px]"
               >
-                {option?.label ?? value}
+                <span className="leading-none">{option?.label ?? value}</span>
                 <button
                   type="button"
                   onClick={(e) => removeItem(value, e)}
-                  className="hover:bg-accent/20 rounded p-0 transition-colors ml-px"
+                  className="flex items-center justify-center w-3.5 h-3.5 rounded-full hover:bg-accent/20 transition-colors flex-shrink-0"
                   aria-label={`Remove ${option?.label ?? value}`}
                 >
-                  <X className="h-2 w-2" />
+                  <X className="h-2.5 w-2.5" />
                 </button>
               </span>
             )
