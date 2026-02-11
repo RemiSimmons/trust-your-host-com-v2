@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect, useCallback, useRef } from "react"
+import { useState, useMemo, useEffect, useCallback } from "react"
 import { useSearchParams } from "next/navigation"
 import dynamic from "next/dynamic"
 import { motion, AnimatePresence } from "framer-motion"
@@ -15,7 +15,6 @@ import { QuickViewModal } from "@/components/property/quick-view-modal"
 import { filterProperties, sortProperties, INITIAL_FILTERS, type FilterState } from "@/lib/utils/search"
 import { Button } from "@/components/ui/button"
 import { fifaCities } from "@/lib/data/fifa-cities"
-import { EXPERIENCE_CARD_TITLES, LOCATION_OPTIONS, PROPERTY_TYPE_VALUES, AMENITIES } from "@/lib/data/property-constants"
 
 // Dynamically import MapView to avoid SSR issues with Leaflet
 const MapView = dynamic(() => import("@/components/search/map-view").then(mod => ({ default: mod.MapView })), {
@@ -23,56 +22,35 @@ const MapView = dynamic(() => import("@/components/search/map-view").then(mod =>
   loading: () => <div className="h-[calc(100vh-240px)] w-full rounded-xl bg-gray-100 animate-pulse" />
 })
 
-const STORAGE_KEY = "tyh_search_state"
-
 interface SearchPageClientProps {
   initialProperties: Property[]
 }
 
-/** Validate restored filters: strip any invalid values that don't match current options */
-function validateFilters(filters: FilterState): FilterState {
-  const validExperiences = EXPERIENCE_CARD_TITLES as readonly string[]
-  const validLocations = LOCATION_OPTIONS as readonly string[]
-  const validPropertyTypes = PROPERTY_TYPE_VALUES as readonly string[]
-  const validAmenities = AMENITIES as readonly string[]
-
-  return {
-    ...filters,
-    experiences: filters.experiences.filter((e) => validExperiences.includes(e)),
-    locations: filters.locations.filter((l) => validLocations.includes(l)),
-    propertyTypes: filters.propertyTypes.filter((t) => validPropertyTypes.includes(t)),
-    amenities: filters.amenities.filter((a) => validAmenities.includes(a)),
-  }
-}
-
-/** Save search state to sessionStorage */
-function saveSearchState(state: {
+interface SearchState {
   filters: FilterState
   sortBy: string
   view: "list" | "map"
-}) {
-  try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-  } catch { /* ignore quota errors */ }
 }
 
-/** Load search state from sessionStorage */
-function loadSearchState(): {
-  filters: FilterState
-  sortBy: string
-  view: "list" | "map"
-} | null {
+/**
+ * Save search state to history.state via replaceState.
+ * When the user presses Back, the browser restores history.state automatically.
+ * Fresh navigation (clicking a link) creates a new history entry without our data.
+ */
+function saveToHistory(state: SearchState) {
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw)
-    // Validate filters on load to remove stale/invalid values
-    if (parsed?.filters) {
-      parsed.filters = validateFilters(parsed.filters)
-    }
-    // Normalize view (remove legacy "split" value)
-    if (parsed?.view === "split") parsed.view = "list"
-    return parsed
+    const current = window.history.state || {}
+    window.history.replaceState({ ...current, tyhSearch: state }, "")
+  } catch { /* ignore */ }
+}
+
+/**
+ * Read search state from history.state.
+ * Returns the saved state if the user navigated back/forward, or null for a fresh visit.
+ */
+function loadFromHistory(): SearchState | null {
+  try {
+    return window.history.state?.tyhSearch ?? null
   } catch {
     return null
   }
@@ -86,88 +64,83 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
   const [view, setView] = useState<"list" | "map">("list")
   const [hoveredPropertyId, setHoveredPropertyId] = useState<string | null>(null)
   const [quickViewProperty, setQuickViewProperty] = useState<Property | null>(null)
-  const hasRestoredRef = useRef(false)
-  const isInitializedRef = useRef(false)
+  const [isReady, setIsReady] = useState(false)
 
-  // Restore state from sessionStorage or apply URL parameters on mount
+  // ── Initialize: restore from history.state (back nav) or URL params ──
   useEffect(() => {
-    if (hasRestoredRef.current) return
-    hasRestoredRef.current = true
+    if (isReady) return
 
     const hasUrlParams = searchParams.get("event") || searchParams.get("city") ||
       searchParams.get("location") || searchParams.get("experience") ||
       searchParams.get("fifa2026")
 
-    // If no URL params, try restoring from sessionStorage
-    if (!hasUrlParams) {
-      const saved = loadSearchState()
+    // URL params always take priority
+    if (hasUrlParams) {
+      const event = searchParams.get("event") || (searchParams.get("fifa2026") === "true" ? "fifa-2026" : null)
+      const cityParam = searchParams.get("city")
+      const locationParam = searchParams.get("location")
+      const experienceParam = searchParams.get("experience")
+      const radius = searchParams.get("radius")
+
+      let cities: string[] = []
+      if (cityParam) {
+        cities = cityParam.split(",")
+      } else if (locationParam && locationParam !== "all") {
+        cities = [locationParam]
+      }
+
+      const experienceMap: Record<string, string> = {
+        "island-getaways": "Island Getaways",
+        "waterfront-escapes": "Waterfront Escapes",
+        "cultural-immersion": "Cultural Immersion",
+        "mountain-lodges": "Mountain Lodges",
+        "hiking-trails": "Hiking & Trails",
+        "wellness-retreats": "Wellness Retreats",
+        "pet-friendly": "Pet Friendly",
+        "family-friendly": "Family-Friendly",
+        "luxury": "Luxury Properties",
+      }
+
+      const experiences: string[] = []
+      let petFriendly = false
+
+      if (experienceParam && experienceParam !== "all") {
+        if (experienceParam === "pet-friendly") {
+          petFriendly = true
+        } else if (experienceMap[experienceParam]) {
+          experiences.push(experienceMap[experienceParam])
+        }
+      }
+
+      if (event || cities.length > 0 || experiences.length > 0 || petFriendly) {
+        setFilters(prev => ({
+          ...prev,
+          event,
+          cities,
+          experiences: experiences.length > 0 ? experiences : prev.experiences,
+          petFriendly: petFriendly || prev.petFriendly,
+          radiusMiles: radius ? Number(radius) : prev.radiusMiles
+        }))
+      }
+    } else {
+      // No URL params → check history.state for back/forward navigation
+      const saved = loadFromHistory()
       if (saved) {
         setFilters(saved.filters)
         setSortBy(saved.sortBy)
         setView(saved.view)
-        // Mark as initialized after restore is applied
-        setTimeout(() => { isInitializedRef.current = true }, 0)
-        return
       }
+      // If no saved state either, keep INITIAL_FILTERS (fresh visit)
     }
 
-    // Apply URL parameters
-    const event = searchParams.get("event") || (searchParams.get("fifa2026") === "true" ? "fifa-2026" : null)
-    const cityParam = searchParams.get("city")
-    const locationParam = searchParams.get("location")
-    const experienceParam = searchParams.get("experience")
-    const radius = searchParams.get("radius")
-    
-    let cities: string[] = []
-    if (cityParam) {
-      cities = cityParam.split(",")
-    } else if (locationParam && locationParam !== "all") {
-      cities = [locationParam]
-    }
-    
-    const experienceMap: Record<string, string> = {
-      "island-getaways": "Island Getaways",
-      "waterfront-escapes": "Waterfront Escapes",
-      "cultural-immersion": "Cultural Immersion",
-      "mountain-lodges": "Mountain Lodges",
-      "hiking-trails": "Hiking & Trails",
-      "wellness-retreats": "Wellness Retreats",
-      "pet-friendly": "Pet Friendly",
-      "family-friendly": "Family-Friendly",
-      "luxury": "Luxury Properties",
-    }
-    
-    const experiences: string[] = []
-    let petFriendly = false
-    
-    if (experienceParam && experienceParam !== "all") {
-      if (experienceParam === "pet-friendly") {
-        petFriendly = true
-      } else if (experienceMap[experienceParam]) {
-        experiences.push(experienceMap[experienceParam])
-      }
-    }
-    
-    if (event || cities.length > 0 || experiences.length > 0 || petFriendly) {
-      setFilters(prev => ({
-        ...prev,
-        event,
-        cities,
-        experiences: experiences.length > 0 ? experiences : prev.experiences,
-        petFriendly: petFriendly || prev.petFriendly,
-        radiusMiles: radius ? Number(radius) : prev.radiusMiles
-      }))
-    }
+    setIsReady(true)
+  }, [isReady, searchParams])
 
-    // Mark as initialized after URL params are applied
-    setTimeout(() => { isInitializedRef.current = true }, 0)
-  }, [searchParams])
-
-  // Save state to sessionStorage -- only after initialization is complete
+  // ── Persist state to history.state on every change (after init) ──
   useEffect(() => {
-    if (!isInitializedRef.current) return
-    saveSearchState({ filters, sortBy, view })
-  }, [filters, sortBy, view])
+    if (!isReady) return
+    saveToHistory({ filters, sortBy, view })
+  }, [filters, sortBy, view, isReady])
 
   const filteredProperties = useMemo(() => {
     const filtered = filterProperties(initialProperties, filters)
@@ -177,7 +150,7 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
   // Group properties by city when multiple cities selected
   const propertiesByCity = useMemo(() => {
     if (filters.cities.length === 0) return null
-    
+
     const grouped: Record<string, Property[]> = {}
     filters.cities.forEach(cityId => {
       grouped[cityId] = filteredProperties.filter(p => {

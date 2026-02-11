@@ -90,15 +90,21 @@ export const LOCATION_OPTIONS = [
   'Arizona',
   'California',
   'Colorado',
+  'Florida',
   'Georgia',
   'Maine',
+  'Massachusetts',
+  'Missouri',
   'Montana',
+  'New Jersey',
   'New York',
   'North Carolina',
   'Oregon',
+  'Pennsylvania',
   'South Carolina',
   'Texas',
   'Vermont',
+  'Washington',
 ] as const
 
 /**

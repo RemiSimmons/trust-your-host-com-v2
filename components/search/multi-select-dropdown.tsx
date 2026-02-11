@@ -142,16 +142,16 @@ export function MultiSelectDropdown({
             return (
               <span
                 key={value}
-                className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-accent/10 text-accent text-xs font-medium border border-accent/20"
+                className="inline-flex items-center gap-px px-1.5 py-px rounded-full bg-accent/10 text-accent text-[11px] font-medium border border-accent/20 leading-tight"
               >
                 {option?.label ?? value}
                 <button
                   type="button"
                   onClick={(e) => removeItem(value, e)}
-                  className="hover:bg-accent/20 rounded-full p-0.5 transition-colors"
+                  className="hover:bg-accent/20 rounded-full p-px transition-colors"
                   aria-label={`Remove ${option?.label ?? value}`}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-2.5 w-2.5" />
                 </button>
               </span>
             )
