@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     const validationResult = PropertyIdSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Invalid property ID format", details: validationResult.error.issues },
+        { error: "Invalid property ID format" },
         { status: 400 }
       )
     }
@@ -130,6 +130,15 @@ export async function DELETE(request: NextRequest) {
     if (!propertyId) {
       return NextResponse.json(
         { error: "Property ID is required" },
+        { status: 400 }
+      )
+    }
+
+    // Validate propertyId is a valid UUID
+    const validationResult = PropertyIdSchema.safeParse({ propertyId })
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: "Invalid property ID format" },
         { status: 400 }
       )
     }

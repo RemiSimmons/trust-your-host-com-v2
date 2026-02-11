@@ -3,6 +3,11 @@ import { properties } from "@/lib/data/properties"
 import { NextResponse } from "next/server"
 
 export async function GET() {
+  // SECURITY: Disable seed endpoint entirely in production
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: "Not found" }, { status: 404 })
+  }
+
   const supabase = await createServerClient()
 
   // Check if user is authenticated
@@ -87,6 +92,7 @@ export async function GET() {
 
     return NextResponse.json({ success: true, results })
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "An error occurred during seeding" }, { status: 500 })
+    console.error('Seeding error:', error.message)
+    return NextResponse.json({ error: "An error occurred during seeding" }, { status: 500 })
   }
 }

@@ -42,16 +42,24 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse
   }
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/signup") &&
-    !request.nextUrl.pathname.startsWith("/auth") &&
-    request.nextUrl.pathname.startsWith("/dashboard")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  // Define all routes that require authentication
+  const protectedPaths = ['/dashboard', '/host', '/admin']
+  const isProtectedPath = protectedPaths.some(path => 
+    request.nextUrl.pathname.startsWith(path)
+  )
+
+  // Allow public auth-related paths even if they start with a protected prefix
+  const isAuthPath = 
+    request.nextUrl.pathname.startsWith("/login") ||
+    request.nextUrl.pathname.startsWith("/signup") ||
+    request.nextUrl.pathname.startsWith("/auth") ||
+    request.nextUrl.pathname === "/host/login" ||
+    request.nextUrl.pathname === "/host/signup"
+
+  if (!user && isProtectedPath && !isAuthPath) {
+    // no user, redirect to the appropriate login page
     const url = request.nextUrl.clone()
-    url.pathname = "/login"
+    url.pathname = request.nextUrl.pathname.startsWith("/host") ? "/host/login" : "/login"
     return NextResponse.redirect(url)
   }
 

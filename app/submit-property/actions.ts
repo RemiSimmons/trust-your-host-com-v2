@@ -140,10 +140,9 @@ export async function submitPropertyListing(formData: FormData) {
         return { error: 'Invalid phone number format. Please use a valid phone number.' }
       }
       
-      // Generic error with more detail
-      const errorMsg = error.message || 'Unknown error'
-      console.error('Full error details:', errorMsg)
-      return { error: `Failed to submit property: ${errorMsg.substring(0, 100)}. Please contact support if this persists.` }
+      // Log full error server-side but return generic message to client
+      console.error('Property submission error:', error.message || 'Unknown error')
+      return { error: 'Failed to submit property. Please contact support if this persists.' }
     }
     
     // Send email notification to admin

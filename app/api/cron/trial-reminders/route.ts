@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendTrialEndingReminder } from '@/lib/email/resend'
+import { timingSafeEqual } from 'crypto'
 
 // Force dynamic rendering - don't try to build this at build time
 export const dynamic = 'force-dynamic'
@@ -17,9 +18,21 @@ export const runtime = 'nodejs'
  * 4. Set CRON_SECRET in environment variables
  */
 export async function GET(req: NextRequest) {
-  // Verify cron secret for security
+  // Verify cron secret for security (constant-time comparison to prevent timing attacks)
   const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const expectedSecret = process.env.CRON_SECRET
+  if (!expectedSecret || !authHeader) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const providedToken = authHeader.replace('Bearer ', '')
+  try {
+    const isValid = 
+      providedToken.length === expectedSecret.length &&
+      timingSafeEqual(Buffer.from(providedToken), Buffer.from(expectedSecret))
+    if (!isValid) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+  } catch {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

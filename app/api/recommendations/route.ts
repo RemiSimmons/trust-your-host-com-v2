@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import { rateLimit, getClientIdentifier } from "@/lib/utils/rate-limit"
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "")
 
@@ -30,22 +31,36 @@ interface RecommendationResult {
   highlights: string[]
 }
 
-// Validation schema for recommendations request
+// Validation schema for recommendations request (with size limits to prevent abuse)
 const RecommendationsRequestSchema = z.object({
   userPreferences: z.record(z.union([z.string(), z.number(), z.boolean(), z.array(z.string())])).optional(),
-  searchHistory: z.array(z.record(z.unknown())).optional(),
-  availableProperties: z.array(z.record(z.unknown())),
+  searchHistory: z.array(z.record(z.unknown())).max(50, "Search history limited to 50 entries").optional(),
+  availableProperties: z.array(z.record(z.unknown())).max(100, "Properties limited to 100 entries"),
 })
 
 export async function POST(request: Request) {
   try {
+    // Rate limit: 20 requests per minute per IP
+    const clientId = getClientIdentifier(request)
+    const rateLimitResult = rateLimit({
+      identifier: `recommendations:${clientId}`,
+      limit: 20,
+      windowSeconds: 60,
+    })
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        { status: 429 }
+      )
+    }
+
     const body = await request.json()
     
     // Validate request body
     const validationResult = RecommendationsRequestSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
-        { error: "Invalid request data", details: validationResult.error.issues },
+        { error: "Invalid request data" },
         { status: 400 }
       )
     }

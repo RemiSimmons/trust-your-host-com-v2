@@ -5,7 +5,16 @@ import type { NextRequest } from 'next/server'
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
-  const next = requestUrl.searchParams.get('next') || '/host'
+  const nextParam = requestUrl.searchParams.get('next') || '/host'
+
+  // Prevent open redirect attacks - only allow relative paths starting with allowed prefixes
+  const allowedRedirectPrefixes = ['/host', '/admin', '/dashboard', '/']
+  const isValidRedirect = 
+    nextParam.startsWith('/') && 
+    !nextParam.startsWith('//') && 
+    !nextParam.includes('://') &&
+    allowedRedirectPrefixes.some(prefix => nextParam.startsWith(prefix))
+  const safeRedirect = isValidRedirect ? nextParam : '/host'
 
   if (code) {
     const supabase = await createServerClient()
@@ -30,7 +39,7 @@ export async function GET(request: NextRequest) {
       }
       
       // Redirect to the intended destination (or /host for hosts)
-      return NextResponse.redirect(new URL(next, requestUrl.origin))
+      return NextResponse.redirect(new URL(safeRedirect, requestUrl.origin))
     }
   }
 
