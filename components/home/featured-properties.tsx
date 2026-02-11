@@ -23,6 +23,13 @@ export function PropertyCard({ property }: { property: Property }) {
                 hover:-translate-y-2
                 transition-all duration-300"
     >
+      {/* Coming Soon badge - subtle, non-blocking */}
+      <div className="absolute top-4 right-14 z-20 pointer-events-none">
+        <span className="px-2.5 py-1 rounded-md bg-white/95 text-gray-700 font-medium text-xs shadow-md border border-gray-200/80">
+          Coming Soon
+        </span>
+      </div>
+
       {/* Full-bleed image */}
       <div className="relative w-full h-full">
         <img
@@ -175,7 +182,7 @@ export function PropertyCard({ property }: { property: Property }) {
 }
 
 export function FeaturedProperties({ properties }: { properties: Property[] }) {
-  const featuredProperties = properties.slice(0, 6)
+  const featuredProperties = properties.slice(0, 3)
 
   return (
     <section className="relative z-20 -mt-32 pt-32 pb-24">

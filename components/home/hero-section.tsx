@@ -8,22 +8,19 @@ import { FifaBadgeOverlay } from "@/components/home/fifa-badge-overlay"
 export function HeroSection() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center pt-24 sm:pt-28 md:pt-32 lg:pt-20 pb-20 sm:pb-24 overflow-hidden">
-      {/* FIFA 2026 Badge Overlay - Desktop only (absolute positioned) */}
-      <div className="hidden md:block">
-        <FifaBadgeOverlay />
-      </div>
-      
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* Spacer - pushes content down so it stays centered */}
+      <div className="flex-1 min-h-0" />
+      {/* Content - headline, subheadline, search bar (original position) */}
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center flex-shrink-0">
         <div className="max-w-5xl mx-auto">
           {/* Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-serif text-4xl sm:text-5xl lg:text-7xl text-white font-bold mb-4 sm:mb-6 leading-tight drop-shadow-lg px-2"
+            className="font-serif text-4xl sm:text-5xl lg:text-7xl text-white font-bold mb-4 sm:mb-6 leading-tight drop-shadow-lg px-2 whitespace-nowrap"
           >
-            Find Your Perfect Getaway
+            Better Stays with Better Hosts
           </motion.h1>
 
           {/* Subheadline */}
@@ -33,7 +30,7 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-base sm:text-xl lg:text-2xl text-white/95 mb-8 sm:mb-12 leading-relaxed drop-shadow-md max-w-2xl mx-auto px-4"
           >
-            Discover unique homes and unforgettable experiences curated just for you.
+            Browse a curated directory of personally verified vacation rentals you can book direct.
           </motion.p>
 
           {/* Search Bar */}
@@ -45,18 +42,17 @@ export function HeroSection() {
           >
             <HeroSearch />
           </motion.div>
-
-          {/* FIFA 2026 Badge - Mobile only (below search bar) */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="md:hidden mb-12"
-          >
-            <FifaBadgeOverlay />
-          </motion.div>
         </div>
       </div>
+      {/* FIFA 2026 Badge - Below search bar, vertically centered in space to hero bottom */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.5 }}
+        className="flex-1 flex items-center justify-center w-full min-h-[80px] md:min-h-[100px]"
+      >
+        <FifaBadgeOverlay />
+      </motion.div>
 
       {/* Scroll indicator */}
       <motion.div
