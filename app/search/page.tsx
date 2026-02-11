@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
 import { getProperties } from "@/lib/db/properties"
-import { Breadcrumbs } from "@/components/seo/breadcrumbs"
 import { SearchPageClient } from "@/components/search/search-page-client"
 import { NavBar } from "@/components/navigation/nav-bar"
 import { Footer } from "@/components/navigation/footer"
@@ -50,18 +49,11 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
 export default async function SearchPage() {
   const properties = await getProperties()
 
-  const breadcrumbItems = [{ label: "Search", href: "/search" }]
-
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <NavBar />
       {/* Scroll container starts below nav - content cannot scroll above this boundary */}
       <div className="flex-1 overflow-y-auto mt-[72px]">
-        <div className="bg-gray-50 border-b">
-          <div className="container mx-auto px-4 py-3">
-            <Breadcrumbs items={breadcrumbItems} />
-          </div>
-        </div>
         <main>
           <Suspense fallback={<SearchLoadingSkeleton />}>
             <SearchPageClient initialProperties={properties} />

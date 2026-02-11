@@ -19,6 +19,7 @@ interface MapViewProps {
   distanceFrom?: "stadium" | "city-center"
   hoveredPropertyId?: string | null
   onPropertyHover?: (propertyId: string | null) => void
+  onQuickView?: (propertyId: string) => void
 }
 
 /** Inner component that fits map bounds when properties change */
@@ -52,6 +53,7 @@ export function MapView({
   distanceFrom = "stadium",
   hoveredPropertyId,
   onPropertyHover,
+  onQuickView,
 }: MapViewProps) {
   // Default center - use stadium, center, or first property
   const mapCenter = distanceFrom === "stadium" && stadiumCoords 
@@ -249,12 +251,24 @@ export function MapView({
                         🏟️ {property.distance_to_stadium} mi to stadium
                       </p>
                     )}
-                  <Link
-                    href={`/properties/${property.slug}`}
-                    className="block w-full text-center bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-lg text-sm font-semibold transition-colors"
-                  >
-                    View Details →
-                  </Link>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onQuickView?.(property.id)
+                      }}
+                      className="block w-full text-center bg-accent hover:bg-accent/90 text-white py-2 px-4 rounded-lg text-sm font-semibold transition-colors cursor-pointer border-none"
+                    >
+                      Quick View
+                    </button>
+                    <Link
+                      href={`/properties/${property.slug}`}
+                      className="block w-full text-center text-accent hover:text-accent/80 text-xs font-medium underline"
+                    >
+                      View Full Details
+                    </Link>
+                  </div>
                   </div>
                 </Popup>
               </Marker>

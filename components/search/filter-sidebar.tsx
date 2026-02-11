@@ -73,7 +73,15 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
         <h4 className="font-semibold text-gray-900 mb-2">Special Events</h4>
         <select
           value={filters.event || ""}
-          onChange={(e) => updateFilter("event", e.target.value || null)}
+          onChange={(e) => {
+            const val = e.target.value || null
+            if (!val) {
+              // Clear related cities & radius when event is deselected
+              setFilters({ ...filters, event: null, cities: [], radiusMiles: 25 })
+            } else {
+              updateFilter("event", val)
+            }
+          }}
           className="w-full h-11 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 text-sm bg-white"
         >
           <option value="">No event filter</option>

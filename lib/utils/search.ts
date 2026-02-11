@@ -173,7 +173,8 @@ export function filterProperties(properties: Property[], filters: FilterState): 
     }
 
     // Amenities (AND logic - must have ALL selected)
-    // Filter uses IDs like "wifi", "hot-tub"; property uses labels like "WiFi", "Hot Tub"
+    // Filter sends label values from AMENITIES constant (e.g., "WiFi", "Hot Tub")
+    // Also supports legacy ID values (e.g., "wifi", "hot-tub") for backwards compat
     if (filters.amenities.length > 0) {
       const AMENITY_ID_TO_LABELS: Record<string, string[]> = {
         "hot-tub": ["Hot Tub", "Jacuzzi"],
@@ -187,8 +188,9 @@ export function filterProperties(properties: Property[], filters: FilterState): 
         "air-conditioning": ["Air Conditioning"],
         "beach-access": ["Beach Access"],
       }
-      const hasAllAmenities = filters.amenities.every((amenityId) => {
-        const labels = AMENITY_ID_TO_LABELS[amenityId] || [amenityId]
+      const hasAllAmenities = filters.amenities.every((amenityFilter) => {
+        // First check if the filter value is a legacy ID
+        const labels = AMENITY_ID_TO_LABELS[amenityFilter] || [amenityFilter]
         return property.amenities.some((pa) =>
           labels.some((l) => pa.toLowerCase().includes(l.toLowerCase()))
         )

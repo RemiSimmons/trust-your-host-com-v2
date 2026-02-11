@@ -142,7 +142,7 @@ export function MultiSelectDropdown({
             return (
               <span
                 key={value}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-medium border border-accent/20"
+                className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-accent/10 text-accent text-xs font-medium border border-accent/20"
               >
                 {option?.label ?? value}
                 <button

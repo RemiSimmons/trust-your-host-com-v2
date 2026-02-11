@@ -4,23 +4,21 @@ import { useState, useMemo, useEffect, useCallback, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import dynamic from "next/dynamic"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search, SlidersHorizontal, X } from "lucide-react"
+import { Search, SlidersHorizontal, X, Home, ChevronRight } from "lucide-react"
+import Link from "next/link"
 import type { Property } from "@/lib/types"
 import { PropertyCard } from "@/components/home/featured-properties"
 import { FilterSidebar } from "@/components/search/filter-sidebar"
 import { CityResultsGroup } from "@/components/search/city-results-group"
 import { MapListToggle } from "@/components/search/map-list-toggle"
+import { QuickViewModal } from "@/components/property/quick-view-modal"
 import { filterProperties, sortProperties, INITIAL_FILTERS, type FilterState } from "@/lib/utils/search"
 import { Button } from "@/components/ui/button"
 import { fifaCities } from "@/lib/data/fifa-cities"
+import { EXPERIENCE_CARD_TITLES, LOCATION_OPTIONS, PROPERTY_TYPE_VALUES, AMENITIES } from "@/lib/data/property-constants"
 
-// Dynamically import MapView and SplitView to avoid SSR issues with Leaflet
+// Dynamically import MapView to avoid SSR issues with Leaflet
 const MapView = dynamic(() => import("@/components/search/map-view").then(mod => ({ default: mod.MapView })), {
-  ssr: false,
-  loading: () => <div className="h-[calc(100vh-240px)] w-full rounded-xl bg-gray-100 animate-pulse" />
-})
-
-const SplitView = dynamic(() => import("@/components/search/split-view").then(mod => ({ default: mod.SplitView })), {
   ssr: false,
   loading: () => <div className="h-[calc(100vh-240px)] w-full rounded-xl bg-gray-100 animate-pulse" />
 })
@@ -31,11 +29,27 @@ interface SearchPageClientProps {
   initialProperties: Property[]
 }
 
+/** Validate restored filters: strip any invalid values that don't match current options */
+function validateFilters(filters: FilterState): FilterState {
+  const validExperiences = EXPERIENCE_CARD_TITLES as readonly string[]
+  const validLocations = LOCATION_OPTIONS as readonly string[]
+  const validPropertyTypes = PROPERTY_TYPE_VALUES as readonly string[]
+  const validAmenities = AMENITIES as readonly string[]
+
+  return {
+    ...filters,
+    experiences: filters.experiences.filter((e) => validExperiences.includes(e)),
+    locations: filters.locations.filter((l) => validLocations.includes(l)),
+    propertyTypes: filters.propertyTypes.filter((t) => validPropertyTypes.includes(t)),
+    amenities: filters.amenities.filter((a) => validAmenities.includes(a)),
+  }
+}
+
 /** Save search state to sessionStorage */
 function saveSearchState(state: {
   filters: FilterState
   sortBy: string
-  view: "list" | "map" | "split"
+  view: "list" | "map"
 }) {
   try {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
@@ -46,12 +60,19 @@ function saveSearchState(state: {
 function loadSearchState(): {
   filters: FilterState
   sortBy: string
-  view: "list" | "map" | "split"
+  view: "list" | "map"
 } | null {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY)
     if (!raw) return null
-    return JSON.parse(raw)
+    const parsed = JSON.parse(raw)
+    // Validate filters on load to remove stale/invalid values
+    if (parsed?.filters) {
+      parsed.filters = validateFilters(parsed.filters)
+    }
+    // Normalize view (remove legacy "split" value)
+    if (parsed?.view === "split") parsed.view = "list"
+    return parsed
   } catch {
     return null
   }
@@ -62,9 +83,11 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS)
   const [sortBy, setSortBy] = useState("relevance")
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false)
-  const [view, setView] = useState<"list" | "map" | "split">("list")
+  const [view, setView] = useState<"list" | "map">("list")
   const [hoveredPropertyId, setHoveredPropertyId] = useState<string | null>(null)
+  const [quickViewProperty, setQuickViewProperty] = useState<Property | null>(null)
   const hasRestoredRef = useRef(false)
+  const isInitializedRef = useRef(false)
 
   // Restore state from sessionStorage or apply URL parameters on mount
   useEffect(() => {
@@ -82,6 +105,8 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
         setFilters(saved.filters)
         setSortBy(saved.sortBy)
         setView(saved.view)
+        // Mark as initialized after restore is applied
+        setTimeout(() => { isInitializedRef.current = true }, 0)
         return
       }
     }
@@ -133,11 +158,14 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
         radiusMiles: radius ? Number(radius) : prev.radiusMiles
       }))
     }
+
+    // Mark as initialized after URL params are applied
+    setTimeout(() => { isInitializedRef.current = true }, 0)
   }, [searchParams])
 
-  // Save state to sessionStorage whenever filters/sort/view change
+  // Save state to sessionStorage -- only after initialization is complete
   useEffect(() => {
-    if (!hasRestoredRef.current) return
+    if (!isInitializedRef.current) return
     saveSearchState({ filters, sortBy, view })
   }, [filters, sortBy, view])
 
@@ -187,12 +215,26 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
     setHoveredPropertyId(propertyId)
   }, [])
 
+  const handleMapQuickView = useCallback((propertyId: string) => {
+    const property = initialProperties.find((p) => p.id === propertyId)
+    if (property) setQuickViewProperty(property)
+  }, [initialProperties])
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top Bar */}
-      <div className="sticky top-0 z-40 bg-white border-b border-gray-200 py-4 shadow-sm">
+      {/* Top Bar - breadcrumbs + results count + controls */}
+      <div className="sticky top-0 z-40 bg-white border-b border-gray-200 py-3 shadow-sm">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          {/* Breadcrumb row */}
+          <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-2">
+            <Link href="/" className="hover:text-accent transition-colors flex items-center gap-1">
+              <Home className="h-3.5 w-3.5" />
+              <span>Home</span>
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <span className="text-gray-900 font-medium">Search</span>
+          </div>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div className="flex items-center gap-4">
               <p className="text-gray-700 font-medium">
                 Showing {filteredProperties.length} of {initialProperties.length} properties
@@ -231,30 +273,18 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
         <div className="container mx-auto px-6">
           <div className="flex gap-8">
             {/* Desktop Sidebar */}
-            <aside className="hidden md:block w-80 shrink-0 sticky top-[64px] h-[calc(100vh-140px)] z-10 overflow-y-auto">
+            <aside className="hidden md:block w-80 shrink-0 sticky top-[100px] h-[calc(100vh-160px)] z-10 overflow-y-auto">
               <FilterSidebar filters={filters} setFilters={setFilters} />
             </aside>
 
             {/* Main Content */}
             <main className="flex-1 relative z-0 overflow-hidden">
-              {/* Map View */}
               {view === "map" ? (
                 <MapView
                   properties={filteredProperties}
                   hoveredPropertyId={hoveredPropertyId}
                   onPropertyHover={handlePropertyHover}
-                  stadiumCoords={filters.cities.length === 1 ? fifaCities.find(c => c.id === filters.cities[0])?.stadium.coordinates ? {
-                    lat: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![0],
-                    lng: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![1]
-                  } : undefined : undefined}
-                  radiusMiles={filters.radiusMiles}
-                  distanceFrom={filters.distanceFrom}
-                />
-              ) : view === "split" ? (
-                <SplitView
-                  properties={filteredProperties}
-                  hoveredPropertyId={hoveredPropertyId}
-                  onPropertyHover={handlePropertyHover}
+                  onQuickView={handleMapQuickView}
                   stadiumCoords={filters.cities.length === 1 ? fifaCities.find(c => c.id === filters.cities[0])?.stadium.coordinates ? {
                     lat: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![0],
                     lng: fifaCities.find(c => c.id === filters.cities[0])!.stadium.coordinates![1]
@@ -313,6 +343,15 @@ export function SearchPageClient({ initialProperties }: SearchPageClientProps) {
           </div>
         </div>
       </div>
+
+      {/* Quick View Modal (triggered from map popup) */}
+      {quickViewProperty && (
+        <QuickViewModal
+          property={quickViewProperty}
+          isOpen={!!quickViewProperty}
+          onClose={() => setQuickViewProperty(null)}
+        />
+      )}
 
       {/* Mobile Filter Drawer */}
       <AnimatePresence>
