@@ -96,7 +96,7 @@ export function NavBar() {
             />
 
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 min-h-[44px]">
               <Heart className="h-6 w-6 text-accent fill-accent" />
               <span
                 className={cn(

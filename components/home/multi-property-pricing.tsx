@@ -140,15 +140,15 @@ export function MultiPropertyPricing() {
             <div>
               <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2">$88</p>
               <p className="text-sm text-muted-foreground">2 properties</p>
-              <p className="text-xs text-green-600 mt-1">Save $10/mo</p>
+              <p className="text-sm text-green-600 mt-1">Save $10/mo</p>
             </div>
             <div>
               <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2">$127</p>
               <p className="text-sm text-muted-foreground">3 properties</p>
-              <p className="text-xs text-green-600 mt-1">Save $20/mo</p>
+              <p className="text-sm text-green-600 mt-1">Save $20/mo</p>
             </div>
           </div>
-          <p className="text-xs text-center text-muted-foreground mt-6">
+          <p className="text-sm text-center text-muted-foreground mt-6">
             * First property includes 60-day free trial. Additional properties billed immediately at the discounted rate.
           </p>
         </motion.div>

@@ -39,11 +39,11 @@ export function BackButton({ className, variant = "ghost" }: BackButtonProps) {
     <Button
       variant={variant}
       size="sm"
-      className={cn("gap-1 pl-2 pr-3 md:pr-4", className)}
+      className={cn("gap-1 pl-2 pr-3 md:pr-4 min-h-[44px] min-w-[44px]", className)}
       onClick={handleBack}
       aria-label="Go back"
     >
-      <ChevronLeft className="h-4 w-4" />
+      <ChevronLeft className="h-5 w-5" />
       <span className="hidden md:inline">Back</span>
     </Button>
   )

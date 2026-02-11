@@ -314,7 +314,7 @@ export function SubmissionImageUploader({
               )}
             </Button>
           </label>
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-sm text-muted-foreground text-center">
             Max 5MB per image. JPG, PNG, or WebP only.<br />
             Drag images to reorder. First image will be the main thumbnail.
           </p>

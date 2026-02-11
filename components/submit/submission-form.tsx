@@ -136,7 +136,7 @@ export function SubmissionForm() {
                 type="url" 
                 placeholder="https://example.com/profile.jpg"
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 Direct link to your profile picture (JPG, PNG, or WebP)
               </p>
             </div>
@@ -201,7 +201,7 @@ export function SubmissionForm() {
                 <Input id="country" name="country" defaultValue="United States" required />
               </div>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Full address helps us verify your property and improve SEO for local searches
             </p>
           </div>
@@ -407,7 +407,7 @@ export function SubmissionForm() {
             {/* Currently Listed On */}
             <div className="space-y-3">
               <Label>Currently Listed On</Label>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 Helps us understand your current distribution
               </p>
               <div className="grid grid-cols-2 gap-3">
@@ -443,7 +443,7 @@ export function SubmissionForm() {
             {/* Typical Response Time */}
             <div className="space-y-3">
               <Label>Typical Response Time</Label>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 We'll display this on your listing to set guest expectations
               </p>
               <div className="space-y-2">

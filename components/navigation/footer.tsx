@@ -33,24 +33,24 @@ export function Footer() {
           {/* Column 1: For Guests */}
           <div>
             <h3 className="font-semibold text-foreground mb-4">For Guests</h3>
-            <ul className="space-y-3">
+            <ul className="space-y-1">
               <li>
-                <Link href="/how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/how-it-works" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
                   How It Works
                 </Link>
               </li>
               <li>
-                <Link href="/search" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/search" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Search Properties
                 </Link>
               </li>
               <li>
-                <Link href="/safety" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/safety" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Safety & Trust
                 </Link>
               </li>
               <li>
-                <Link href="/help?tab=guests" className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">
+                <Link href="/help?tab=guests" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">
                   Guest Help →
                 </Link>
               </li>
@@ -60,24 +60,24 @@ export function Footer() {
           {/* Column 2: For Hosts */}
           <div>
             <h3 className="font-semibold text-foreground mb-4">For Hosts</h3>
-            <ul className="space-y-3">
+            <ul className="space-y-1">
               <li>
-                <Link href="/for-hosts" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/for-hosts" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Why List With Us
                 </Link>
               </li>
               <li>
-                <Link href="/submit-property" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/submit-property" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
                   List Your Property
                 </Link>
               </li>
               <li>
-                <Link href="/host-resources" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/host-resources" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Host Resources
                 </Link>
               </li>
               <li>
-                <Link href="/help?tab=hosts" className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">
+                <Link href="/help?tab=hosts" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">
                   Host Help →
                 </Link>
               </li>
@@ -87,19 +87,19 @@ export function Footer() {
           {/* Column 3: FIFA 2026 */}
           <div>
             <h3 className="font-semibold text-foreground mb-4">FIFA 2026</h3>
-            <ul className="space-y-3">
+            <ul className="space-y-1">
               <li>
-                <Link href="/fifa-2026" className="block py-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/fifa-2026" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
                   All Host Cities
                 </Link>
               </li>
               <li>
-                <Link href="/fifa-2026/guides/planning-your-trip" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/fifa-2026/guides/planning-your-trip" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Booking Guide
                 </Link>
               </li>
               <li>
-                <Link href="/help?tab=fifa" className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">
+                <Link href="/help?tab=fifa" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">
                   FAQ →
                 </Link>
               </li>
@@ -109,24 +109,24 @@ export function Footer() {
           {/* Column 4: Company */}
           <div>
             <h3 className="font-semibold text-foreground mb-4">Company</h3>
-            <ul className="space-y-3">
+            <ul className="space-y-1">
               <li>
-                <Link href="/how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/how-it-works" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/contact" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/help" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Help Center
                 </Link>
               </li>
               <li>
-                <Link href="/journal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/journal" className="inline-flex items-center min-h-[44px] text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Blog
                 </Link>
               </li>
@@ -137,14 +137,14 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} TrustYourHost. All rights reserved.</p>
-            <div className="flex items-center gap-6">
-              <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <div className="flex items-center gap-4">
+              <Link href="/privacy" className="inline-flex items-center min-h-[44px] px-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Privacy
               </Link>
-              <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/terms" className="inline-flex items-center min-h-[44px] px-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Terms
               </Link>
-              <Link href="/site-navigation" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link href="/site-navigation" className="inline-flex items-center min-h-[44px] px-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Sitemap
               </Link>
             </div>
