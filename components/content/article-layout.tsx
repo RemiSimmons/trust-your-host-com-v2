@@ -93,6 +93,36 @@ export function ArticleLayout({
           </article>
         </div>
 
+        {/* Conversion Links - internal linking for SEO */}
+        <div className="bg-white border-t">
+          <div className="container mx-auto px-4 py-12 max-w-4xl">
+            <h3 className="text-2xl font-bold mb-4 text-center">Explore TrustYourHost</h3>
+            <p className="text-gray-600 mb-6 text-center">
+              Browse vacation rentals, list your property, or find FIFA 2026 stays.
+            </p>
+            <div className="flex flex-wrap gap-4 justify-center mb-8">
+              <Link
+                href="/search"
+                className="inline-block px-6 py-3 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 transition"
+              >
+                Browse Vacation Rentals
+              </Link>
+              <Link
+                href="/submit-property"
+                className="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+              >
+                List Your Property
+              </Link>
+              <Link
+                href="/fifa-2026"
+                className="inline-block px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition"
+              >
+                FIFA 2026 Stays
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* Help CTA */}
         <div className="bg-gray-50 border-t">
           <div className="container mx-auto px-4 py-12 max-w-4xl text-center">

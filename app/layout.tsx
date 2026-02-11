@@ -3,6 +3,8 @@ import type { Metadata } from "next"
 import Script from "next/script"
 import { Inter, Playfair_Display } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { generateOrganizationSchema, generateWebSiteSchema } from "@/lib/seo/schema"
+import { SchemaMarkup } from "@/components/seo/schema-markup"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -93,6 +95,9 @@ export default function RootLayout({
           />
         </noscript>
         {/* end Pinterest Tag */}
+
+        {/* Site-wide Organization + WebSite schema for answer engines */}
+        <SchemaMarkup schema={[generateOrganizationSchema(), generateWebSiteSchema()]} />
         
         {children}
         <Analytics />

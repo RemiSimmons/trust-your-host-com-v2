@@ -26,12 +26,21 @@ export function BackButton({ className, variant = "ghost" }: BackButtonProps) {
     return null
   }
 
+  const handleBack = () => {
+    // If no prior history (e.g. arrived via direct link), go to home
+    if (typeof window !== "undefined" && window.history.length <= 1) {
+      router.push("/")
+    } else {
+      router.back()
+    }
+  }
+
   return (
     <Button
       variant={variant}
       size="sm"
       className={cn("gap-1 pl-2 pr-3 md:pr-4", className)}
-      onClick={() => router.back()}
+      onClick={handleBack}
       aria-label="Go back"
     >
       <ChevronLeft className="h-4 w-4" />

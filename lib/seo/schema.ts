@@ -197,7 +197,7 @@ export function generateArticleSchema(article: Article, canonicalUrl: string): S
     author: {
       "@type": "Person",
       name: article.author.name,
-      image: article.author.avatar,
+      ...(article.author.avatar && { image: article.author.avatar }),
     },
     publisher: {
       "@type": "Organization",
@@ -291,6 +291,156 @@ export function generateBreadcrumbSchema(
       name: crumb.name,
       item: crumb.url,
     })),
+  }
+}
+
+/**
+ * Event schema for FIFA World Cup 2026 and other events
+ */
+export interface SchemaEvent {
+  "@context": "https://schema.org"
+  "@type": "Event"
+  name: string
+  description?: string
+  startDate: string
+  endDate: string
+  location: {
+    "@type": "Place"
+    name: string
+    address?: {
+      "@type": "PostalAddress"
+      addressLocality: string
+      addressRegion?: string
+      addressCountry: string
+    }
+    geo?: {
+      "@type": "GeoCoordinates"
+      latitude: number
+      longitude: number
+    }
+  }
+  url?: string
+  organizer?: {
+    "@type": "Organization"
+    name: string
+    url: string
+  }
+}
+
+/**
+ * Place schema for city/location pages
+ */
+export interface SchemaPlace {
+  "@context": "https://schema.org"
+  "@type": "Place"
+  name: string
+  description?: string
+  geo?: {
+    "@type": "GeoCoordinates"
+    latitude: number
+    longitude: number
+  }
+  url?: string
+  address?: {
+    "@type": "PostalAddress"
+    addressLocality: string
+    addressRegion?: string
+    addressCountry: string
+  }
+}
+
+/** Approximate city center coordinates for FIFA host cities (lat, lng) */
+const FIFA_CITY_COORDINATES: Record<string, [number, number]> = {
+  "new-york-new-jersey": [40.7128, -74.006],
+  "los-angeles": [34.0522, -118.2437],
+  "miami-gardens": [25.9429, -80.2456],
+  "dallas": [32.7767, -96.797],
+  "san-francisco": [37.7749, -122.4194],
+  "atlanta": [33.749, -84.388],
+  "houston": [29.7604, -95.3698],
+  "seattle": [47.6062, -122.3321],
+  "philadelphia": [39.9526, -75.1652],
+  "boston": [42.3601, -71.0589],
+  "kansas-city": [39.0997, -94.5786],
+}
+
+/**
+ * Generate Event schema for FIFA World Cup 2026
+ * Tournament dates: June 11 - July 19, 2026
+ */
+export function generateFifaEventSchema(options: {
+  cityName?: string
+  stadiumName?: string
+  stadiumAddress?: string
+  accommodationUrl?: string
+  geo?: { lat: number; lng: number }
+}): SchemaEvent {
+  const baseUrl = "https://trustyourhost.com"
+  const location: SchemaEvent["location"] = {
+    "@type": "Place",
+    name: options.stadiumName || options.cityName || "FIFA World Cup 2026",
+    address: options.stadiumAddress ? {
+      "@type": "PostalAddress",
+      addressLocality: options.cityName || "",
+      addressCountry: "US",
+    } : undefined,
+    geo: options.geo ? {
+      "@type": "GeoCoordinates",
+      latitude: options.geo.lat,
+      longitude: options.geo.lng,
+    } : undefined,
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: "FIFA World Cup 2026",
+    description: "The FIFA World Cup 2026. Find verified vacation rentals near host city stadiums. Book direct, no platform fees.",
+    startDate: "2026-06-11",
+    endDate: "2026-07-19",
+    location,
+    url: options.accommodationUrl || `${baseUrl}/fifa-2026`,
+    organizer: {
+      "@type": "Organization",
+      name: "FIFA",
+      url: "https://www.fifa.com",
+    },
+  }
+}
+
+/**
+ * Generate Place schema for FIFA city pages
+ */
+export function generatePlaceSchema(options: {
+  name: string
+  description?: string
+  cityId?: string
+  url?: string
+  address?: { city: string; region?: string; country: string }
+}): SchemaPlace {
+  const coords = options.cityId ? FIFA_CITY_COORDINATES[options.cityId] : undefined
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    name: options.name,
+    description: options.description,
+    geo: coords
+      ? {
+          "@type": "GeoCoordinates",
+          latitude: coords[0],
+          longitude: coords[1],
+        }
+      : undefined,
+    url: options.url,
+    address: options.address
+      ? {
+          "@type": "PostalAddress",
+          addressLocality: options.address.city,
+          addressRegion: options.address.region,
+          addressCountry: options.address.country || "US",
+        }
+      : undefined,
   }
 }
 

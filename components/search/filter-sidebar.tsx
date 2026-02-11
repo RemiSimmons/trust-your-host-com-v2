@@ -143,8 +143,8 @@ export function FilterSidebar({ filters, setFilters, className }: FilterSidebarP
       <div className="mb-8">
         <h4 className="font-semibold text-gray-900 mb-3">Experiences</h4>
         <div className="space-y-1">
-          {EXPERIENCE_CATEGORIES.map((category) => (
-            <label key={category} className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
+          {EXPERIENCE_CATEGORIES.map((category, index) => (
+            <label key={`${category}-${index}`} className="flex items-center gap-3 cursor-pointer group min-h-[44px] py-1">
               <div
                 className={cn(
                   "w-5 h-5 rounded border flex items-center justify-center transition-colors shrink-0",

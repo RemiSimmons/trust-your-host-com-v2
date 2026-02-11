@@ -21,7 +21,7 @@ import { NavBar } from "@/components/navigation/nav-bar";
 import { Footer } from "@/components/navigation/footer";
 import { FifaCityFAQ } from "@/components/faq/fifa-city-faq";
 import { SchemaMarkup } from "@/components/seo/schema-markup";
-import { generateBreadcrumbSchema } from "@/lib/seo/schema";
+import { generateBreadcrumbSchema, generateFifaEventSchema, generatePlaceSchema } from "@/lib/seo/schema";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { generateFifaBreadcrumbs } from "@/lib/seo/breadcrumb-helpers";
 import { findArticlesForFifaCity } from "@/lib/seo/related-content";
@@ -51,13 +51,16 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
     };
   }
 
+  const title = `FIFA World Cup 2026 ${city.name} Vacation Rentals | Book Direct | TrustYourHost`;
+  const description = `Book verified vacation rentals near ${city.stadium.officialName} for FIFA 2026. Direct booking, no platform fees. ${city.propertyCount || 0} properties available in ${city.name}.`;
+
   return {
-    title: city.seo.metaTitle,
-    description: city.seo.metaDescription,
+    title,
+    description,
     keywords: [...city.seo.topSearchPhrases, ...city.seo.longTailKeywords].join(", "),
     openGraph: {
-      title: city.seo.metaTitle,
-      description: city.seo.metaDescription,
+      title,
+      description,
       type: "website",
       url: `/fifa-2026/${city.id}`,
       images: [
@@ -71,8 +74,8 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
     },
     twitter: {
       card: "summary_large_image",
-      title: city.seo.metaTitle,
-      description: city.seo.metaDescription,
+      title,
+      description,
       images: [city.heroImage],
     },
     alternates: {
@@ -102,9 +105,29 @@ export default async function CityPage({ params }: CityPageProps) {
     url: item.href ? `https://trustyourhost.com${item.href}` : undefined,
   })));
 
+  // Event schema - stadium-specific with accommodation link
+  const geo = city.stadium.coordinates
+    ? { lat: city.stadium.coordinates[0], lng: city.stadium.coordinates[1] }
+    : undefined;
+  const eventSchema = generateFifaEventSchema({
+    cityName: city.name,
+    stadiumName: city.stadium.officialName,
+    accommodationUrl: `https://trustyourhost.com/search?event=fifa-2026&city=${city.id}`,
+    geo,
+  });
+
+  // Place schema for city
+  const placeSchema = generatePlaceSchema({
+    name: city.displayName,
+    description: `FIFA World Cup 2026 host city. Find vacation rentals near ${city.stadium.officialName}. Book direct, no platform fees.`,
+    cityId: city.id,
+    url: `https://trustyourhost.com/fifa-2026/${city.id}`,
+    address: { city: city.name, region: "USA", country: "US" },
+  });
+
   return (
     <div className="min-h-screen flex flex-col">
-      <SchemaMarkup schema={breadcrumbSchema} />
+      <SchemaMarkup schema={[eventSchema, placeSchema, breadcrumbSchema]} />
       <NavBar />
 
       {/* Breadcrumbs */}
@@ -135,7 +158,7 @@ export default async function CityPage({ params }: CityPageProps) {
               </div>
 
               <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold mb-4">
-                FIFA World Cup 2026 in {city.name}
+                FIFA 2026 Vacation Rentals in {city.name}
               </h1>
 
               <div className="flex flex-wrap items-center gap-4 text-lg md:text-xl mb-6">

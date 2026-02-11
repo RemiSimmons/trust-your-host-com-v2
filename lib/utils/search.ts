@@ -1,6 +1,81 @@
 import type { Property } from "@/lib/types"
 import { calculateDistance } from "@/lib/utils/geo"
 import { matchesCity } from "@/lib/utils/city-matching"
+import { PROPERTY_TYPES } from "@/lib/data/property-constants"
+
+/**
+ * Maps filter property type labels (from experience presets) to property type keys.
+ * Experience config uses labels like "Chalet", "Cabin" while properties use keys like "cabin".
+ */
+const FILTER_PROPERTY_TYPE_TO_KEY: Record<string, string> = {
+  ...Object.fromEntries(
+    Object.entries(PROPERTY_TYPES).map(([key, label]) => [label, key])
+  ),
+  // Experience preset labels not in PROPERTY_TYPES
+  Chalet: "cabin",
+  "A-Frame": "cabin",
+  "Ski Condo": "apartment",
+  "Mountain Home": "cabin",
+  "Tiny Home": "other",
+  "Beach House": "house",
+  Bungalow: "house",
+  Condo: "apartment",
+  "Beach Cabin": "cabin",
+  Loft: "apartment",
+  Penthouse: "apartment",
+  Studio: "apartment",
+  "Converted Space": "other",
+  "Boutique Stay": "other",
+  Treehouse: "treehouse",
+  Yurt: "glamping",
+  "Log Home": "cabin",
+  "Earth Home": "other",
+  Villa: "villa",
+  Cottage: "house",
+  "Island Home": "house",
+  "Resort Suite": "apartment",
+  "Tiki Hut": "other",
+  Palapa: "other",
+  Farmhouse: "house",
+  "Ranch House": "house",
+  "Barn Conversion": "other",
+  "Country Estate": "house",
+  Homestead: "house",
+  "Rural Retreat": "cabin",
+  Estate: "house",
+  Manor: "house",
+  "Private Residence": "house",
+  "Luxury Home": "house",
+  Compound: "house",
+  "Gated Property": "house",
+  "Base Camp Cabin": "cabin",
+  "Glamping Tent": "glamping",
+  "Adventure Cabin": "cabin",
+  "Outdoor Retreat": "cabin",
+  "Wilderness Home": "cabin",
+  "Vineyard Estate": "villa",
+  "Farm Cottage": "house",
+  "Wine Country Villa": "villa",
+  Chateau: "villa",
+  Casita: "house",
+  "Family Home": "house",
+  "Vacation House": "house",
+  Lakehouse: "house",
+  "Large Cabin": "cabin",
+  "Resort Home": "house",
+  "Group House": "house",
+  "Event Rental": "house",
+  "Festival Lodging": "house",
+  "Shared Home": "house",
+  "Party House": "house",
+  "Venue Nearby": "house",
+  Castle: "historic",
+  Lighthouse: "unique-stay",
+  "Container Home": "unique-stay",
+  "Dome Home": "unique-stay",
+  "Historic Building": "historic",
+  "Artist Loft": "apartment",
+}
 
 export interface FilterState {
   experiences: string[]
@@ -65,11 +140,17 @@ export function filterProperties(properties: Property[], filters: FilterState): 
       return false
     }
 
-    // Property types
+    // Property types (filter uses labels like "Cabin", "Chalet"; property uses keys like "cabin")
     if (filters.propertyTypes.length > 0) {
-      if (!filters.propertyTypes.includes(property.propertyType)) {
-        return false
-      }
+      const propertyLabel = PROPERTY_TYPES[property.propertyType as keyof typeof PROPERTY_TYPES] || property.propertyType
+      const filterKeys = filters.propertyTypes.map(
+        (ft) => FILTER_PROPERTY_TYPE_TO_KEY[ft] ?? ft.toLowerCase()
+      )
+      const propertyKey = property.propertyType
+      const matches =
+        filters.propertyTypes.includes(propertyLabel) ||
+        filterKeys.includes(propertyKey)
+      if (!matches) return false
     }
 
     // Bedrooms
@@ -80,8 +161,26 @@ export function filterProperties(properties: Property[], filters: FilterState): 
     }
 
     // Amenities (AND logic - must have ALL selected)
+    // Filter uses IDs like "wifi", "hot-tub"; property uses labels like "WiFi", "Hot Tub"
     if (filters.amenities.length > 0) {
-      const hasAllAmenities = filters.amenities.every((amenity) => property.amenities.includes(amenity))
+      const AMENITY_ID_TO_LABELS: Record<string, string[]> = {
+        "hot-tub": ["Hot Tub", "Jacuzzi"],
+        pool: ["Pool"],
+        wifi: ["WiFi", "Wifi"],
+        kitchen: ["Full Kitchen", "Kitchen"],
+        fireplace: ["Fireplace"],
+        "mountain-views": ["Mountain Views"],
+        "pet-friendly": ["Pet Friendly"],
+        "washer-dryer": ["Washer/Dryer"],
+        "air-conditioning": ["Air Conditioning"],
+        "beach-access": ["Beach Access"],
+      }
+      const hasAllAmenities = filters.amenities.every((amenityId) => {
+        const labels = AMENITY_ID_TO_LABELS[amenityId] || [amenityId]
+        return property.amenities.some((pa) =>
+          labels.some((l) => pa.toLowerCase().includes(l.toLowerCase()))
+        )
+      })
       if (!hasAllAmenities) return false
     }
 

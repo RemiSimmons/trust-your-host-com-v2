@@ -207,8 +207,9 @@ export function generateCategoryMetadata(
  */
 export function generateHomeMetadata(): Metadata {
   return generateMetadata({
-    title: "Direct Vacation Rentals from Verified Hosts | FIFA 2026",
-    description: SITE_DESCRIPTION,
+    title: "Direct Vacation Rentals from Verified Hosts | No Booking Fees | TrustYourHost",
+    description:
+      "Book vacation rentals directly from verified hosts. No platform commissions. Save 10-15% vs Airbnb/Vrbo. FIFA World Cup 2026 properties available.",
     url: "/",
   })
 }

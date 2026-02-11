@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import Link from "next/link"
 import { getArticlesByCategory } from "@/lib/data/articles"
 import { ArticleCard } from "@/components/articles/article-card"
 import { NavBar } from "@/components/navigation/nav-bar"
@@ -81,12 +82,12 @@ export default function HostResourcesPage() {
             <p className="text-purple-100 mb-6 max-w-xl mx-auto">
               Join TrustYourHost and connect directly with travelers while maintaining control over your pricing, policies, and guest relationships.
             </p>
-            <a
-              href="/become-host"
+            <Link
+              href="/submit-property"
               className="inline-flex items-center px-6 py-3 bg-white text-purple-600 font-semibold rounded-lg hover:bg-purple-50 transition-colors"
             >
               List Your Property
-            </a>
+            </Link>
           </div>
         </div>
       </main>

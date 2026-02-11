@@ -57,6 +57,13 @@ export function generatePropertyBreadcrumbs(
 /**
  * Specialized breadcrumbs for article pages
  */
+const categoryPaths: Record<string, string> = {
+  insights: "/insights",
+  guides: "/guides",
+  journal: "/journal",
+  resources: "/host-resources",
+}
+
 export function generateArticleBreadcrumbs(
   category: string,
   articleTitle: string
@@ -65,11 +72,11 @@ export function generateArticleBreadcrumbs(
     insights: "Insights",
     guides: "Guides",
     journal: "Journal",
-    resources: "Resources",
+    resources: "Host Resources",
   }
 
   return [
-    { label: categoryLabels[category] || category, href: `/${category}` },
+    { label: categoryLabels[category] || category, href: categoryPaths[category] || `/${category}` },
     { label: articleTitle },
   ]
 }

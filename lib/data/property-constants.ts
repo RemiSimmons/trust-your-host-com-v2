@@ -26,9 +26,8 @@ export const EXPERIENCE_CATEGORIES = [
   'Adventure Sports',
   'Countryside Calm',
   'Coastal Towns',
-  // Additional experiences found in properties.ts
+  // Additional experiences found in properties.ts (no duplicates)
   'Hiking & Trails',
-  'Wellness Retreats',
   'Mountain Lodges',
   'Remote Work Retreats',
   'Island Getaways',

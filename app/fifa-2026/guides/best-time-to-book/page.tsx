@@ -2,13 +2,13 @@ import { ArticleLayout } from '@/components/content/article-layout';
 
 export const metadata = {
   title: 'Best Time to Book FIFA 2026 Accommodations | TrustYourHost',
-  description: 'When should you book accommodation for the FIFA World Cup 2026? Expert guide to timing your reservation for the best availability and pricing.',
+  description: 'When to book FIFA World Cup 2026 accommodation. Expert timing guide for availability and pricing. Book direct, save on fees.',
 };
 
 export default function BestTimeToBook() {
   return (
     <ArticleLayout
-      title="Best Time to Book for FIFA 2026"
+      title="Best Time to Book FIFA 2026 Accommodations"
       description="Strategic timing guide for securing World Cup accommodation"
       category="fifa"
       lastUpdated="January 26, 2026"

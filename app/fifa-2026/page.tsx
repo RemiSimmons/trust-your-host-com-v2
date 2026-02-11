@@ -4,6 +4,8 @@ import { fifaCities } from "@/lib/data/fifa-cities";
 import { NavBar } from "@/components/navigation/nav-bar";
 import { Footer } from "@/components/navigation/footer";
 import { FifaCitiesSection } from "@/components/home/fifa-cities-section";
+import { SchemaMarkup } from "@/components/seo/schema-markup";
+import { generateFifaEventSchema } from "@/lib/seo/schema";
 import { 
   MapPin, 
   Calendar, 
@@ -13,12 +15,12 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "FIFA World Cup 2026 USA - Host Cities & Vacation Rentals | TrustYourHost",
-  description: "Find perfect vacation rentals for FIFA World Cup 2026 across 11 US host cities. Book direct accommodation near stadiums in New York, LA, Miami, Dallas, and more. Save on fees.",
+  title: "FIFA World Cup 2026 Host Cities | Vacation Rentals | Book Direct | TrustYourHost",
+  description: "Find verified vacation rentals for FIFA World Cup 2026 across 11 US host cities. Book direct near stadiums in New York, LA, Miami, Dallas, and more. No platform fees.",
   keywords: "FIFA World Cup 2026, FIFA 2026 accommodation, World Cup vacation rentals, FIFA host cities, World Cup hotels, soccer rentals USA",
   openGraph: {
-    title: "FIFA World Cup 2026 USA - Host Cities & Vacation Rentals",
-    description: "Find perfect vacation rentals for FIFA World Cup 2026 across 11 US host cities.",
+    title: "FIFA World Cup 2026 Host Cities | Vacation Rentals | Book Direct",
+    description: "Find verified vacation rentals for FIFA World Cup 2026 across 11 US host cities. Book direct, no platform fees.",
     type: "website",
     url: "/fifa-2026",
   },
@@ -33,8 +35,13 @@ export default function Fifa2026Page() {
   const totalMatches = fifaCities.reduce((sum, city) => sum + city.stadium.matchesHosted, 0);
   const totalCapacity = fifaCities.reduce((sum, city) => sum + city.stadium.capacity, 0);
 
+  const eventSchema = generateFifaEventSchema({
+    accommodationUrl: "https://trustyourhost.com/search?event=fifa-2026",
+  });
+
   return (
     <div className="min-h-screen flex flex-col">
+      <SchemaMarkup schema={eventSchema} />
       <NavBar />
 
       <main className="flex-1">

@@ -2,6 +2,9 @@ import type { Metadata } from "next"
 import { NavBar } from "@/components/navigation/nav-bar"
 import { Footer } from "@/components/navigation/footer"
 import { DetailedGuestFAQ } from "@/components/faq/detailed-guest-faq"
+import { guestFAQs } from "@/lib/data/guest-faqs"
+import { SchemaMarkup } from "@/components/seo/schema-markup"
+import { generateFAQPageSchema } from "@/lib/seo/schema"
 import { Search, Heart, ExternalLink, Shield, Users, CreditCard, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -16,8 +19,11 @@ export const metadata: Metadata = generateMetadata({
 export const revalidate = 3600
 
 export default function HowItWorksPage() {
+  const faqSchema = generateFAQPageSchema(guestFAQs.map((f) => ({ question: f.question, answer: f.answer })))
+
   return (
     <div className="flex min-h-screen flex-col">
+      <SchemaMarkup schema={faqSchema} />
       <NavBar />
       <main className="flex-1 py-12 md:py-20">
         <div className="container mx-auto px-4 max-w-5xl">

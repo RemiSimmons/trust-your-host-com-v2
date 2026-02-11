@@ -42,8 +42,13 @@ export default function SitemapPage() {
               </Link>
             </li>
             <li>
-              <Link href="/become-host" className="hover:underline">
-                Become a Host
+              <Link href="/for-hosts" className="hover:underline">
+                For Hosts
+              </Link>
+            </li>
+            <li>
+              <Link href="/submit-property" className="hover:underline">
+                List Your Property
               </Link>
             </li>
             <li>

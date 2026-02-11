@@ -18,18 +18,21 @@ const categoryPaths = {
   insights: "/insights",
   guides: "/guides",
   journal: "/journal",
+  resources: "/host-resources",
 }
 
 const categoryLabels = {
   insights: "Host Insights",
   guides: "Guide",
   journal: "Journal",
+  resources: "Host Resources",
 }
 
 const categoryColors = {
   insights: "bg-blue-100 text-blue-700",
   guides: "bg-emerald-100 text-emerald-700",
   journal: "bg-amber-100 text-amber-700",
+  resources: "bg-purple-100 text-purple-700",
 }
 
 export function ArticleDetail({ article, relatedArticles }: ArticleDetailProps) {
@@ -152,8 +155,33 @@ export function ArticleDetail({ article, relatedArticles }: ArticleDetailProps) 
           <ReactMarkdown>{article.content}</ReactMarkdown>
         </div>
 
-        {/* Author Bio */}
+        {/* Conversion Links - internal linking for SEO */}
         <div className="mt-12 pt-8 border-t border-gray-200">
+          <h3 className="font-semibold text-gray-900 mb-4">Explore TrustYourHost</h3>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/search"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 transition-colors text-sm font-medium"
+            >
+              Browse Vacation Rentals
+            </Link>
+            <Link
+              href="/submit-property"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"
+            >
+              List Your Property
+            </Link>
+            <Link
+              href="/fifa-2026"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium"
+            >
+              FIFA 2026 Stays
+            </Link>
+          </div>
+        </div>
+
+        {/* Author Bio */}
+        <div className="mt-8 pt-8 border-t border-gray-200">
           <div className="flex items-start gap-4 p-6 bg-gray-50 rounded-xl">
             <Image
               src={article.author.avatar}
@@ -178,6 +206,7 @@ export function ArticleDetail({ article, relatedArticles }: ArticleDetailProps) 
         {relatedArticles && relatedArticles.length > 0 && (
           <div className="mt-12 pt-8 border-t border-gray-200">
             <h2 className="font-serif text-2xl font-bold text-gray-900 mb-6">Related Articles</h2>
+            <p className="text-gray-600 mb-6">Continue exploring with these related guides and insights.</p>
             <div className="grid gap-6">
               {relatedArticles.map((relatedArticle) => (
                 <Link

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { ArrowLeft, MapPin, Heart, ExternalLink, Check, Star, Trophy, ChevronRight, Home } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import type { Property } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { PropertyGallery } from "@/components/property/property-gallery"
@@ -14,6 +13,7 @@ import { RelatedProperties } from "@/components/property/related-properties"
 import { LocationMap } from "@/components/property/location-map"
 import { useFavorites } from "@/hooks/use-favorites"
 import { useToast } from "@/hooks/use-toast"
+import { getCityByName } from "@/lib/data/fifa-cities"
 
 interface PropertyDetailClientProps {
   property: Property
@@ -21,7 +21,6 @@ interface PropertyDetailClientProps {
 }
 
 export function PropertyDetailClient({ property, relatedProperties }: PropertyDetailClientProps) {
-  const router = useRouter()
   const [showFullDescription, setShowFullDescription] = useState(false)
   const [isToggling, setIsToggling] = useState(false)
   const { isFavorite, toggleFavorite, isLoading } = useFavorites()
@@ -85,7 +84,10 @@ export function PropertyDetailClient({ property, relatedProperties }: PropertyDe
               Search
             </Link>
             <ChevronRight className="h-4 w-4" />
-            <Link href={`/search?city=${property.location.city}`} className="hover:text-primary">
+            <Link
+              href={`/search?city=${getCityByName(property.location.city.split(",")[0]?.trim() || property.location.city)?.id ?? property.location.city.toLowerCase().replace(/\s+/g, "-").replace(/,/g, "")}`}
+              className="hover:text-primary"
+            >
               {property.location.city}
             </Link>
             <ChevronRight className="h-4 w-4" />
@@ -97,13 +99,17 @@ export function PropertyDetailClient({ property, relatedProperties }: PropertyDe
       {/* Header Section */}
       <div className="bg-white border-b sticky top-0 z-30">
         <div className="container mx-auto px-6 py-6">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+          <Link
+            href={
+              property.location?.city
+                ? `/search?city=${getCityByName(property.location.city.split(",")[0]?.trim() || property.location.city)?.id ?? property.location.city.toLowerCase().replace(/\s+/g, "-").replace(/,/g, "")}`
+                : "/search"
+            }
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
             <span>Back to search</span>
-          </button>
+          </Link>
 
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
@@ -178,7 +184,15 @@ export function PropertyDetailClient({ property, relatedProperties }: PropertyDe
       </div>
 
       {/* Photo Gallery */}
-      <PropertyGallery images={property.images.slice(0, 10)} propertyName={property.name} />
+      <div className="relative">
+        <PropertyGallery images={property.images.slice(0, 10)} propertyName={property.name} />
+        {/* Coming Soon badge - subtle, non-blocking */}
+        <div className="absolute top-4 right-4 z-20 pointer-events-none">
+          <span className="px-3 py-1.5 rounded-lg bg-white/95 text-gray-700 font-medium text-sm shadow-md border border-gray-200/80">
+            Coming Soon
+          </span>
+        </div>
+      </div>
 
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

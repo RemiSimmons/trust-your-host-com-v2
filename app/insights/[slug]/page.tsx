@@ -36,7 +36,7 @@ export default async function InsightArticlePage({ params }: PageProps) {
 
   // Get all articles for better related content matching
   const allArticles = getAllArticles()
-  const relatedArticles = findRelatedArticles(article, allArticles, 3)
+  const relatedArticles = findRelatedArticles(article, allArticles, 4)
 
   // Generate schema markup
   const canonicalUrl = `https://trustyourhost.com/insights/${article.slug}`

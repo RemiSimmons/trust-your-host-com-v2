@@ -1,14 +1,14 @@
 import { ArticleLayout } from '@/components/content/article-layout';
 
 export const metadata = {
-  title: 'FIFA World Cup 2026: How to Use TrustYourHost for Your Trip',
-  description: 'Complete guide to planning your FIFA World Cup 2026 trip using TrustYourHost. Find accommodations near stadiums in all 11 host cities.',
+  title: 'FIFA 2026 Trip Planning Guide | Vacation Rentals | TrustYourHost',
+  description: 'Plan your FIFA World Cup 2026 trip. Find verified vacation rentals near stadiums in 11 host cities. Book direct, no fees.',
 };
 
 export default function FIFAPlanningGuide() {
   return (
     <ArticleLayout
-      title="FIFA World Cup 2026: Planning Your Trip with TrustYourHost"
+      title="FIFA 2026 Trip Planning Guide"
       description="Your complete guide to finding accommodations for the FIFA World Cup 2026"
       category="fifa"
       lastUpdated="January 26, 2026"
