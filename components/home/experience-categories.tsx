@@ -242,10 +242,10 @@ export function ExperienceCategories() {
                     }
                   }}
                   className="group relative flex-shrink-0 snap-center aspect-[4/5] overflow-hidden rounded-xl cursor-pointer
-                             border border-white/20 
+                             bg-gray-700
                              shadow-[0_8px_30px_rgba(255,255,255,0.1),0_4px_12px_rgba(0,0,0,0.3)]
                              hover:shadow-[0_20px_60px_rgba(255,255,255,0.15),0_8px_20px_rgba(0,0,0,0.4)]
-                             backdrop-blur-sm w-[288px] min-w-[288px]
+                             w-[288px] min-w-[288px]
                              focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent
                              transition-all duration-300"
                   whileHover={{ y: -8, scale: 1.02 }}
@@ -259,15 +259,15 @@ export function ExperienceCategories() {
                   <img
                     src={category.image || "/placeholder.svg"}
                     alt={category.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
                     loading="lazy"
                   />
 
-                  {/* Gradient overlay - bottom only, top stays pure image */}
+                  {/* Gradient overlay - bottom text area + subtle top vignette */}
                   <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
-                      background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 35%, transparent 60%)",
+                      background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 35%, transparent 55%, transparent 100%)",
                     }}
                   />
 
