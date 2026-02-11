@@ -8,6 +8,8 @@ import { Loader2 } from "lucide-react"
 import { getExperienceConfig } from "@/lib/config/experience-config"
 import { getCityById } from "@/lib/data/fifa-cities"
 import { generateMetadata as genMeta } from "@/lib/seo/metadata"
+import { generateOrganizationSchema, generateWebSiteSchema } from "@/lib/seo/schema"
+import { SchemaMarkup } from "@/components/seo/schema-markup"
 
 export const revalidate = 3600
 
@@ -51,6 +53,8 @@ export default async function SearchPage() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
+      {/* Site-wide schema for search page */}
+      <SchemaMarkup schema={[generateOrganizationSchema(), generateWebSiteSchema()]} />
       <NavBar />
       {/* Scroll container starts below nav - content cannot scroll above this boundary */}
       <div className="flex-1 overflow-y-auto mt-[72px]">

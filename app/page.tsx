@@ -12,7 +12,7 @@ import { getFeaturedProperties } from "@/lib/db/properties"
 import { getArticlesByCategory } from "@/lib/data/articles"
 import { homepageFaqs } from "@/lib/data/homepage-faqs"
 import { generateHomeMetadata } from "@/lib/seo/metadata"
-import { generateFAQPageSchema } from "@/lib/seo/schema"
+import { generateFAQPageSchema, generateOrganizationSchema, generateWebSiteSchema } from "@/lib/seo/schema"
 import { SchemaMarkup } from "@/components/seo/schema-markup"
 
 export const metadata = generateHomeMetadata()
@@ -31,6 +31,8 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Site-wide Organization + WebSite schema + Homepage FAQ schema */}
+      <SchemaMarkup schema={[generateOrganizationSchema(), generateWebSiteSchema(), faqSchema]} />
       <NavBar />
       <main className="flex-1">
         <div className="relative">
@@ -71,7 +73,6 @@ export default async function HomePage() {
                 insights={insights}
                 resources={resources}
               />
-              <SchemaMarkup schema={faqSchema} />
               <HomepageFAQ />
               <HostCTA />
             </div>

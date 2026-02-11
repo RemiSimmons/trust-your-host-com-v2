@@ -5,12 +5,13 @@ import { PropertyDetailClient } from "@/components/property/property-detail-clie
 import { NavBar } from "@/components/navigation/nav-bar"
 import { Footer } from "@/components/navigation/footer"
 import { generatePropertyMetadata } from "@/lib/seo/metadata"
-import { generateLodgingBusinessSchema, generateBreadcrumbSchema } from "@/lib/seo/schema"
+import { generateLodgingBusinessSchema, generateBreadcrumbSchema, generateOrganizationSchema, generateWebSiteSchema } from "@/lib/seo/schema"
 import { SchemaMarkup } from "@/components/seo/schema-markup"
 import { Breadcrumbs } from "@/components/seo/breadcrumbs"
 import { generatePropertyBreadcrumbs } from "@/lib/seo/breadcrumb-helpers"
 import { findArticlesForProperty } from "@/lib/seo/related-content"
 import { RelatedContent } from "@/components/seo/related-content"
+import { isMockProperty } from "@/lib/utils/property-helpers"
 
 interface PropertyPageProps {
   params: Promise<{
@@ -30,7 +31,20 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
     }
   }
 
-  return generatePropertyMetadata(property)
+  const metadata = generatePropertyMetadata(property)
+  
+  // Add noindex for mock properties to prevent SEO indexing
+  if (isMockProperty(property)) {
+    return {
+      ...metadata,
+      robots: {
+        index: false,
+        follow: false,
+      }
+    }
+  }
+
+  return metadata
 }
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
@@ -71,9 +85,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     })
     .slice(0, 4)
 
-  // Generate schema markup
+  // Generate schema markup (only for real properties)
   const canonicalUrl = `https://trustyourhost.com/properties/${property.slug}`
-  const lodgingSchema = generateLodgingBusinessSchema(property, canonicalUrl)
   const breadcrumbItems = generatePropertyBreadcrumbs(
     property.name,
     property.location.city,
@@ -89,7 +102,17 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      <SchemaMarkup schema={[lodgingSchema, breadcrumbSchema]} />
+      {/* Only add structured data schema for real properties, not mock properties */}
+      {!isMockProperty(property) && (
+        <SchemaMarkup 
+          schema={[
+            generateOrganizationSchema(),
+            generateWebSiteSchema(),
+            generateLodgingBusinessSchema(property, canonicalUrl), 
+            breadcrumbSchema
+          ]} 
+        />
+      )}
       <NavBar />
       {/* Scroll container starts below nav - content cannot scroll above this boundary */}
       <div className="flex-1 overflow-y-auto mt-[72px]">

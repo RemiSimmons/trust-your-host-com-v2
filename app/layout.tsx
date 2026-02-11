@@ -96,8 +96,10 @@ export default function RootLayout({
         </noscript>
         {/* end Pinterest Tag */}
 
-        {/* Site-wide Organization + WebSite schema for answer engines */}
-        <SchemaMarkup schema={[generateOrganizationSchema(), generateWebSiteSchema()]} />
+        {/* 
+          Site-wide Organization + WebSite schema moved to individual pages
+          to prevent schema from appearing on noindex pages (like mock properties)
+        */}
         
         {children}
         <Analytics />

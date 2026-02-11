@@ -9,6 +9,7 @@ import Link from "next/link"
 import type { Property } from "@/lib/types"
 import { QuickViewModal } from "@/components/property/quick-view-modal"
 import { FavoriteButton } from "@/components/favorites/favorite-button"
+import { isMockProperty } from "@/lib/utils/property-helpers"
 
 export function PropertyCard({ property }: { property: Property }) {
   const [showQuickView, setShowQuickView] = useState(false)
@@ -23,13 +24,6 @@ export function PropertyCard({ property }: { property: Property }) {
                 hover:-translate-y-2
                 transition-all duration-300"
     >
-      {/* Coming Soon badge - subtle, non-blocking */}
-      <div className="absolute top-4 right-14 z-20 pointer-events-none">
-        <span className="px-2.5 py-1 rounded-md bg-white/95 text-gray-700 font-medium text-xs shadow-md border border-gray-200/80">
-          Coming Soon
-        </span>
-      </div>
-
       {/* Full-bleed image */}
       <div className="relative w-full h-full">
         <img
@@ -71,6 +65,22 @@ export function PropertyCard({ property }: { property: Property }) {
           </div>
         )}
       </div>
+
+      {/* Diagonal "SAMPLE LISTING" watermark - only for mock properties */}
+      {isMockProperty(property) && (
+        <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
+          <div 
+            className="text-white text-3xl sm:text-4xl lg:text-5xl font-bold tracking-wider whitespace-nowrap"
+            style={{
+              transform: 'rotate(-30deg)',
+              textShadow: '2px 2px 8px rgba(0,0,0,0.5), -2px -2px 8px rgba(0,0,0,0.3)',
+              opacity: 0.45,
+            }}
+          >
+            SAMPLE LISTING
+          </div>
+        </div>
+      )}
 
       {/* DEFAULT STATE: Minimal text */}
       <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
