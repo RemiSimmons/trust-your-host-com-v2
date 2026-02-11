@@ -437,7 +437,7 @@ export function FifaCitiesSection({ variant = "default" }: { variant?: "default"
               Can't decide? Explore all FIFA 2026 properties across all host cities.
             </p>
             <Link
-              href="/search?event=fifa-2026"
+              href="/fifa-2026"
               className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-10 py-4 rounded-full font-bold shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 border border-white/20"
             >
               <span>Explore All FIFA 2026 Host Cities</span>

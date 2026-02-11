@@ -1,14 +1,17 @@
 "use client"
 
-import { useSearchParams, useRouter } from "next/navigation"
+import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { useMemo, useState } from "react"
 import { X, Filter, ArrowLeft } from "lucide-react"
 import { Property } from "@/lib/types"
 import { getExperienceConfig } from "@/lib/config/experience-config"
+import { getCityById } from "@/lib/data/fifa-cities"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { FilterModal } from "./filter-modal"
 import { filterProperties, type FilterState } from "@/lib/utils/search"
+import { experienceKeyToTags } from "@/lib/config/experience-tag-mapping"
 import { PropertyCard } from "@/components/home/featured-properties"
 
 interface ResultsPageClientProps {
@@ -16,9 +19,20 @@ interface ResultsPageClientProps {
 }
 
 export function ResultsPageClient({ initialProperties }: ResultsPageClientProps) {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const [showFilters, setShowFilters] = useState(false)
+
+  // Build back-to-search URL from current params (city, experience, event)
+  const searchBackUrl = useMemo(() => {
+    const city = searchParams.get("city")
+    const experience = searchParams.get("experience")
+    const event = searchParams.get("event") || (searchParams.get("fifa2026") === "true" ? "fifa-2026" : null)
+    const params = new URLSearchParams()
+    if (city) params.set("city", city)
+    if (experience) params.set("experience", experience)
+    if (event) params.set("event", event)
+    return params.toString() ? `/search?${params.toString()}` : "/search"
+  }, [searchParams])
 
   // Parse query params with validation
   const filtersFromUrl = useMemo(() => {
@@ -80,6 +94,21 @@ export function ResultsPageClient({ initialProperties }: ResultsPageClientProps)
     if (!filtersFromUrl.experience) return null
     return getExperienceConfig(filtersFromUrl.experience)
   }, [filtersFromUrl.experience])
+
+  // Build dynamic H1 based on active filters
+  const resultsH1 = useMemo(() => {
+    const cityParam = searchParams.get("city")
+    const city = cityParam ? getCityById(cityParam) : null
+    const cityLabel = city?.name || (cityParam ? String(cityParam).replace(/-/g, " ") : "")
+    const experienceLabel = experienceConfig?.title || ""
+
+    const parts: string[] = []
+    if (cityLabel) parts.push(cityLabel)
+    if (experienceLabel) parts.push(experienceLabel)
+    parts.push("Vacation Rentals")
+
+    return parts.filter(Boolean).join(" ") || "Search Results"
+  }, [filtersFromUrl.experience, searchParams, experienceConfig])
 
   // Build active filter tags for display
   const activeFilterTags = useMemo(() => {
@@ -181,8 +210,10 @@ export function ResultsPageClient({ initialProperties }: ResultsPageClientProps)
 
   // Convert filtersFromUrl to FilterState format for the filterProperties function
   const filterState = useMemo((): FilterState => {
-    // Convert single experience to array
-    const experiences = filtersFromUrl.experience ? [filtersFromUrl.experience] : []
+    // Map experience key (e.g. "mountainRetreats") to actual DB tags (e.g. ["Mountain Lodges", "Hiking & Trails"])
+    const experiences = filtersFromUrl.experience
+      ? experienceKeyToTags(filtersFromUrl.experience)
+      : []
     
     // Estimate bedrooms from guests (rough estimate: guests / 2)
     const bedrooms = filtersFromUrl.guests > 2 ? Math.ceil(filtersFromUrl.guests / 2) : 0
@@ -214,25 +245,17 @@ export function ResultsPageClient({ initialProperties }: ResultsPageClientProps)
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <Button
-              onClick={() => router.back()}
-              variant="ghost"
-              size="icon"
-              className="flex-shrink-0"
-              aria-label="Go back"
+            <Link
+              href={searchBackUrl}
+              className="flex-shrink-0 inline-flex items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10"
+              aria-label="Back to search"
             >
               <ArrowLeft className="h-5 w-5" />
-            </Button>
+            </Link>
             <div className="flex-1 flex items-center justify-between">
               <div>
                 <h1 className="font-serif text-3xl sm:text-4xl font-bold text-primary mb-2">
-                {experienceConfig ? (
-                  <>
-                    Filtering by: <span className="text-[#2C5F7C]">{experienceConfig.title}</span>
-                  </>
-                ) : (
-                  "Search Results"
-                )}
+                {resultsH1}
               </h1>
               <p className="text-gray-600">
                 {filteredProperties.length} {filteredProperties.length === 1 ? "property" : "properties"} found
@@ -280,6 +303,33 @@ export function ResultsPageClient({ initialProperties }: ResultsPageClientProps)
             {filteredProperties.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))}
+          </div>
+        ) : filtersFromUrl.experience ? (
+          /* Experience search with no results - show Coming Soon overlay */
+          <div className="relative min-h-[60vh] rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900">
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
+              <div className="text-center max-w-2xl">
+                <p className="text-6xl sm:text-7xl md:text-8xl font-bold text-[#2C5F7C]/20 dark:text-[#2C5F7C]/30 tracking-tight select-none mb-4">
+                  Coming Soon
+                </p>
+                <p className="text-xl text-gray-600 dark:text-gray-400 mb-2">
+                  We&apos;re adding {experienceConfig?.title || "this experience"} properties to our directory
+                </p>
+                <p className="text-base text-gray-500 dark:text-gray-500 mb-8">
+                  Check back soon or browse other experiences
+                </p>
+                <div className="flex flex-wrap gap-4 justify-center">
+                  <Link href="/#experiences">
+                    <Button className="bg-[#2C5F7C] hover:bg-[#2C5F7C]/90">
+                      Explore Other Experiences
+                    </Button>
+                  </Link>
+                  <Button onClick={() => setShowFilters(true)} variant="outline">
+                    Adjust Filters
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="text-center py-16">

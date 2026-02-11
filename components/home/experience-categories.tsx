@@ -263,8 +263,13 @@ export function ExperienceCategories() {
                     loading="lazy"
                   />
 
-                  {/* Gradient overlay - dramatic bottom gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                  {/* Gradient overlay - bottom only, top stays pure image */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 35%, transparent 60%)",
+                    }}
+                  />
 
                   {/* Content - bottom overlay only */}
                   <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 md:p-5">
