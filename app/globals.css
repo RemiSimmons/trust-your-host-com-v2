@@ -251,6 +251,16 @@
   background: linear-gradient(135deg, var(--card) 0%, var(--background) 100%);
 }
 
+/* Continuous marquee scroll for FIFA cities carousel */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 /* Animated gradient for multi-city card */
 @keyframes gradient-xy {
   0%, 100% {

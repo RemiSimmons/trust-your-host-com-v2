@@ -20,7 +20,7 @@ const DEFAULT_FILTER_STATE: FilterState = {
   guests: 2,
   priceRange: [50, 500],
   propertyTypes: [],
-  bookingPlatform: ['Direct Booking Site'],
+  bookingPlatform: [],
   locationRadius: 'Within 50 miles',
   specificFilters: [],
   amenities: [],
@@ -209,9 +209,6 @@ export function FilterModal({
     if (filters.priceRange[0] !== DEFAULT_FILTER_STATE.priceRange[0] || 
         filters.priceRange[1] !== DEFAULT_FILTER_STATE.priceRange[1]) count++
     if (filters.propertyTypes.length > 0) count++
-    const hasOnlyDirectBooking = filters.bookingPlatform.length === 1 && 
-                                  filters.bookingPlatform[0] === 'Direct Booking Site'
-    if (!hasOnlyDirectBooking) count++
     if (filters.locationRadius !== DEFAULT_FILTER_STATE.locationRadius) count++
     if (filters.specificFilters.length > 0) count++
     if (filters.amenities.length > 0) count++
@@ -229,7 +226,7 @@ export function FilterModal({
       ...DEFAULT_FILTER_STATE,
       experience: filters.experience,
       propertyTypes: [],
-      bookingPlatform: ['Direct Booking Site'],
+      bookingPlatform: [],
     })
   }, [filters.experience])
 
@@ -250,17 +247,6 @@ export function FilterModal({
     }
     if (filters.propertyTypes.length > 0) {
       params.set('propertyTypes', filters.propertyTypes.map(t => encodeURIComponent(t)).join(','))
-    }
-    if (filters.bookingPlatform.length > 0) {
-      const platformMap: Record<string, string> = {
-        'Direct Booking Site': 'direct-booking',
-        'Airbnb': 'airbnb',
-        'VRBO': 'vrbo',
-        'Booking.com': 'booking-com',
-        'Expedia': 'expedia',
-      }
-      const platformIds = filters.bookingPlatform.map((label) => platformMap[label] || label)
-      params.set('platforms', platformIds.join(','))
     }
     if (filters.locationRadius !== DEFAULT_FILTER_STATE.locationRadius) {
       params.set('radius', encodeURIComponent(filters.locationRadius))
@@ -306,18 +292,6 @@ export function FilterModal({
     const match = filters.locationRadius.match(/\d+/)
     return match ? match[0] : '50'
   }, [filters.locationRadius])
-
-  // Map booking platform
-  const bookingPlatformIds = useMemo(() => {
-    const platformMap: Record<string, string> = {
-      'Direct Booking Site': 'direct-booking',
-      'Airbnb': 'airbnb',
-      'VRBO': 'vrbo',
-      'Booking.com': 'booking-com',
-      'Expedia': 'expedia',
-    }
-    return filters.bookingPlatform.map((label) => platformMap[label] || label).filter(Boolean)
-  }, [filters.bookingPlatform])
 
   // Handle backdrop click
   const handleBackdropClick = useCallback((e: React.MouseEvent) => {
@@ -457,20 +431,9 @@ export function FilterModal({
               />
             </div>
             
-            {/* Column 4: Booking Platform, Amenities */}
+            {/* Column 4: Amenities */}
             <div className="min-w-0">
               <FilterModalColumn4
-                selectedBookingPlatforms={bookingPlatformIds}
-                onBookingPlatformsChange={(selected) => {
-                  const labelMap: Record<string, string> = {
-                    'direct-booking': 'Direct Booking Site',
-                    'airbnb': 'Airbnb',
-                    'vrbo': 'VRBO',
-                    'booking-com': 'Booking.com',
-                    'expedia': 'Expedia',
-                  }
-                  handleFilterChange('bookingPlatform', selected.map((id) => labelMap[id] || id))
-                }}
                 selectedAmenities={filters.amenities}
                 onAmenitiesChange={(selected) => handleFilterChange('amenities', selected)}
               />

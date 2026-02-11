@@ -22,6 +22,12 @@ export function FifaCitiesSection({ variant = "default" }: { variant?: "default"
   const router = useRouter();
   const [isMultiCityDialogOpen, setIsMultiCityDialogOpen] = useState(false);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+  const [isPaused, setIsPaused] = useState(false);
+
+  const handleImageError = (cityId: string) => {
+    setImageErrors((prev) => new Set(prev).add(cityId));
+  };
 
   // Calculate property counts for each city
   const cityPropertyCounts = useMemo(() => {
@@ -87,11 +93,14 @@ export function FifaCitiesSection({ variant = "default" }: { variant?: "default"
           transition={{ duration: 0.6 }}
           className="text-center mb-12 md:mb-16"
         >
-          {/* Glassmorphic Badge */}
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600/90 to-green-600/90 backdrop-blur-xl text-white px-6 py-3 rounded-full text-sm font-bold mb-6 shadow-2xl border border-white/20 ring-1 ring-white/10">
-            <span className="text-xl">🏆</span>
-            <span className="tracking-wide">FIFA WORLD CUP 2026</span>
-          </div>
+          {/* Search All FIFA 2026 Properties Button */}
+          <Link
+            href="/search?event=fifa-2026"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 via-teal-500 to-green-600 hover:from-blue-700 hover:via-teal-600 hover:to-green-700 text-white px-6 py-3.5 rounded-full text-sm font-bold mb-6 shadow-2xl border border-white/20 ring-1 ring-white/10 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+          >
+            <Map className="w-5 h-5" />
+            <span className="tracking-wide">Search All FIFA 2026 Properties</span>
+          </Link>
 
           <h2 className={`font-serif text-3xl sm:text-4xl md:text-5xl font-bold mb-4 ${textColor} drop-shadow-lg`}>
             Stay in the Action
@@ -119,217 +128,173 @@ export function FifaCitiesSection({ variant = "default" }: { variant?: "default"
         </motion.div>
 
         {/* Glassmorphic Frame around Cards Grid */}
-        <div className="relative bg-white/[0.19] backdrop-blur-2xl rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl border border-white/30 ring-1 ring-black/5">
+        <div className="relative bg-white/[0.19] backdrop-blur-2xl rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl border border-white/30 ring-1 ring-black/5 overflow-hidden">
           {/* Subtle Inner Glow */}
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500/5 via-transparent to-green-500/5 pointer-events-none" />
+
+          {/* Fade edges */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 z-10 bg-gradient-to-r from-white/20 to-transparent pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 z-10 bg-gradient-to-l from-white/20 to-transparent pointer-events-none" />
           
-          {/* City Cards Container - Horizontal scroll on mobile, grid on tablet+ */}
-          <div className="relative flex overflow-x-auto snap-x snap-mandatory gap-3 pb-4 -mx-6 px-6
-                         sm:grid sm:grid-cols-2 sm:overflow-visible sm:mx-0 sm:px-0 sm:gap-6
-                         lg:grid-cols-3 xl:grid-cols-4 
-                         scrollbar-hide"
-               style={{
-                 scrollbarWidth: 'none',
-                 msOverflowStyle: 'none'
-               }}>
-          {/* Multi-City Tour Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="min-w-[280px] flex-shrink-0 snap-center sm:min-w-0 sm:flex-shrink"
+          {/* Continuous Marquee Carousel */}
+          <div
+            className="relative overflow-hidden py-3 pb-4"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
           >
-            <button
-              onClick={() => setIsMultiCityDialogOpen(true)}
-              className="group block w-full text-left"
+            <div
+              className="flex gap-6 w-max"
+              style={{
+                animation: `marquee-scroll 60s linear infinite`,
+                animationPlayState: isPaused ? "paused" : "running",
+              }}
             >
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-2">
-                {/* Animated Gradient Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 animate-gradient-xy">
-                  {/* Animated pattern overlay */}
-                  <div className="absolute inset-0 opacity-20">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.3),transparent_50%)] animate-pulse" />
-                  </div>
-                </div>
-
-                {/* Subtle gradient for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
-
-                {/* Hover Glow Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                {/* Special Badge */}
-                <div className="absolute top-4 left-4 right-4 z-10">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-purple-600 text-xs font-semibold shadow-lg">
-                    <Map className="w-3 h-3" />
-                    <span>MULTI-CITY TOUR</span>
-                  </div>
-                </div>
-
-                {/* Center Icon */}
-                <div className="absolute inset-0 flex items-center justify-center z-10">
-                  <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Map className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-
-                {/* Bottom Content Area */}
-                <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
-                  <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2 drop-shadow-lg">
-                    <span className="text-2xl">🗺️</span>
-                    <span>Plan Multi-City Tour</span>
-                  </h3>
-
-                  <div className="flex items-center gap-1.5 text-white/95 text-sm mb-3">
-                    <Building2 className="w-4 h-4" />
-                    <span className="font-medium">Select multiple cities at once</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-white/90 text-sm">
-                      <span>Open all selected cities</span>
-                    </div>
-
-                    <div className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ChevronRight className="w-4 h-4 text-white" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Hover Border Effect */}
-                <div className="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-white/60 transition-all duration-300" />
-              </div>
-            </button>
-          </motion.div>
-
-          {/* Individual City Cards */}
-          {fifaCities.map((city, index) => {
-            const [imageError, setImageError] = useState(false);
-            
-            return (
-            <motion.div
-              key={city.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-              className="min-w-[280px] flex-shrink-0 snap-center sm:min-w-0 sm:flex-shrink"
-            >
-              <Link
-                href={`/search?event=fifa-2026&city=${city.id}`}
-                className="group block"
-              >
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-2">
-                  {/* Background Image/Gradient - Full Card Fill */}
-                  <div className="absolute inset-0">
-                    {!imageError && (
-                      <Image
-                        src={`/fifa-cities/${city.id}.jpg`}
-                        alt={`${city.displayName} - FIFA 2026 Host City`}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        onError={() => setImageError(true)}
-                      />
-                    )}
-                    {/* Gradient Fallback */}
-                    {imageError && (
-                      <div className={`absolute inset-0 bg-gradient-to-br ${gradientColors[city.id] || 'from-blue-600 to-green-600'}`}>
-                        {/* Subtle pattern overlay */}
-                        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
+              {/* Render cards twice for seamless loop */}
+              {[0, 1].map((setIndex) => (
+                <div key={setIndex} className="flex gap-6">
+                  {/* Multi-City Tour Card */}
+                  <div className="min-w-[280px] w-[280px] flex-shrink-0">
+                    <button
+                      onClick={() => setIsMultiCityDialogOpen(true)}
+                      className="group block w-full text-left"
+                    >
+                      <div className="relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-2 hover:scale-105">
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 animate-gradient-xy">
+                          <div className="absolute inset-0 opacity-20">
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.3),transparent_50%)] animate-pulse" />
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="absolute top-4 left-4 right-4 z-10">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-purple-600 text-xs font-semibold shadow-lg">
+                            <Map className="w-3 h-3" />
+                            <span>MULTI-CITY TOUR</span>
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center z-10">
+                          <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Map className="w-8 h-8 text-white" />
+                          </div>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
+                          <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2 drop-shadow-lg">
+                            <span className="text-2xl">🗺️</span>
+                            <span>Plan Multi-City Tour</span>
+                          </h3>
+                          <div className="flex items-center gap-1.5 text-white/95 text-sm mb-3">
+                            <Building2 className="w-4 h-4" />
+                            <span className="font-medium">Select multiple cities at once</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 text-white/90 text-sm">
+                              <span>Open all selected cities</span>
+                            </div>
+                            <div className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <ChevronRight className="w-4 h-4 text-white" />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-white/60 transition-all duration-300" />
                       </div>
-                    )}
+                    </button>
                   </div>
 
-                  {/* Subtle gradient for text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
-
-                  {/* Hover Glow Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                  {/* Top Badges Row */}
-                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-                    {/* FIFA 2026 Badge (Left) */}
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500 text-white text-xs font-semibold shadow-lg">
-                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      <span>FIFA 2026</span>
+                  {/* City Cards */}
+                  {fifaCities.map((city) => (
+                    <div key={`${setIndex}-${city.id}`} className="min-w-[280px] w-[280px] flex-shrink-0">
+                      <Link href={`/fifa-2026/${city.id}`} className="group block">
+                        <div className="relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-2 hover:scale-105">
+                          <div className="absolute inset-0">
+                            {!imageErrors.has(city.id) && (
+                              <Image
+                                src={`/fifa-cities/${city.id}.jpg`}
+                                alt={`${city.displayName} - FIFA 2026 Host City`}
+                                fill
+                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                onError={() => handleImageError(city.id)}
+                              />
+                            )}
+                            {imageErrors.has(city.id) && (
+                              <div className={`absolute inset-0 bg-gradient-to-br ${gradientColors[city.id] || 'from-blue-600 to-green-600'}`}>
+                                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
+                          <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500 text-white text-xs font-semibold shadow-lg">
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                              <span>FIFA 2026</span>
+                            </div>
+                            <div className="px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-bold shadow-lg">
+                              {city.stadium.matchesHosted} Matches
+                            </div>
+                          </div>
+                          {city.stadium.rounds.includes("Final") && (
+                            <div className="absolute top-14 left-4 z-10">
+                              <div className="px-2.5 py-1 rounded-md bg-yellow-500 text-xs font-bold text-gray-900 shadow-lg animate-pulse">
+                                ⭐ FINAL
+                              </div>
+                            </div>
+                          )}
+                          {city.stadium.rounds.includes("Semifinal") && !city.stadium.rounds.includes("Final") && (
+                            <div className="absolute top-14 left-4 z-10">
+                              <div className="px-2.5 py-1 rounded-md bg-yellow-600 text-xs font-bold text-white shadow-lg">
+                                SEMIFINAL
+                              </div>
+                            </div>
+                          )}
+                          <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
+                            <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2 drop-shadow-lg">
+                              <span className="text-2xl">{city.emoji}</span>
+                              <span>{city.name}</span>
+                            </h3>
+                            <div className="flex items-center gap-1.5 text-white/95 text-sm mb-3">
+                              <Building2 className="w-4 h-4" />
+                              <span className="font-medium line-clamp-1">{city.stadium.officialName}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5 text-white/90 text-sm">
+                                <MapPin className="w-4 h-4" />
+                                <span>{cityPropertyCounts[city.id] || 0} properties</span>
+                              </div>
+                              <div className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <ChevronRight className="w-4 h-4 text-white" />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-[#d4af37]/60 transition-all duration-300" />
+                        </div>
+                      </Link>
                     </div>
-
-                    {/* Match Count Badge (Right) */}
-                    <div className="px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-bold shadow-lg">
-                      {city.stadium.matchesHosted} Matches
-                    </div>
-                  </div>
-
-                  {/* Special Tournament Badge (Top Left Corner Below FIFA Badge) */}
-                  {city.stadium.rounds.includes("Final") && (
-                    <div className="absolute top-14 left-4 z-10">
-                      <div className="px-2.5 py-1 rounded-md bg-yellow-500 text-xs font-bold text-gray-900 shadow-lg animate-pulse">
-                        ⭐ FINAL
-                      </div>
-                    </div>
-                  )}
-                  {city.stadium.rounds.includes("Semifinal") && !city.stadium.rounds.includes("Final") && (
-                    <div className="absolute top-14 left-4 z-10">
-                      <div className="px-2.5 py-1 rounded-md bg-yellow-600 text-xs font-bold text-white shadow-lg">
-                        SEMIFINAL
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Bottom Content Area (Over Image) */}
-                  <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
-                    {/* City Name with Emoji */}
-                    <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2 drop-shadow-lg">
-                      <span className="text-2xl">{city.emoji}</span>
-                      <span>{city.name}</span>
-                    </h3>
-
-                    {/* Stadium Name */}
-                    <div className="flex items-center gap-1.5 text-white/95 text-sm mb-3">
-                      <Building2 className="w-4 h-4" />
-                      <span className="font-medium line-clamp-1">{city.stadium.officialName}</span>
-                    </div>
-
-                    {/* Property Count and Details */}
-                    <div className="flex items-center justify-between">
-                      {/* Property Count */}
-                      <div className="flex items-center gap-1.5 text-white/90 text-sm">
-                        <MapPin className="w-4 h-4" />
-                        <span>{cityPropertyCounts[city.id] || 0} properties</span>
-                      </div>
-
-                      {/* View Arrow */}
-                      <div className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ChevronRight className="w-4 h-4 text-white" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Hover Border Effect */}
-                  <div className="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-[#d4af37]/60 transition-all duration-300" />
+                  ))}
                 </div>
-              </Link>
-            </motion.div>
-            );
-          })}
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Search All FIFA Properties CTA */}
-        <div className="mt-12 text-center">
-          <Link href="/search?event=fifa-2026">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-8 py-6 text-lg shadow-xl"
-            >
-              <Map className="w-5 h-5 mr-2" />
-              Search All FIFA 2026 Properties
-            </Button>
-          </Link>
+        {/* FIFA city links + Search CTA */}
+        <div className="mt-12 space-y-6">
+          <div className="text-center">
+            <p className={`text-sm ${textMuted} mb-3`}>Explore host cities:</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {fifaCities.map((city) => (
+                <Link
+                  key={city.id}
+                  href={`/fifa-2026/${city.id}`}
+                  className={`px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 ${textColor} text-sm font-medium transition-colors`}
+                >
+                  {city.emoji} {city.name}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Multi-City Selection Dialog */}
@@ -472,7 +437,7 @@ export function FifaCitiesSection({ variant = "default" }: { variant?: "default"
               Can't decide? Explore all FIFA 2026 properties across all host cities.
             </p>
             <Link
-              href="/fifa-2026"
+              href="/search?event=fifa-2026"
               className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-10 py-4 rounded-full font-bold shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 border border-white/20"
             >
               <span>Explore All FIFA 2026 Host Cities</span>

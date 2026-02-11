@@ -25,14 +25,23 @@ export function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [user, setUser] = useState<SupabaseUser | null>(null)
-  
-  // Check if we're on the homepage (which has a background image)
-  const isHomePage = pathname === '/'
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Defer pathname/scroll-dependent styling until after mount to avoid hydration mismatch.
+  // Before mount, use stable "interior" styles so server and client render identically.
+  const isHomePage = pathname === "/"
+  const useHomepageStyles = mounted && isHomePage && !scrolled
+  const useStableStyles = !mounted
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50)
     }
+    handleScroll() // Set initial scroll state on mount
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
@@ -65,14 +74,17 @@ export function NavBar() {
     <motion.nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        // Solid white background on interior pages, glass only on homepage when scrolled
-        !isHomePage
+        // During SSR and initial hydration, use stable interior styles to prevent hydration mismatch.
+        // After mount, apply pathname/scroll-dependent styles.
+        useStableStyles
           ? "bg-white py-4 shadow-md border-b border-gray-100"
-          : scrolled
-            ? "glass py-4 shadow-lg"
-            : "bg-transparent py-6",
+          : useHomepageStyles
+            ? "bg-transparent py-6"
+            : isHomePage
+              ? "glass py-4 shadow-lg"
+              : "bg-white py-4 shadow-md border-b border-gray-100",
       )}
-      initial={{ y: -100 }}
+      initial={false}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
     >
@@ -80,7 +92,7 @@ export function NavBar() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 md:gap-4">
             <BackButton
-              className={cn("mr-2", (scrolled || !isHomePage) ? "text-foreground" : "text-white hover:text-white/80 hover:bg-white/10")}
+              className={cn("mr-2", useStableStyles || !useHomepageStyles ? "text-foreground" : "text-white hover:text-white/80 hover:bg-white/10")}
             />
 
             {/* Logo */}
@@ -89,7 +101,7 @@ export function NavBar() {
               <span
                 className={cn(
                   "font-serif text-2xl font-bold transition-colors",
-                  (scrolled || !isHomePage) ? "text-foreground" : "text-white",
+                  useStableStyles || !useHomepageStyles ? "text-foreground" : "text-white",
                 )}
               >
                 TrustYourHost
@@ -103,7 +115,7 @@ export function NavBar() {
               href="/search"
               className={cn(
                 "text-sm font-medium transition-colors",
-                (scrolled || !isHomePage) ? "text-muted-foreground hover:text-foreground" : "text-white/90 hover:text-white",
+                useStableStyles || !useHomepageStyles ? "text-muted-foreground hover:text-foreground" : "text-white/90 hover:text-white",
               )}
             >
               Search Properties
@@ -112,7 +124,7 @@ export function NavBar() {
               href="/#experiences"
               className={cn(
                 "text-sm font-medium transition-colors",
-                (scrolled || !isHomePage) ? "text-muted-foreground hover:text-foreground" : "text-white/90 hover:text-white",
+                useStableStyles || !useHomepageStyles ? "text-muted-foreground hover:text-foreground" : "text-white/90 hover:text-white",
               )}
               onClick={(e) => {
                 // If already on homepage, smooth scroll instead of reload
@@ -128,7 +140,7 @@ export function NavBar() {
               href="/how-it-works"
               className={cn(
                 "text-sm font-medium transition-colors",
-                (scrolled || !isHomePage) ? "text-muted-foreground hover:text-foreground" : "text-white/90 hover:text-white",
+                useStableStyles || !useHomepageStyles ? "text-muted-foreground hover:text-foreground" : "text-white/90 hover:text-white",
               )}
             >
               How It Works
@@ -137,7 +149,7 @@ export function NavBar() {
               href="/fifa-2026"
               className={cn(
                 "text-sm font-bold transition-colors flex items-center gap-1",
-                (scrolled || !isHomePage) ? "text-blue-600 hover:text-blue-700" : "text-yellow-400 hover:text-yellow-300",
+                useStableStyles || !useHomepageStyles ? "text-blue-600 hover:text-blue-700" : "text-yellow-400 hover:text-yellow-300",
               )}
             >
               <span>🏆</span>
@@ -147,10 +159,19 @@ export function NavBar() {
               href="/for-hosts"
               className={cn(
                 "text-sm font-medium transition-colors hover:text-orange-600",
-                (scrolled || !isHomePage) ? "text-muted-foreground" : "text-white/90 hover:text-orange-400",
+                useStableStyles || !useHomepageStyles ? "text-muted-foreground" : "text-white/90 hover:text-orange-400",
               )}
             >
               For Hosts
+            </Link>
+            <Link
+              href="/help"
+              className={cn(
+                "text-sm font-medium transition-colors",
+                useStableStyles || !useHomepageStyles ? "text-muted-foreground hover:text-foreground" : "text-white/90 hover:text-white",
+              )}
+            >
+              Help Center
             </Link>
           </div>
 
@@ -160,9 +181,9 @@ export function NavBar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant={(scrolled || !isHomePage) ? "ghost" : "ghost"}
+                    variant="ghost"
                     size="sm"
-                    className={(scrolled || !isHomePage) ? "" : "text-white hover:text-white hover:bg-white/10"}
+                    className={useStableStyles || !useHomepageStyles ? "" : "text-white hover:text-white hover:bg-white/10"}
                   >
                     <User className="h-4 w-4 mr-2" />
                     Account
@@ -193,11 +214,11 @@ export function NavBar() {
             ) : (
               <Link href="/host/login">
                 <Button
-                  variant={(scrolled || !isHomePage) ? "ghost" : "ghost"}
+                  variant="ghost"
                   size="sm"
-                  className={(scrolled || !isHomePage) ? "" : "text-white hover:text-white hover:bg-white/10"}
+                  className={useStableStyles || !useHomepageStyles ? "" : "text-white hover:text-white hover:bg-white/10"}
                 >
-                  Host Login
+                  Login
                 </Button>
               </Link>
             )}
@@ -218,9 +239,9 @@ export function NavBar() {
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           >
             {isMenuOpen ? (
-              <X className={cn("h-6 w-6", (scrolled || !isHomePage) ? "text-foreground" : "text-white")} />
+              <X className={cn("h-6 w-6", useStableStyles || !useHomepageStyles ? "text-foreground" : "text-white")} />
             ) : (
-              <Menu className={cn("h-6 w-6", (scrolled || !isHomePage) ? "text-foreground" : "text-white")} />
+              <Menu className={cn("h-6 w-6", useStableStyles || !useHomepageStyles ? "text-foreground" : "text-white")} />
             )}
           </button>
         </div>
@@ -275,6 +296,13 @@ export function NavBar() {
             >
               For Hosts
             </Link>
+            <Link
+              href="/help"
+              className="block py-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors min-h-[44px] flex items-center"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Help Center
+            </Link>
 
             {/* Primary CTA - Prominent in mobile */}
             <div className="pt-3 pb-3 border-t border-border">
@@ -320,7 +348,7 @@ export function NavBar() {
                 <>
                   <Link href="/host/login" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" size="sm" className="w-full min-h-[44px]">
-                      Host Login
+                      Login
                     </Button>
                   </Link>
                 </>
